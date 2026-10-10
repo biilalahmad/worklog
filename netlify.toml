@@ -5,20 +5,15 @@
 [functions]
   node_bundler = "esbuild"
 
-[[redirects]]
-  from = "/app"
-  to = "/app/"
-  status = 301
-
 [[headers]]
-  for = "/app/*"
+  for = "/invoice/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
-  for = "/invoice/*"
+  for = "/verified/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
     X-Content-Type-Options = "nosniff"

@@ -12,11 +12,11 @@ await copyFile(
   resolve(brandRoot, 'worklog-icon.png'),
 );
 await copyFile(
-  resolve(repoRoot, 'web', 'favicon.png'),
+  resolve(repoRoot, 'assets', 'images', 'worklog_icon.png'),
   resolve(websiteRoot, 'public', 'favicon.png'),
 );
-const publicOrigin = process.env.PUBLIC_SITE_URL || 'https://worklog.netlify.app';
+const publicOrigin = process.env.PUBLIC_SITE_URL || 'https://worklog-site.netlify.app';
 await writeFile(
   resolve(websiteRoot, 'public', 'robots.txt'),
-  `User-agent: *\nDisallow: /app/\nDisallow: /invoice/\nSitemap: ${publicOrigin.replace(/\/$/, '')}/sitemap-index.xml\n`,
+  `User-agent: *\nDisallow: /invoice/\nDisallow: /verified/\nSitemap: ${publicOrigin.replace(/\/$/, '')}/sitemap-index.xml\n`,
 );

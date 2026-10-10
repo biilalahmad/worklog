@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -296,11 +295,6 @@ class AppTheme {
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: _FadeThroughTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.macOS: _FadeThroughTransitionsBuilder(),
-          TargetPlatform.windows: _FadeThroughTransitionsBuilder(),
-          TargetPlatform.linux: _FadeThroughTransitionsBuilder(),
-          TargetPlatform.fuchsia: _FadeThroughTransitionsBuilder(),
         },
       ),
     );

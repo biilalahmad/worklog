@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:timezone/data/latest_all.dart' as tz_data;
@@ -22,15 +21,9 @@ class NotificationService {
   void Function(String? payload)? onNotificationTap;
 
   Future<void> init() async {
-    if (kIsWeb) return;
     tz_data.initializeTimeZones();
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosInit = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-    );
-    const settings = InitializationSettings(android: androidInit, iOS: iosInit);
+    const settings = InitializationSettings(android: androidInit);
     await _plugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (response) {
@@ -59,29 +52,24 @@ class NotificationService {
   /// Prompts for permission if not already decided. Returns whether
   /// notifications are allowed after the prompt.
   Future<bool> requestPermissions() async {
-    if (kIsWeb) return false;
     final androidGranted = await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
-    final iosGranted = await _plugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
-    return (androidGranted ?? iosGranted ?? false);
+    return androidGranted ?? false;
   }
 
   /// Checks current permission status without prompting — used to
   /// show a clear "notifications are off" banner instead of silently
   /// failing to schedule anything.
   Future<bool> areNotificationsEnabled() async {
-    if (kIsWeb) return false;
     final androidEnabled = await _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
         ?.areNotificationsEnabled();
     if (androidEnabled != null) return androidEnabled;
-    // iOS: fall back to permission_handler's status check.
+    // Fall back to permission_handler if the notification plugin cannot
+    // determine Android's current permission state.
     final status = await ph.Permission.notification.status;
     return status.isGranted;
   }
@@ -106,7 +94,6 @@ class NotificationService {
     RepeatInterval? repeat,
     String? payload,
   }) async {
-    if (kIsWeb) return;
     if (dateTime.isBefore(DateTime.now())) return;
     final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
     const details = NotificationDetails(
@@ -117,7 +104,6 @@ class NotificationService {
         priority: Priority.high,
         playSound: true,
       ),
-      iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
     );
 
     DateTimeComponents? matchComponents;
@@ -159,7 +145,6 @@ class NotificationService {
       required String title,
       required String body,
       String? payload}) async {
-    if (kIsWeb) return;
     const details = NotificationDetails(
       android: AndroidNotificationDetails(
         'overdue_channel',
@@ -168,7 +153,6 @@ class NotificationService {
         importance: Importance.high,
         priority: Priority.high,
       ),
-      iOS: DarwinNotificationDetails(),
     );
     await _plugin.show(id, title, body, details, payload: payload);
   }

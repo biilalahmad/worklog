@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 /// Supabase project credentials + auth deep-link settings.
 ///
 /// Pass them at build/run time so real keys never get committed:
@@ -30,25 +28,20 @@ class SupabaseConfig {
   static const String googleWebClientId =
       String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
 
-  /// Optional iOS client ID (only needed if/when an iOS build ships).
-  static const String googleIosClientId =
-      String.fromEnvironment('GOOGLE_IOS_CLIENT_ID');
-
   static bool get isConfigured =>
       url.isNotEmpty &&
       anonKey.isNotEmpty &&
       !url.contains('YOUR-PROJECT') &&
       !anonKey.contains('YOUR-ANON-KEY');
 
-  static bool get isGoogleConfigured => kIsWeb || googleWebClientId.isNotEmpty;
+  static bool get isGoogleConfigured => googleWebClientId.isNotEmpty;
 
-  /// Deep links the email templates redirect back into the app with.
-  /// Add BOTH to Supabase Dashboard -> Authentication -> URL Configuration
-  /// -> Redirect URLs.
+  /// Android app-return auth callbacks; signup verification uses the public
+  /// website route below. Keep both links in Supabase's redirect allow-list.
   static const String authRedirect = 'io.worklog.app://login-callback/';
   static const String resetRedirect = 'io.worklog.app://reset-callback/';
-
-  /// Email confirmation returns to the Flutter web app's mounted path.
-  /// The public marketing site lives at the origin root.
-  static String get webAuthRedirect => '${Uri.base.origin}/app/';
+  static const String verificationRedirect = String.fromEnvironment(
+    'EMAIL_VERIFICATION_REDIRECT_URL',
+    defaultValue: 'https://worklog-site.netlify.app/verified/',
+  );
 }

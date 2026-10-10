@@ -153,14 +153,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.9"
   dart_jsonwebtoken:
     dependency: transitive
     description:
@@ -440,14 +432,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  idb_shim:
-    dependency: transitive
-    description:
-      name: idb_shim
-      sha256: "110fe0514a52dc8da5414df42405a8f9e880dfac3e84852fdab8e5559ee6ad07"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.9.11"
   image:
     dependency: transitive
     description:
@@ -928,14 +912,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
-  sembast_web:
-    dependency: "direct main"
-    description:
-      name: sembast_web
-      sha256: "0dc954ffa88ae75958f4750892e86b29289bb1d0cb16b8f5b27b9fdb84d5d2ee"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.6"
   share_plus:
     dependency: "direct main"
     description:

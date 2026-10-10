@@ -133,9 +133,9 @@ products; review Google's current terms and limits before enabling it.
    Google Sign-In; you'll need an OAuth **Web** client ID from Google
    Cloud Console. For Android, also add your app's SHA-1 fingerprint
    there.
-4. **Authentication → URL Configuration → Redirect URLs** → add both:
-   - `io.worklog.app://login-callback/`
-   - `io.worklog.app://reset-callback/`
+4. **Authentication → URL Configuration → Redirect URLs** → add:
+   - `https://worklog-site.netlify.app/verified/` for signup email confirmation
+   - `io.worklog.app://login-callback/` and `io.worklog.app://reset-callback/` for Android auth flows
 5. **Authentication → SMTP Settings** → connect a real provider
    (Resend or Brevo recommended) before any public launch — Supabase's
    built-in sender is capped at 2 emails/hour, nowhere near enough for
@@ -150,9 +150,9 @@ products; review Google's current terms and limits before enabling it.
    ```
 8. `flutter pub get` then `flutter run`.
 
-The app is targeted and validated for Android and web. The iOS project
-files are retained in the repository but are not a supported release
-target.
+The app is an Android-only mobile app. The Netlify website contains
+public product information, support, account-verification results and
+read-only shared invoices; it does not run the Flutter app in a browser.
 
 Without the dart-defines set, the app shows a "Connect Supabase" screen
 instead of crashing.

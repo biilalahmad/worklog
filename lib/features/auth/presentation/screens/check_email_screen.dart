@@ -74,14 +74,15 @@ class _CheckEmailScreenState extends ConsumerState<CheckEmailScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: AppColors.mint, borderRadius: BorderRadius.circular(18)),
+            decoration: BoxDecoration(
+                color: AppColors.mint, borderRadius: BorderRadius.circular(18)),
             child: const Row(
               children: [
                 Icon(Icons.info_outline_rounded, color: AppColors.forest),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Tap "Verify Your Account" in that email, then come back and log in. The link expires in 24 hours.',
+                    'Tap "Verify Your Account" in that email. You’ll see a success message on the WorkLog website, then return here to log in. The link expires in 24 hours.',
                     style: TextStyle(color: AppColors.forest),
                   ),
                 ),
@@ -96,9 +97,14 @@ class _CheckEmailScreenState extends ConsumerState<CheckEmailScreen> {
           OutlinedButton.icon(
             onPressed: (_sending || onCooldown) ? null : _resend,
             icon: _sending
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.refresh_rounded),
-            label: Text(onCooldown ? 'Resend in ${_secondsLeft}s' : 'Resend verification email'),
+            label: Text(onCooldown
+                ? 'Resend in ${_secondsLeft}s'
+                : 'Resend verification email'),
           ),
           const SizedBox(height: 12),
           FilledButton(

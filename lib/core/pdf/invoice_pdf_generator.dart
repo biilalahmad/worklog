@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../features/clients/domain/client.dart';
@@ -51,11 +49,6 @@ class InvoicePdfGenerator {
     final fileName =
         'Invoice_${project.title.replaceAll(RegExp(r'[^\w\-]+'), '_')}.pdf';
     final amount = _formatMoney(project.totalAmountMinor, project.currency);
-
-    if (kIsWeb) {
-      await Printing.sharePdf(bytes: bytes, filename: fileName);
-      return;
-    }
 
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/$fileName');

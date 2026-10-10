@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -46,13 +45,6 @@ class CsvExportService {
       'worklog_expenses.csv': _expensesCsv(expenses),
     };
 
-    if (kIsWeb) {
-      // dart:io/path_provider aren't meaningful on web; share the
-      // largest file (income) as a reasonable single-file fallback so
-      // the export still does *something* usable there.
-      return;
-    }
-
     final dir = await getTemporaryDirectory();
     final xfiles = <XFile>[];
     for (final entry in files.entries) {
@@ -61,13 +53,24 @@ class CsvExportService {
       xfiles.add(XFile(file.path, mimeType: 'text/csv'));
     }
 
-    await Share.shareXFiles(xfiles, subject: 'WorkLog data export (${_dateFmt.format(DateTime.now())})');
+    await Share.shareXFiles(xfiles,
+        subject: 'WorkLog data export (${_dateFmt.format(DateTime.now())})');
   }
 
   String _clientsCsv(List<Client> clients) {
     final csv = CsvWriter();
-    csv.addRow(['Name', 'Email', 'Phone', 'Total Earned', 'Total Pending', 'Retainer',
-        'Retainer Amount', 'Retainer Currency', 'Retainer Day', 'Notes']);
+    csv.addRow([
+      'Name',
+      'Email',
+      'Phone',
+      'Total Earned',
+      'Total Pending',
+      'Retainer',
+      'Retainer Amount',
+      'Retainer Currency',
+      'Retainer Day',
+      'Notes'
+    ]);
     for (final c in clients) {
       csv.addRow([
         c.name,
@@ -76,7 +79,9 @@ class CsvExportService {
         c.totalEarned.formatAll(),
         c.totalPending.formatAll(),
         c.isRetainer ? 'Yes' : 'No',
-        c.retainerAmountMinor != null ? (c.retainerAmountMinor! / 100).toStringAsFixed(2) : '',
+        c.retainerAmountMinor != null
+            ? (c.retainerAmountMinor! / 100).toStringAsFixed(2)
+            : '',
         c.retainerCurrency ?? '',
         c.retainerDayOfMonth?.toString() ?? '',
         c.notes ?? '',
@@ -85,9 +90,20 @@ class CsvExportService {
     return csv.build();
   }
 
-  String _workEntriesCsv(List<WorkEntry> entries, Map<String, String> clientNameById) {
+  String _workEntriesCsv(
+      List<WorkEntry> entries, Map<String, String> clientNameById) {
     final csv = CsvWriter();
-    csv.addRow(['Date', 'Client', 'Task', 'Work Type', 'Video Count', 'Other Count', 'Hours', 'Status', 'Notes']);
+    csv.addRow([
+      'Date',
+      'Client',
+      'Task',
+      'Work Type',
+      'Video Count',
+      'Other Count',
+      'Hours',
+      'Status',
+      'Notes'
+    ]);
     for (final e in entries) {
       csv.addRow([
         _dateFmt.format(e.date),
@@ -106,7 +122,15 @@ class CsvExportService {
 
   String _incomeCsv(List<Income> income, Map<String, String> clientNameById) {
     final csv = CsvWriter();
-    csv.addRow(['Date', 'Client', 'Amount', 'Currency', 'Method', 'Description', 'Notes']);
+    csv.addRow([
+      'Date',
+      'Client',
+      'Amount',
+      'Currency',
+      'Method',
+      'Description',
+      'Notes'
+    ]);
     for (final i in income) {
       csv.addRow([
         _dateFmt.format(i.date),
@@ -123,7 +147,8 @@ class CsvExportService {
 
   String _expensesCsv(List<Expense> expenses) {
     final csv = CsvWriter();
-    csv.addRow(['Date', 'Category', 'Amount', 'Currency', 'Description', 'Notes']);
+    csv.addRow(
+        ['Date', 'Category', 'Amount', 'Currency', 'Description', 'Notes']);
     for (final e in expenses) {
       csv.addRow([
         _dateFmt.format(e.date),

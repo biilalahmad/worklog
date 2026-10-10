@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -53,8 +52,7 @@ class AuthRepositoryImpl implements AuthRepository {
       email: email,
       password: password,
       data: {'display_name': displayName},
-      emailRedirectTo:
-          kIsWeb ? SupabaseConfig.webAuthRedirect : SupabaseConfig.authRedirect,
+      emailRedirectTo: SupabaseConfig.verificationRedirect,
     );
     // With email confirmation ON, Supabase does not error for an
     // already-registered address (anti-enumeration) — it returns a
@@ -76,15 +74,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<bool> signInWithGoogle() async {
-    if (kIsWeb) {
-      await _client.auth.signInWithOAuth(OAuthProvider.google);
-      return true;
-    }
     final google = GoogleSignIn(
       serverClientId: SupabaseConfig.googleWebClientId,
-      clientId: SupabaseConfig.googleIosClientId.isEmpty
-          ? null
-          : SupabaseConfig.googleIosClientId,
     );
     final account = await google.signIn();
     if (account == null) return false; // user cancelled — stay silent
@@ -116,8 +107,7 @@ class AuthRepositoryImpl implements AuthRepository {
     return _client.auth.resend(
       type: OtpType.signup,
       email: email,
-      emailRedirectTo:
-          kIsWeb ? SupabaseConfig.webAuthRedirect : SupabaseConfig.authRedirect,
+      emailRedirectTo: SupabaseConfig.verificationRedirect,
     );
   }
 

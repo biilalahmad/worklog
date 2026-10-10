@@ -1,6 +1,6 @@
 # WorkLog Android release and update guide
 
-The web app is deployed with the website. An Android APK is not published yet: the Android application ID is still `com.example.freelance_tracker`, and the release build currently falls back to the debug signing key. Do not publish a public APK until both are finalized.
+The Android app is not published yet: the Android application ID is still `com.example.freelance_tracker`, and the release build currently falls back to the debug signing key. Do not publish a public APK until both are finalized.
 
 ## Before the first public APK
 
@@ -13,4 +13,4 @@ The web app is deployed with the website. An Android APK is not published yet: t
 
 Flutter reads the human-readable version and Android build number from the root `pubspec.yaml` entry, currently `0.5.0+1`. Bump the version before each public release, e.g. `0.5.1+2` or `0.6.0+3`; the portion after `+` becomes Android `versionCode` and must increase every time. Keep the application ID and signing key unchanged. Build and verify with `flutter build apk --release`, inspect the signature with Android build tools, install over the previous APK and confirm user data remains available. Then attach the APK, checksum and notes to the release and update the website Download link.
 
-When users install a newer APK with the same application ID and signing certificate, Android updates the existing app in place; they normally do **not** need to uninstall it, and app-private data remains. Users still need to download and approve each direct APK update themselves. For automatic store-managed updates, publish through Google Play under the same application ID/signing lineage. Web app changes are automatic after a successful site deploy and do not require an APK.
+When users install a newer APK with the same application ID and signing certificate, Android updates the existing app in place; they normally do **not** need to uninstall it, and app-private data remains. Users still need to download and approve each direct APK update themselves. For automatic store-managed updates, publish through Google Play under the same application ID/signing lineage. Website changes deploy separately and do not require a new APK.

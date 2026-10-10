@@ -7,9 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/offline_data_store.dart';
 import '../utils/refresh_with_network.dart';
 
-/// A browser reload recreates the Flutter app instead of invoking an
-/// in-app RefreshIndicator. Check after first paint so offline reloads
-/// get the same brief, non-blocking notice without delaying startup.
+/// Check connectivity after first paint so offline launches get the same
+/// brief, non-blocking notice without delaying startup.
 class OfflineStartupNotice extends StatefulWidget {
   const OfflineStartupNotice({super.key, required this.child});
 

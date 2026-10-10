@@ -797,6 +797,10 @@ h1 {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+.download-grid-single {
+  grid-template-columns: minmax(0, 640px);
+  justify-content: center;
+}
 .download-card {
   padding: 30px;
   border: 1px solid var(--line);

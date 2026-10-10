@@ -1,0 +1,40 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+<SiteLayout title="Email verification — WorkLog" description="Confirm the result of your WorkLog email verification." noindex={true}>
+  <section class="section section-space">
+    <div class="container narrow center" aria-live="polite">
+      <span class="download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg></span>
+      <span class="eyebrow">WORKLOG ACCOUNT</span>
+      <h1 id="verification-title">Checking your verification…</h1>
+      <p class="section-lede" id="verification-message">Please wait while we check the result from Supabase.</p>
+      <p><a class="button button-primary" href="/download/">Get WorkLog for Android <span aria-hidden="true">→</span></a></p>
+      <p class="page-meta"><a class="inline-link" href="/support/">Need help with verification?</a></p>
+    </div>
+  </section>
+  <script>
+    const title = document.querySelector<HTMLElement>('#verification-title');
+    const message = document.querySelector<HTMLElement>('#verification-message');
+    const query = new URLSearchParams(window.location.search);
+    const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const error = query.get('error_description') || query.get('error') || query.get('error_code') ||
+      fragment.get('error_description') || fragment.get('error') || fragment.get('error_code');
+    const confirmationResult = query.has('code') || query.get('type') === 'signup' ||
+      fragment.has('access_token') || fragment.get('type') === 'signup';
+
+    if (error) {
+      if (title) title.textContent = 'Verification link unavailable';
+      if (message) message.textContent = 'This link may have expired or already been used. Return to the WorkLog Android app and request a new verification email.';
+    } else if (confirmationResult) {
+      if (title) title.textContent = 'Email verified successfully';
+      if (message) message.textContent = 'Your account is ready. You can now log in to the WorkLog Android app.';
+    } else {
+      if (title) title.textContent = 'Verify your email to continue';
+      if (message) message.textContent = 'Open the verification link sent to your email. After confirmation, you can log in to WorkLog on Android.';
+    }
+
+    if (window.location.search || window.location.hash) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+</SiteLayout>

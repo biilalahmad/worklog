@@ -34,17 +34,24 @@ jobs:
       - name: Check Flutter code
         run: |
           flutter pub get
-          dart format --output=none --set-exit-if-changed lib/core/config/supabase_config.dart lib/features/auth/data/auth_repository_impl.dart lib/features/clients/presentation/screens/client_detail_screen.dart
+          dart format --output=none --set-exit-if-changed lib/core/config/supabase_config.dart lib/features/auth/data/auth_repository_impl.dart lib/features/auth/presentation/screens/check_email_screen.dart lib/core/data/local_database_factory.dart lib/core/csv/csv_export_service.dart lib/core/pdf/invoice_pdf_generator.dart lib/services/notifications/notification_service.dart lib/app/theme/app_theme.dart lib/features/clients/presentation/screens/client_detail_screen.dart
           flutter analyze --no-pub --no-fatal-infos
           flutter test
+      - name: Build Android app
+        run: flutter build apk --debug
       - name: Test contact function
         run: npm run test:contact
-      - name: Build website and Flutter app
+      - name: Build website
         run: npm run build --prefix website
         env:
           PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
           PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+      - name: Check published website routes
+        run: |
+          test ! -e website/dist/app
+          test -f website/dist/verified/index.html
+          test -f website/dist/invoice/index.html
       - name: Deploy preview
         if: github.event_name == 'pull_request' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         run: npx --yes netlify-cli@27.12.0 deploy --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Preview $GITHUB_SHA"
