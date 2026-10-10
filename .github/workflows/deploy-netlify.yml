@@ -1,0 +1,53 @@
+name: Build and deploy WorkLog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.5
+          channel: stable
+          cache: true
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+      - name: Install function dependencies
+        run: npm ci
+      - name: Check Flutter code
+        run: |
+          flutter pub get
+          dart format --output=none --set-exit-if-changed lib/core/config/supabase_config.dart lib/features/auth/data/auth_repository_impl.dart lib/features/clients/presentation/screens/client_detail_screen.dart
+          flutter analyze --no-pub --no-fatal-infos
+          flutter test
+      - name: Test contact function
+        run: npm run test:contact
+      - name: Build website and Flutter app
+        run: npm run build --prefix website
+        env:
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+      - name: Deploy preview
+        if: github.event_name == 'pull_request' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
+        run: npx --yes netlify-cli@27.12.0 deploy --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Preview $GITHUB_SHA"
+      - name: Deploy production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
+        run: npx --yes netlify-cli@27.12.0 deploy --prod --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Production $GITHUB_SHA"

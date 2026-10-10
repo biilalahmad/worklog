@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>Confirm your WorkLog email</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+      @keyframes soft-enter {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .card { animation: soft-enter 560ms ease-out both; }
+      .cta:hover { background-color: #285b8f !important; }
+
+      @media only screen and (max-width: 600px) {
+        .page-padding { padding: 24px 12px !important; }
+        .card-padding { padding: 30px 22px !important; }
+        .headline { font-size: 27px !important; line-height: 34px !important; }
+        .cta { display: block !important; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card { animation: none !important; }
+      }
+    </style>
+  </head>
+  <body style="margin:0;padding:0;background:#eaf2f9;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;color:#182a3d;-webkit-text-size-adjust:100%;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+      Confirm your email to finish setting up your WorkLog account.
+    </div>
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#eaf2f9;">
+      <tr>
+        <td class="page-padding" align="center" style="padding:52px 18px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:560px;">
+            <tr>
+              <td align="center" style="padding:0 0 22px;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td valign="middle" style="padding-right:11px;">
+                      <img src="{{ .SiteURL }}/icons/Icon-192.png" width="42" height="42" alt="WorkLog" style="display:block;width:42px;height:42px;border:1px solid #d6e3ef;border-radius:13px;background:#fff9e8;">
+                    </td>
+                    <td valign="middle" style="color:#183b62;font-size:19px;font-weight:800;letter-spacing:-.35px;">WorkLog</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="card" style="overflow:hidden;background:#ffffff;border:1px solid #d7e4ef;border-radius:22px;box-shadow:0 16px 42px rgba(24,59,98,.10);">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td style="height:5px;background:#63b3ed;font-size:0;line-height:0;">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td class="card-padding" style="padding:42px 42px 38px;">
+                      <div style="display:inline-block;padding:7px 11px;border:1px solid #d9eafb;border-radius:999px;background:#f2f8fe;color:#315f8f;font-size:11px;font-weight:700;letter-spacing:1.1px;">
+                        ONE QUICK STEP
+                      </div>
+
+                      <h1 class="headline" style="margin:20px 0 12px;color:#182a3d;font-size:31px;line-height:39px;font-weight:700;letter-spacing:-.8px;">
+                        Confirm your email
+                      </h1>
+
+                      <p style="margin:0 0 12px;color:#526a81;font-size:15px;line-height:25px;">
+                        Welcome to WorkLog. Confirm your email address to finish setting up your account and get started.
+                      </p>
+                      <p style="margin:0 0 27px;color:#526a81;font-size:14px;line-height:22px;">
+                        This confirmation is for <strong style="color:#182a3d;font-weight:600;">{{ .Email }}</strong>.
+                      </p>
+
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 25px;">
+                        <tr>
+                          <td align="center" bgcolor="#183b62" style="border-radius:12px;">
+                            <a class="cta" href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:15px 25px;border:1px solid #183b62;border-radius:12px;background:#183b62;color:#ffffff;font-size:15px;font-weight:700;line-height:20px;text-decoration:none;">
+                              Confirm email address&nbsp; &rarr;
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin:0 0 8px;color:#71859a;font-size:12px;line-height:19px;">
+                        Button not opening? Copy this link into your browser:
+                      </p>
+                      <p style="margin:0;word-break:break-all;font-size:12px;line-height:19px;">
+                        <a href="{{ .ConfirmationURL }}" style="color:#285b8f;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+                      </p>
+
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;margin-top:27px;">
+                        <tr>
+                          <td style="border-top:1px solid #e7eef5;font-size:0;line-height:0;">&nbsp;</td>
+                        </tr>
+                      </table>
+                      <p style="margin:18px 0 0;color:#71859a;font-size:12px;line-height:19px;">
+                        If you didn’t create a WorkLog account, you can safely ignore this email.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="padding:21px 12px 0;color:#71859a;font-size:12px;line-height:19px;">
+                WorkLog <span style="color:#a3b2c1;">·</span> Your work, clearly tracked.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

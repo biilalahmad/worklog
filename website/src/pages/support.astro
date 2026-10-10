@@ -1,0 +1,44 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+<SiteLayout title="Contact WorkLog support" description="Contact WorkLog support for help with your account, work log, invoice sharing or app download.">
+  <section class="page-hero"><div class="container narrow"><span class="eyebrow">CONTACT SUPPORT</span><h1>We’re here to help.</h1><p class="hero-lede">Tell us what’s happening. Please don’t send passwords, verification codes or payment card details.</p></div></section>
+  <section class="section section-space"><div class="container support-grid">
+    <form class="support-form" id="support-form" novalidate>
+      <label for="support-name">Your name</label><input id="support-name" name="name" autocomplete="name" maxlength="100" required />
+      <label for="support-email">Email address</label><input id="support-email" name="email" type="email" autocomplete="email" maxlength="254" required />
+      <label for="support-topic">What do you need help with?</label><select id="support-topic" name="topic" required><option value="">Choose a topic</option><option>Account or sign-in</option><option>Clients or work log</option><option>Invoice or payment</option><option>App download or update</option><option>Other</option></select>
+      <label for="support-message">Message</label><textarea id="support-message" name="message" rows="6" minlength="10" maxlength="5000" required></textarea>
+      <div class="form-trap" aria-hidden="true"><label for="support-website">Leave this field empty</label><input id="support-website" name="website" tabindex="-1" autocomplete="off" /></div>
+      <p class="form-note">We’ll use these details to reply to your support request. See our <a class="inline-link" href="/privacy/">Privacy Policy</a>.</p>
+      <button class="button button-primary" type="submit" id="support-submit">Send message <span aria-hidden="true">→</span></button>
+      <p class="form-status" id="support-status" role="status" aria-live="polite"></p>
+    </form>
+    <aside class="support-aside"><span class="support-aside-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 7l8 6 8-6" /></svg></span><h2>Prefer email?</h2><p>Write to our support inbox directly. Please include a short description of the issue and your account email.</p><a class="text-link" href="mailto:worklog.support@gmail.com">worklog.support@gmail.com <span aria-hidden="true">↗</span></a><div class="support-safety"><strong>Keep your account safe</strong><p>WorkLog support will never ask you to send your password or one-time verification code.</p></div></aside>
+  </div></section>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#support-form');
+    const status = document.querySelector<HTMLElement>('#support-status');
+    const submit = document.querySelector<HTMLButtonElement>('#support-submit');
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      if (status) status.textContent = 'Sending your message…';
+      if (submit) submit.disabled = true;
+      const values = Object.fromEntries(new FormData(form).entries());
+      try {
+        const response = await fetch('/.netlify/functions/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.message || 'The message could not be sent. Please email support directly.');
+        form.reset();
+        if (status) status.textContent = 'Thanks—your message has been sent. We’ll reply by email.';
+      } catch (error) {
+        if (status) status.textContent = `${error instanceof Error ? error.message : 'Something went wrong.'} Email worklog.support@gmail.com if you need help now.`;
+      } finally {
+        if (submit) submit.disabled = false;
+      }
+    });
+  </script>
+</SiteLayout>

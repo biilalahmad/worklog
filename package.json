@@ -1,0 +1,12 @@
+{
+  "name": "worklog-netlify-functions",
+  "private": true,
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "test:contact": "node --test website/test/contact.test.mjs",
+    "build": "npm run build --prefix website"
+  },
+  "dependencies": {
+    "nodemailer": "10.1.0"
+  }
+}

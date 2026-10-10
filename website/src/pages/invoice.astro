@@ -1,0 +1,87 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+const endpoint = import.meta.env.PUBLIC_SUPABASE_URL || '';
+const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
+---
+<SiteLayout title="WorkLog invoice" description="A private, read-only invoice shared with you through WorkLog." noindex={true}>
+  <div class="invoice-wrap">
+    <main class="invoice-card" id="invoice" data-endpoint={endpoint} data-anon-key={anonKey} aria-live="polite">
+      <div class="invoice-status" id="invoice-status"><div class="invoice-loading" aria-hidden="true"></div><h1>Loading invoice</h1><p>Please wait while we retrieve the shared invoice.</p></div>
+      <article id="invoice-content" class="invoice-hidden" aria-label="Shared invoice">
+        <div class="invoice-top"><div><a class="invoice-brand" href="/" aria-label="WorkLog"><img src="/brand/worklog-icon.png" alt="" />WorkLog</a><h1>INVOICE</h1></div><div class="invoice-meta"><span>INVOICE DATE<strong id="invoice-date"></strong></span><span>STATUS<strong id="invoice-status-value"></strong></span></div></div>
+        <div class="invoice-parties"><section><h2>FROM</h2><p>WorkLog user</p></section><section><h2>BILL TO</h2><p id="invoice-client"></p></section></div>
+        <table class="invoice-table"><thead><tr><th>DESCRIPTION</th><th>AMOUNT</th></tr></thead><tbody><tr><td id="invoice-title"></td><td id="invoice-total-cell"></td></tr></tbody></table>
+        <div class="invoice-total"><div><span>Total</span><strong id="invoice-total"></strong></div><div><span>Paid</span><strong id="invoice-paid"></strong></div><div><span>Amount due</span><strong id="invoice-due"></strong></div></div>
+        <section class="invoice-note"><h2 class="invoice-note-label">PAYMENT DETAILS</h2><p id="invoice-payment-note"></p></section>
+        <div class="invoice-actions"><button class="button button-outline invoice-download-button" type="button" id="invoice-print">Print / Save as PDF</button></div>
+        <p class="print-only">Shared securely with WorkLog.</p>
+      </article>
+    </main>
+    <section id="invoice-error" class="invoice-screen-status invoice-hidden"><h1>Invoice unavailable</h1><p id="invoice-error-message">This invoice link is invalid or has expired. Please ask the sender for a new link.</p><a class="button button-primary" href="/">Go to WorkLog</a></section>
+  </div>
+  <footer class="invoice-footer">Shared with WorkLog · Please contact the sender if you have a question about this invoice.</footer>
+  <script>
+    const card = document.querySelector<HTMLElement>('#invoice');
+    const status = document.querySelector<HTMLElement>('#invoice-status');
+    const content = document.querySelector<HTMLElement>('#invoice-content');
+    const error = document.querySelector<HTMLElement>('#invoice-error');
+    const token = new URLSearchParams(window.location.search).get('token');
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const fail = (message: string) => {
+      if (status) status.classList.add('invoice-hidden');
+      if (card) card.classList.add('invoice-hidden');
+      if (error) error.classList.remove('invoice-hidden');
+      const messageEl = document.querySelector<HTMLElement>('#invoice-error-message');
+      if (messageEl) messageEl.textContent = message;
+    };
+    const text = (id: string, value: unknown) => {
+      const target = document.getElementById(id);
+      if (target) target.textContent = value == null || value === '' ? '—' : String(value);
+    };
+    const dateLabel = (value: unknown) => {
+      if (typeof value !== 'string' || !value) return '—';
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.valueOf()) ? '—' : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(parsed);
+    };
+    const money = (amount: unknown, currency: unknown) => {
+      const numeric = Number(amount);
+      const code = typeof currency === 'string' ? currency.toUpperCase() : '';
+      if (!Number.isFinite(numeric) || !/^[A-Z]{3}$/.test(code)) return '—';
+      try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(numeric); }
+      catch { return `${code} ${numeric.toFixed(2)}`; }
+    };
+    const load = async () => {
+      const endpoint = card?.dataset.endpoint || '';
+      const anonKey = card?.dataset.anonKey || '';
+      if (!token || !uuid.test(token)) return fail('This invoice link is invalid. Please ask the sender to check the link.');
+      if (!endpoint || !anonKey) return fail('Invoice sharing is temporarily unavailable. Please contact the sender.');
+      try {
+        const response = await fetch(`${endpoint.replace(/\/$/, '')}/rest/v1/rpc/get_public_invoice`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+          body: JSON.stringify({ p_token: token }),
+        });
+        if (!response.ok) throw new Error('request failed');
+        const invoice = await response.json();
+        if (!invoice || typeof invoice !== 'object' || Array.isArray(invoice)) return fail('This invoice link is invalid or has expired. Please ask the sender for a new link.');
+        const currency = invoice.currency;
+        text('invoice-date', dateLabel(invoice.createdAt));
+        text('invoice-client', invoice.clientName);
+        text('invoice-title', invoice.projectTitle);
+        text('invoice-total-cell', money(invoice.totalAmount, currency));
+        text('invoice-total', money(invoice.totalAmount, currency));
+        text('invoice-paid', money(invoice.amountPaid, currency));
+        text('invoice-due', money(invoice.amountRemaining, currency));
+        const statusLabel = typeof invoice.status === 'string' ? invoice.status.replaceAll('_', ' ') : '';
+        text('invoice-status-value', statusLabel);
+        text('invoice-payment-note', invoice.dueDate ? `Due ${dateLabel(invoice.dueDate)}. Please contact the sender if you have a question about payment.` : 'Please contact the sender if you have a question about payment.');
+        status?.classList.add('invoice-hidden');
+        content?.classList.remove('invoice-hidden');
+        document.title = `${String(invoice.projectTitle || 'Invoice')} — WorkLog`;
+      } catch {
+        fail('We couldn’t load this invoice right now. Please try again later or contact the sender.');
+      }
+    };
+    document.querySelector<HTMLButtonElement>('#invoice-print')?.addEventListener('click', () => window.print());
+    void load();
+  </script>
+</SiteLayout>

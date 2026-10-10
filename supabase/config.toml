@@ -1,0 +1,18 @@
+# Local Supabase CLI settings only. Hosted Auth settings must also be changed
+# in the Supabase dashboard (or Management API) for production to match.
+project_id = "worklog"
+
+[auth.email]
+otp_length = 8
+otp_expiry = 180
+secure_password_change = true
+
+[auth.email.template.recovery]
+subject = "Your WorkLog security code"
+content_path = "./supabase/templates/reset_password.html"
+
+[functions.worklog-assistant]
+verify_jwt = true
+
+[functions.exchange-rates]
+verify_jwt = true
