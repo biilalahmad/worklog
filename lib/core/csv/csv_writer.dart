@@ -14,7 +14,7 @@ class CsvWriter {
     final needsQuoting = text.contains(',') || text.contains('"') || text.contains('\n') || text.contains('\r');
     if (!needsQuoting) return text;
     final escaped = text.replaceAll('"', '""');
-    return '"' + escaped + '"';
+    return '"$escaped"';
   }
 
   String build() => _rows.map((r) => r.join(',')).join('\r\n');

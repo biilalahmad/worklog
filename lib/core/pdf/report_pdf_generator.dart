@@ -86,7 +86,7 @@ class ReportPdfGenerator {
                         pw.Image(logo, width: 20, height: 20),
                         pw.SizedBox(width: 6),
                         pw.Text('WorkLog',
-                            style: pw.TextStyle(
+                            style: const pw.TextStyle(
                                 fontSize: 10,
                                 fontWeight: pw.FontWeight.bold,
                                 color: accent)),
@@ -109,20 +109,20 @@ class ReportPdfGenerator {
                           pw.Image(logo, width: 30, height: 30),
                           pw.SizedBox(width: 8),
                           pw.Text('WorkLog',
-                              style: pw.TextStyle(
+                              style: const pw.TextStyle(
                                   fontSize: 13,
                                   fontWeight: pw.FontWeight.bold,
                                   color: accent)),
                         ]),
                         pw.Text('FINANCIAL REPORT',
-                            style: pw.TextStyle(
+                            style: const pw.TextStyle(
                                 fontSize: 9,
                                 fontWeight: pw.FontWeight.bold,
                                 color: muted)),
                       ]),
                   pw.SizedBox(height: 15),
                   pw.Text(monthLabel,
-                      style: pw.TextStyle(
+                      style: const pw.TextStyle(
                           fontSize: 22,
                           fontWeight: pw.FontWeight.bold,
                           color: ink)),
@@ -145,7 +145,7 @@ class ReportPdfGenerator {
                 softBlue, ink),
             pw.SizedBox(height: 16),
             pw.Text('Income',
-                style: pw.TextStyle(
+                style: const pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                     color: accent)),
@@ -158,7 +158,7 @@ class ReportPdfGenerator {
                 softBlue, ink),
             pw.SizedBox(height: 16),
             pw.Text('Spending',
-                style: pw.TextStyle(
+                style: const pw.TextStyle(
                     fontSize: 14,
                     fontWeight: pw.FontWeight.bold,
                     color: accent)),
@@ -180,7 +180,7 @@ class ReportPdfGenerator {
             pw.Align(
               alignment: pw.Alignment.centerRight,
               child: pw.Text('Total Spending: ${_formatTotals(totalExpenses)}',
-                  style: pw.TextStyle(
+                  style: const pw.TextStyle(
                       fontWeight: pw.FontWeight.bold, color: accent)),
             ),
           ],
@@ -214,7 +214,7 @@ class ReportPdfGenerator {
     return pw.Table.fromTextArray(
       headers: headers,
       data: rows,
-      headerStyle: pw.TextStyle(
+      headerStyle: const pw.TextStyle(
           fontWeight: pw.FontWeight.bold, fontSize: 9, color: PdfColors.white),
       headerDecoration:
           const pw.BoxDecoration(color: PdfColor.fromInt(0xFF1E3A5F)),
@@ -251,19 +251,19 @@ class ReportPdfGenerator {
                         _pdfSafeText(item.method.trim().isEmpty
                             ? 'Income'
                             : item.method),
-                        style: pw.TextStyle(
+                        style: const pw.TextStyle(
                             fontSize: 10,
                             fontWeight: pw.FontWeight.bold,
-                            color: const PdfColor.fromInt(0xFF1B2A41)),
+                            color: PdfColor.fromInt(0xFF1B2A41)),
                       )),
                       pw.SizedBox(width: 12),
                       pw.Text(
                           _formatMoney(item.amountMinor.abs(), item.currency),
                           textAlign: pw.TextAlign.right,
-                          style: pw.TextStyle(
+                          style: const pw.TextStyle(
                               fontSize: 10,
                               fontWeight: pw.FontWeight.bold,
-                              color: const PdfColor.fromInt(0xFF1E3A5F))),
+                              color: PdfColor.fromInt(0xFF1E3A5F))),
                     ]),
                 pw.SizedBox(height: 3),
                 pw.Text(DateFormat('MMM d, yyyy').format(item.date),

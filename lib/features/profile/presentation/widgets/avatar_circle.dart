@@ -43,7 +43,7 @@ class AvatarCircle extends StatelessWidget {
 
   static String? initialsFromEmail(String? email) {
     final name = firstNameFromEmail(email);
-    return name == null ? null : name.substring(0, 1).toUpperCase();
+    return name?.substring(0, 1).toUpperCase();
   }
 
   @override

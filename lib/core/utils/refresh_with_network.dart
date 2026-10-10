@@ -32,10 +32,10 @@ void _showOfflineMessage(BuildContext context) {
   messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 2),
+      const SnackBar(
+        duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        content: const Row(
+        content: Row(
           children: [
             Icon(Icons.wifi_off_rounded, size: 18),
             SizedBox(width: 10),

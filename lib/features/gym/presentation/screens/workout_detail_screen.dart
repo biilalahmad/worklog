@@ -24,8 +24,9 @@ class WorkoutDetailScreen extends ConsumerWidget {
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorView(message: Failure.from(e).message),
         data: (workout) {
-          if (workout == null)
+          if (workout == null) {
             return const Center(child: Text('Workout not found.'));
+          }
           final exerciseNames = exercisesAsync.valueOrNull ?? const [];
           String nameFor(String id) {
             final match = exerciseNames.where((e) => e.id == id);

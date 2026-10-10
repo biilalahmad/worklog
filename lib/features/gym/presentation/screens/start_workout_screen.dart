@@ -101,26 +101,29 @@ class _StartWorkoutScreenState extends ConsumerState<StartWorkoutScreen> {
           ));
       for (final item in routineItems) {
         final matches = exercises!.where((e) => e.id == item.exerciseId);
-        if (matches.isNotEmpty)
+        if (matches.isNotEmpty) {
           _exercises.add(_SessionExercise(
             exerciseId: item.exerciseId,
             exerciseName: matches.first.name,
             targetSets: item.targetSets,
             targetReps: item.targetReps,
           ));
+        }
       }
-      if (mounted)
+      if (mounted) {
         setState(() {
           _workoutId = id;
           _startedAt = startedAt;
           _initializing = false;
         });
+      }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _initError = Failure.from(e).message;
           _initializing = false;
         });
+      }
     }
   }
 
@@ -163,9 +166,10 @@ class _StartWorkoutScreenState extends ConsumerState<StartWorkoutScreen> {
       });
       ref.invalidate(exercisesListProvider);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(Failure.save(e).message)));
+      }
     } finally {
       if (mounted) setState(() => _addingExercise = false);
     }
@@ -353,7 +357,7 @@ class _RestBanner extends StatelessWidget {
           children: [
             const Icon(Icons.timer_outlined, color: Colors.white, size: 18),
             const SizedBox(width: 8),
-            Text('Rest: ${m}:${s.toString().padLeft(2, '0')}',
+            Text('Rest: $m:${s.toString().padLeft(2, '0')}',
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w600)),
             const Spacer(),
@@ -414,8 +418,8 @@ class _ExerciseSessionCard extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             if (exercise.sets.isNotEmpty)
-              Row(
-                children: const [
+              const Row(
+                children: [
                   SizedBox(
                       width: 28,
                       child: Text('Set',
@@ -470,7 +474,7 @@ class _SetRow extends StatefulWidget {
 
 class _SetRowState extends State<_SetRow> {
   void _cycleType() {
-    final values = SetType.values;
+    const values = SetType.values;
     final next = values[(widget.set.type.index + 1) % values.length];
     setState(() => widget.set.type = next);
   }

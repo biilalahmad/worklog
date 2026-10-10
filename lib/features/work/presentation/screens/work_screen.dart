@@ -178,8 +178,9 @@ class _WorkScreenState extends ConsumerState<WorkScreen> {
                 };
                 final query = _searchQuery.trim();
                 final filtered = entries.where((entry) {
-                  if (_clientFilter != null && entry.clientId != _clientFilter)
+                  if (_clientFilter != null && entry.clientId != _clientFilter) {
                     return false;
+                  }
                   if (query.isEmpty) return true;
                   final clientName = clientsById[entry.clientId] ?? '';
                   return matchesSearch(entry.taskName, query) ||

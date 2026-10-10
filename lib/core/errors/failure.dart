@@ -37,8 +37,9 @@ class Failure {
       final msg = error.message.toLowerCase();
       final status = error.statusCode?.toString();
 
-      if (_looksOffline(msg))
+      if (_looksOffline(msg)) {
         return const Failure(noInternet, code: codeNetwork);
+      }
       if (msg.contains('email not confirmed') ||
           msg.contains('not confirmed')) {
         return const Failure('Please verify your email before logging in.',

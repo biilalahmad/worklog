@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.freelance_tracker"
-    compileSdk = flutter.compileSdkVersion
+    // Keep in sync with plugins that require Android API 36 during compilation.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

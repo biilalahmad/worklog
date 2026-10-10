@@ -82,7 +82,9 @@ class WgerExerciseService {
     if (name.contains('shoulder')) return MuscleGroup.shoulders;
     if (name.contains('arm') ||
         name.contains('bicep') ||
-        name.contains('tricep')) return MuscleGroup.arms;
+        name.contains('tricep')) {
+      return MuscleGroup.arms;
+    }
     if (name.contains('ab') || name.contains('core')) return MuscleGroup.core;
     if (name.contains('cardio')) return MuscleGroup.cardio;
     return MuscleGroup.other;

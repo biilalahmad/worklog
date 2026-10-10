@@ -56,13 +56,15 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
             ));
         ref.invalidate(exercisesListProvider);
       }
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('$name added to your library')));
+      }
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(Failure.save(error).message)));
+      }
     }
   }
 
@@ -122,7 +124,9 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                 final filtered = exercises.where((e) {
                   if (_filter != null && e.muscleGroup != _filter) return false;
                   if (_query.isNotEmpty &&
-                      !e.name.toLowerCase().contains(_query)) return false;
+                      !e.name.toLowerCase().contains(_query)) {
+                    return false;
+                  }
                   return true;
                 }).toList();
                 final popular = _popularExercises.where((entry) {

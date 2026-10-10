@@ -99,7 +99,7 @@ class AppTheme {
         )
         .apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface);
 
-    final pill = const StadiumBorder();
+    const pill = StadiumBorder();
 
     return ThemeData(
       useMaterial3: true,

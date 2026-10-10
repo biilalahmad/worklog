@@ -189,8 +189,9 @@ class _IncomeFormScreenState extends ConsumerState<IncomeFormScreen> {
                       helperText: 'Enter a positive amount',
                     ),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty)
+                      if (v == null || v.trim().isEmpty) {
                         return 'Enter an amount';
+                      }
                       final amount = double.tryParse(v.trim());
                       if (amount == null) return 'Enter a valid number';
                       if (amount <= 0) return 'Amount must be greater than 0';

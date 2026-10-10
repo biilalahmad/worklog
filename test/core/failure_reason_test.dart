@@ -15,7 +15,7 @@ void main() {
   });
 
   test('explains a missing deployed edge function', () {
-    final failure = Failure.from(FunctionsHttpException(status: 404));
+    final failure = Failure.from(const FunctionsHttpException(status: 404));
     expect(failure.message, contains('not deployed'));
   });
 
@@ -30,7 +30,7 @@ void main() {
   });
 
   test('uses the shared message for Edge Function HTTP 429 responses', () {
-    final failure = Failure.from(FunctionsHttpException(
+    final failure = Failure.from(const FunctionsHttpException(
       status: 429,
       details: '{"error":"some_endpoint_error"}',
     ));

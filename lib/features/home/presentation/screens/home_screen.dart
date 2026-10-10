@@ -168,8 +168,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(height: 18),
             Consumer(builder: (context, ref, _) {
               final clients = ref.watch(clientsListProvider).valueOrNull;
-              if (clients == null || clients.isNotEmpty)
+              if (clients == null || clients.isNotEmpty) {
                 return const SizedBox.shrink();
+              }
               return Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: SectionCard(

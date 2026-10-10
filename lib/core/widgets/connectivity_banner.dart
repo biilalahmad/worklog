@@ -65,12 +65,12 @@ class _ConnectivityBannerState extends State<ConnectivityBanner> {
     if (!_offline) return const SizedBox.shrink();
     return Material(
       color: Colors.orange.shade700,
-      child: SafeArea(
+      child: const SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            children: const [
+            children: [
               Icon(Icons.wifi_off_rounded, color: Colors.white, size: 16),
               SizedBox(width: 8),
               Expanded(

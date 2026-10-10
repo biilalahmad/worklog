@@ -110,10 +110,12 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: const InputDecoration(labelText: 'Subtotal *'),
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty)
+                      if (v == null || v.trim().isEmpty) {
                         return 'Enter an amount';
-                      if (double.tryParse(v.trim()) == null)
+                      }
+                      if (double.tryParse(v.trim()) == null) {
                         return 'Enter a valid number';
+                      }
                       return null;
                     },
                   ),
@@ -142,8 +144,9 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
               ),
               validator: (v) {
                 final rate = double.tryParse(v?.trim() ?? '');
-                if (rate == null || rate < 0 || rate > 1000)
+                if (rate == null || rate < 0 || rate > 1000) {
                   return 'Enter a tax rate between 0 and 1000';
+                }
                 return null;
               },
             ),

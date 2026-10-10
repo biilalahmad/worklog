@@ -95,7 +95,7 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
               onPressed: () => context.push('/gym/exercises'),
               icon: const Icon(Icons.search_rounded),
             ),
-            AssistantShortcutButton(agent: AssistantAgent.gym),
+            const AssistantShortcutButton(agent: AssistantAgent.gym),
           ],
         ),
       ),
@@ -451,7 +451,7 @@ class _WeekdayDot extends StatelessWidget {
           child: isActive
               ? Icon(Icons.check_rounded, size: 16, color: foreground)
               : Text('${date.day}',
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w700)),

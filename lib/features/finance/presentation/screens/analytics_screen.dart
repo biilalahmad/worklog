@@ -149,15 +149,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Row(
+                  const Row(
                     children: [
-                      const _LegendDot(color: Colors.green),
-                      const SizedBox(width: 4),
-                      const Text('Income'),
-                      const SizedBox(width: 16),
-                      const _LegendDot(color: Colors.redAccent),
-                      const SizedBox(width: 4),
-                      const Text('Spending'),
+                      _LegendDot(color: Colors.green),
+                      SizedBox(width: 4),
+                      Text('Income'),
+                      SizedBox(width: 16),
+                      _LegendDot(color: Colors.redAccent),
+                      SizedBox(width: 4),
+                      Text('Spending'),
                     ],
                   ),
                 ],
@@ -228,8 +228,9 @@ class _ComparisonBarChart extends StatelessWidget {
               showTitles: true,
               getTitlesWidget: (value, meta) {
                 final i = value.toInt();
-                if (i < 0 || i >= periods.length)
+                if (i < 0 || i >= periods.length) {
                   return const SizedBox.shrink();
+                }
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(periods[i].periodKey,
