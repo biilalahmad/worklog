@@ -37,8 +37,13 @@ jobs:
           dart format --output=none --set-exit-if-changed lib/core/config/supabase_config.dart lib/features/auth/data/auth_repository_impl.dart lib/features/auth/presentation/screens/check_email_screen.dart lib/core/data/local_database_factory.dart lib/core/csv/csv_export_service.dart lib/core/pdf/invoice_pdf_generator.dart lib/services/notifications/notification_service.dart lib/app/theme/app_theme.dart lib/features/clients/presentation/screens/client_detail_screen.dart
           flutter analyze --no-pub --no-fatal-infos
           flutter test
+      - name: Free space for Android build
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android/sdk/system-images
+          df -h /
       - name: Build Android app
-        run: flutter build apk --debug
+        run: flutter build apk --debug --target-platform android-arm64
       - name: Test contact function
         run: npm run test:contact
       - name: Build website
