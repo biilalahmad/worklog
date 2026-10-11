@@ -1,4 +1,4 @@
-name: Build and deploy WorkLog
+name: Validate WorkLog app and website
 
 on:
   push:
@@ -11,9 +11,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -57,9 +54,3 @@ jobs:
           test ! -e website/dist/app
           test -f website/dist/verified/index.html
           test -f website/dist/invoice/index.html
-      - name: Deploy preview
-        if: github.event_name == 'pull_request' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
-        run: npx --yes netlify-cli@27.12.0 deploy --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Preview $GITHUB_SHA"
-      - name: Deploy production
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
-        run: npx --yes netlify-cli@27.12.0 deploy --prod --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Production $GITHUB_SHA"
