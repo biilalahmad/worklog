@@ -16,6 +16,7 @@ class NoInternetScreen extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) => SingleChildScrollView(
@@ -26,79 +27,60 @@ class NoInternetScreen extends StatelessWidget {
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 420),
-                  child: Card(
-                    color: colors.surfaceContainerLow,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 36, 28, 28),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 56,
-                            height: 56,
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Image.asset(
-                              'assets/images/worklog_icon.png',
-                              fit: BoxFit.contain,
-                              semanticLabel: 'WorkLog',
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colors.primaryContainer,
                           ),
-                          const SizedBox(height: 28),
-                          Container(
-                            width: 112,
-                            height: 112,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: colors.primaryContainer,
-                            ),
-                            child: Icon(
-                              Icons.wifi_off_rounded,
-                              size: 48,
-                              color: colors.onPrimaryContainer,
-                            ),
+                          child: Icon(
+                            Icons.wifi_off_rounded,
+                            size: 40,
+                            color: colors.onPrimaryContainer,
                           ),
-                          const SizedBox(height: 24),
-                          Semantics(
-                            liveRegion: true,
-                            child: Text(
-                              'No internet connection',
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.titleLarge,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Check your connection. WorkLog will open your saved workspace when it can connect.',
+                        ),
+                        const SizedBox(height: 20),
+                        Semantics(
+                          liveRegion: true,
+                          child: Text(
+                            'No internet connection',
                             textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                              height: 1.5,
-                            ),
+                            style: theme.textTheme.titleLarge,
                           ),
-                          const SizedBox(height: 28),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton.icon(
-                              onPressed: isRetrying ? null : onRetry,
-                              icon: isRetrying
-                                  ? const SizedBox.square(
-                                      dimension: 18,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Icon(Icons.refresh_rounded),
-                              label: Text(isRetrying
-                                  ? 'Checking connection…'
-                                  : 'Retry'),
-                            ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Check your connection. WorkLog will open your saved workspace when it can connect.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                            height: 1.5,
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 28),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton.icon(
+                            onPressed: isRetrying ? null : onRetry,
+                            icon: isRetrying
+                                ? const SizedBox.square(
+                                    dimension: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.refresh_rounded),
+                            label: Text(
+                                isRetrying ? 'Checking connection…' : 'Retry'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -1,16 +1,94 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
-<SiteLayout title="Privacy Policy — WorkLog" description="How WorkLog handles account, work, client, finance, optional wellness and support information." >
-  <section class="page-hero"><div class="container narrow"><span class="eyebrow">LEGAL · DRAFT FOR REVIEW</span><h1>Privacy Policy</h1><p class="page-meta">Last updated October 10, 2026</p><div class="notice-box">This policy is a product-specific draft. The operator’s legal name, governing jurisdiction and final retention/deletion practices must be confirmed before public launch.</div></div></section>
-  <section class="section section-space"><article class="container legal-copy">
-    <h2>Information you add</h2><p>WorkLog may store your account email and profile details; client and project records; work descriptions, notes and time; invoices, income and expenses; reminders; and, if you choose to use them, profile photos and gym, meal or body-measurement records. Some records can contain information about your clients, so only add information you are permitted to manage.</p>
-    <h2>How information is used</h2><p>Information is used to provide the WorkLog features you choose, sync your account, create invoices and reports, send account/security emails, deliver support replies and protect the service. The optional assistant uses allow-listed aggregate metrics for selected suggestions; it is not intended to receive client names, notes or transaction rows.</p>
-    <h2>Service providers and storage</h2><p>WorkLog uses Supabase for authentication, database and file storage. Netlify hosts the public website and may process website requests and contact-form delivery. Email providers process account and support messages. These providers handle information under their own terms and security practices. The website does not intentionally sell personal information or use advertising trackers.</p>
-    <h2>Invoices shared by link</h2><p>An online invoice link is a private token link, not an identity check. Anyone who receives the link may be able to view the invoice fields displayed on that page. Share links only with the intended recipient and contact support if a link needs attention.</p>
-    <h2>Your choices</h2><p>You can edit profile and work records in the app, export supported data, choose whether to use optional features, and request account deletion through the account controls. Deletion may take time to propagate through backups or provider systems. Support can help with access or privacy questions.</p>
-    <h2>Security and retention</h2><p>WorkLog uses account access controls and provider security features, but no online service can promise absolute security. Information is kept while needed to provide the service, meet legitimate operational needs or comply with applicable obligations; final retention periods need to be confirmed by the operator.</p>
-    <h2>Children and changes</h2><p>WorkLog is intended for adults managing their own work, not for children. This policy may change as the product changes; the updated date above will be revised when material changes are made.</p>
-    <h2>Contact</h2><p>For privacy questions, email <a class="inline-link" href="mailto:worklog.support@gmail.com">worklog.support@gmail.com</a>.</p>
-  </article></section>
+<SiteLayout title="Privacy Policy — WorkLog" description="Learn what information WorkLog collects, how it is used and shared, and the choices available to you.">
+  <section class="page-hero">
+    <div class="container narrow">
+      <span class="eyebrow">LEGAL</span>
+      <h1>Privacy Policy</h1>
+      <p class="page-meta">Last updated October 11, 2026</p>
+    </div>
+  </section>
+  <section class="section section-space">
+    <article class="container legal-copy">
+      <p>This Privacy Policy explains what information WorkLog collects, how it is used and shared, and the choices you have. It applies to the WorkLog Android app and the WorkLog website at worklog-site.netlify.app. WorkLog is operated by an independent developer based in Pakistan ("WorkLog", "we", "us"). By creating an account or using WorkLog, you agree to the practices described here.</p>
+
+      <h2>1. Information we collect</h2>
+      <p><strong>Account information.</strong> Your email address and password (stored in hashed form by our authentication provider), and your display name. If you sign in with Google, Google shares your name, email address and profile picture with us, based on the permissions you approve.</p>
+      <p><strong>Profile and settings.</strong> Your default currency, invoice name, payment instructions, theme preference, onboarding choices, optional profile photo, and whether you have turned on the optional Gym and Diet module or the AI assistant.</p>
+      <p><strong>Work and business records you add.</strong> Clients (names, contact details, notes), projects, work entries (descriptions, delivery status, tasks, notes, hours and timers), invoices, income and expenses (including amounts and currencies), reminders, and records created from them such as PDF invoices, reports and CSV exports.</p>
+      <p><strong>Optional Gym and Diet records.</strong> If you choose to use this module: workouts, routines, meals, saved foods, body measurements and goals. These are only collected if you turn the module on and enter them. Turning it off hides the data without deleting it.</p>
+      <p><strong>Support messages.</strong> If you contact us through the support form or by email, we receive your name, email address, the topic and your message.</p>
+      <p><strong>Technical information.</strong> Our hosting and backend providers automatically process technical data needed to run the service, such as IP address, device and app version, and request logs. We use this to operate, secure and troubleshoot WorkLog.</p>
+      <p>We do not collect your precise location, microphone data, or your phone's contact book.</p>
+
+      <h2>2. Information about your clients</h2>
+      <p>WorkLog lets you store information about your own clients. You are responsible for having the right to add that information and for using it lawfully. We process it only to provide WorkLog to you, and we do not use your clients' information for our own purposes such as marketing.</p>
+
+      <h2>3. How we use information</h2>
+      <p>We use information to:</p>
+      <ul>
+        <li>create and secure your account, sign you in and keep your data in sync across your devices;</li>
+        <li>provide the features you choose, including work logs, time tracking, invoices, finance summaries, reports, reminders, search, and CSV export and import;</li>
+        <li>generate and share invoices, including private online invoice links you create;</li>
+        <li>send account and security emails, such as email verification and password reset;</li>
+        <li>send local notifications on your device for reminders and overdue invoices;</li>
+        <li>provide the optional AI assistant when you consent to it;</li>
+        <li>respond to support requests;</li>
+        <li>detect abuse, protect the service and fix problems; and</li>
+        <li>meet legal obligations.</li>
+      </ul>
+      <p>If you are in the European Economic Area, the United Kingdom or a similar region, our legal bases are: performing our agreement with you (providing the app), your consent (for example the AI assistant and optional features), our legitimate interests (securing and improving the service), and legal obligations.</p>
+
+      <h2>4. Who we share information with</h2>
+      <p>We do not sell or rent your personal information, and we do not share it for advertising. We use the following service providers, who process information on our behalf under their own terms and security practices:</p>
+      <ul>
+        <li><strong>Supabase</strong> provides authentication, the database, file storage (such as profile photos) and server functions.</li>
+        <li><strong>Netlify</strong> hosts the public website, serves shared invoice pages and the email verification page, and delivers support form submissions.</li>
+        <li><strong>Google</strong> provides Google Sign-In if you choose it, and the Gemini service that powers the optional AI assistant (see section 5).</li>
+        <li><strong>Email delivery providers</strong> send account, verification, password reset and support emails.</li>
+      </ul>
+      <p>We may also disclose information if required by law or to protect the rights, safety and security of our users or the service. If WorkLog is ever transferred to another owner, we will tell you before your information becomes subject to a different privacy policy.</p>
+
+      <h2>5. Optional AI assistant</h2>
+      <p>The AI assistant is off until you consent to it the first time you use it, and you can turn it off at any time in Profile. When you use it, the app sends fixed task selections and allow-listed aggregate metrics (for example totals and counts) through a secure server function to Google's Gemini service to produce suggestions and drafts. The assistant is not designed to receive free-text prompts, client names, notes or individual transaction rows. Suggestions are only shown to you in the app and never change your data on their own. Information sent to Gemini is handled under Google's terms, which may differ depending on the service tier, so please review Google's current terms before enabling this feature.</p>
+
+      <h2>6. Invoices shared by link</h2>
+      <p>When you create an online invoice link, anyone who has that link can view the invoice details shown on that page. The link is a private token, not an identity check. Share it only with the person it is meant for. If a link has been shared by mistake, contact us and we will help you disable it.</p>
+
+      <h2>7. Device permissions and notifications</h2>
+      <p>WorkLog may ask for the following permissions, and only uses them for the purpose described:</p>
+      <ul>
+        <li><strong>Notifications:</strong> to show reminders and overdue invoice alerts on your device.</li>
+        <li><strong>Photos or files:</strong> only when you choose a profile photo or import a CSV file, and only the item you pick.</li>
+        <li><strong>Sharing:</strong> when you download or share an invoice or export, your phone's share sheet opens so you choose where it goes (for example Email or WhatsApp). The Call, Email and WhatsApp buttons open the matching app on your device with your client's details; WorkLog does not read your messages or calls.</li>
+      </ul>
+      <p>You can change permissions at any time in your phone's settings.</p>
+
+      <h2>8. Website and cookies</h2>
+      <p>The website does not use advertising trackers or sell data. The verification and invoice pages process the link you opened in order to show you the result. Netlify may keep standard server logs, and the contact form sends what you submit to us. The website does not require you to accept cookies to read its pages.</p>
+
+      <h2>9. Data retention and deletion</h2>
+      <p>We keep your information while your account is active and as needed to provide the service. You can delete your account from the Profile tab in the app. When you do, we delete your account and the work, finance and optional records linked to it from our active systems. Copies may remain in backups maintained by our providers for a limited period before they are overwritten. Support messages are kept for as long as needed to resolve your request and for a reasonable period afterward. We may keep limited information longer if the law requires it or to resolve disputes and enforce our terms.</p>
+      <p>You can also export your data as CSV files from the app before deleting your account.</p>
+
+      <h2>10. Security</h2>
+      <p>We protect information with account authentication, row-level security that limits each user's access to their own records, and encrypted connections (HTTPS) between the app, the website and our servers. Our providers also apply their own security measures. No online service can guarantee absolute security, so please use a strong, unique password and keep your device secure. Please never send your password or verification codes to anyone, including support.</p>
+
+      <h2>11. International transfers</h2>
+      <p>Our providers may store and process information in countries other than the one where you live. Where required, we rely on the safeguards offered by our providers for transferring personal information across borders.</p>
+
+      <h2>12. Your rights and choices</h2>
+      <p>Depending on where you live, you may have the right to access, correct, delete, export or restrict the use of your personal information, to object to certain processing, and to withdraw consent at any time. You can do much of this yourself in the app by editing your records, exporting your data, turning optional features off, or deleting your account. For anything else, email us at the address below. We aim to respond within 30 days. You may also have the right to complain to your local data protection authority.</p>
+
+      <h2>13. Children</h2>
+      <p>WorkLog is meant for adults who manage their own work. It is not directed to children, and we do not knowingly collect personal information from anyone under 18. If you believe a child has given us personal information, contact us and we will delete it.</p>
+
+      <h2>14. Changes to this policy</h2>
+      <p>We may update this policy as WorkLog changes. When we make material changes, we will update the date at the top of this page and, where appropriate, notify you in the app or by email. Continuing to use WorkLog after a change means you accept the updated policy.</p>
+
+      <h2>15. Contact</h2>
+      <p>For privacy questions or requests, email <a class="inline-link" href="mailto:worklog.support@gmail.com">worklog.support@gmail.com</a>. Please include the email address linked to your WorkLog account, and do not include passwords or verification codes.</p>
+    </article>
+  </section>
 </SiteLayout>

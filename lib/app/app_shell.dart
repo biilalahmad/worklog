@@ -1,5 +1,3 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,18 +19,31 @@ class _TabItem {
   });
 }
 
-const _home = _TabItem(path: '/home', icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home');
+const _home = _TabItem(
+    path: '/home',
+    icon: Icons.home_outlined,
+    selectedIcon: Icons.home_rounded,
+    label: 'Home');
 const _gym = _TabItem(
-    path: '/gym', icon: Icons.fitness_center_outlined, selectedIcon: Icons.fitness_center_rounded, label: 'Gym');
+    path: '/gym',
+    icon: Icons.fitness_center_outlined,
+    selectedIcon: Icons.fitness_center_rounded,
+    label: 'Gym');
 const _finance = _TabItem(
     path: '/finance',
     icon: Icons.account_balance_wallet_outlined,
     selectedIcon: Icons.account_balance_wallet_rounded,
     label: 'Finance');
 const _clients = _TabItem(
-    path: '/clients', icon: Icons.people_alt_outlined, selectedIcon: Icons.people_alt_rounded, label: 'Clients');
-const _profile =
-    _TabItem(path: '/profile', icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile');
+    path: '/clients',
+    icon: Icons.people_alt_outlined,
+    selectedIcon: Icons.people_alt_rounded,
+    label: 'Clients');
+const _profile = _TabItem(
+    path: '/profile',
+    icon: Icons.person_outline_rounded,
+    selectedIcon: Icons.person_rounded,
+    label: 'Profile');
 List<_TabItem> _tabsFor({required bool gymEnabled}) {
   return gymEnabled
       ? [_home, _clients, _finance, _gym, _profile]
@@ -45,7 +56,8 @@ class AppShell extends ConsumerWidget {
 
   int _currentIndex(BuildContext context, List<_TabItem> tabs) {
     final location = GoRouterState.of(context).uri.toString();
-    return tabs.indexWhere((t) => t.path != null && location.startsWith(t.path!));
+    return tabs
+        .indexWhere((t) => t.path != null && location.startsWith(t.path!));
   }
 
   @override
@@ -55,12 +67,11 @@ class AppShell extends ConsumerWidget {
     final currentIndex = _currentIndex(context, tabs);
 
     if (context.useSideNavigation) {
-      final railIndex = currentIndex;
       return Scaffold(
         body: Row(
           children: [
             NavigationRail(
-              selectedIndex: railIndex == -1 ? null : railIndex,
+              selectedIndex: currentIndex == -1 ? null : currentIndex,
               onDestinationSelected: (index) => context.go(tabs[index].path!),
               labelType: NavigationRailLabelType.all,
               leading: Padding(
@@ -69,8 +80,10 @@ class AppShell extends ConsumerWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(color: AppColors.forest, shape: BoxShape.circle),
-                      child: const Icon(Icons.bolt_rounded, color: AppColors.lime),
+                      decoration: const BoxDecoration(
+                          color: AppColors.forest, shape: BoxShape.circle),
+                      child:
+                          const Icon(Icons.bolt_rounded, color: AppColors.lime),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -106,6 +119,7 @@ class AppShell extends ConsumerWidget {
     }
 
     return Scaffold(
+      extendBody: true,
       body: child,
       bottomNavigationBar: _FloatingNavBar(
         tabs: tabs,
@@ -123,44 +137,59 @@ class _FloatingNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const _FloatingNavBar({required this.tabs, required this.currentIndex, required this.onTap});
+  const _FloatingNavBar({
+    required this.tabs,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final scheme = Theme.of(context).colorScheme;
     final isDark = scheme.brightness == Brightness.dark;
+    if (MediaQuery.viewInsetsOf(context).bottom > 0) {
+      return const SizedBox.shrink();
+    }
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomInset > 0 ? bottomInset - 4 : 12),
+      // Keep the recent, subtle raised position while restoring the prior
+      // four/five destination bar design and sizing.
+      padding: EdgeInsets.fromLTRB(
+          16, 0, 16, bottomInset > 0 ? bottomInset + 12 : 12),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
-            BoxShadow(color: AppColors.forest.withValues(alpha: 0.10), blurRadius: 24, offset: const Offset(0, 8)),
+            BoxShadow(
+                color: AppColors.forest.withValues(alpha: 0.10),
+                blurRadius: 24,
+                offset: const Offset(0, 8))
           ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              height: 72,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                color: isDark ? scheme.surface.withValues(alpha: 0.88) : AppColors.navBar,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                    color: (isDark ? scheme.outlineVariant : Colors.white).withValues(alpha: 0.78)),
-              ),
-              child: Row(
-                children: [
-                  for (var i = 0; i < tabs.length; i++)
-                    Expanded(
-                      child: _NavBarItem(tab: tabs[i], selected: i == currentIndex, onTap: () => onTap(i)),
-                    ),
-                ],
-              ),
+          child: Container(
+            height: 72,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? scheme.surface.withValues(alpha: 0.88)
+                  : AppColors.navBar,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                  color: (isDark ? scheme.outlineVariant : Colors.white)
+                      .withValues(alpha: 0.78)),
+            ),
+            child: Row(
+              children: [
+                for (var i = 0; i < tabs.length; i++)
+                  Expanded(
+                      child: _NavBarItem(
+                          tab: tabs[i],
+                          selected: i == currentIndex,
+                          onTap: () => onTap(i)))
+              ],
             ),
           ),
         ),
@@ -173,7 +202,8 @@ class _NavBarItem extends StatelessWidget {
   final _TabItem tab;
   final bool selected;
   final VoidCallback onTap;
-  const _NavBarItem({required this.tab, required this.selected, required this.onTap});
+  const _NavBarItem(
+      {required this.tab, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -194,29 +224,35 @@ class _NavBarItem extends StatelessWidget {
           ),
         );
 
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: Center(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 260),
-              curve: Curves.easeOutCubic,
-              padding: EdgeInsets.symmetric(horizontal: compact ? 5 : 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: selected
-                    ? (scheme.brightness == Brightness.dark
-                        ? scheme.primaryContainer.withValues(alpha: 0.86)
-                        : AppColors.limeSoft.withValues(alpha: 0.86))
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _NavIcon(tab: tab, selected: selected),
-                  const SizedBox(height: 3),
-                  label,
-                ],
+        return Semantics(
+          button: true,
+          selected: selected,
+          label: tab.label,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onTap,
+            child: Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 260),
+                curve: Curves.easeOutCubic,
+                padding: EdgeInsets.symmetric(
+                    horizontal: compact ? 5 : 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? (scheme.brightness == Brightness.dark
+                          ? scheme.primaryContainer.withValues(alpha: 0.86)
+                          : AppColors.limeSoft.withValues(alpha: 0.86))
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _NavIcon(tab: tab, selected: selected),
+                    const SizedBox(height: 3),
+                    label,
+                  ],
+                ),
               ),
             ),
           ),
@@ -234,12 +270,15 @@ class _NavIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        transitionBuilder: (widget, anim) => ScaleTransition(scale: anim, child: widget),
+        transitionBuilder: (widget, anim) =>
+            ScaleTransition(scale: anim, child: widget),
         child: Icon(
           selected ? tab.selectedIcon : tab.icon,
           key: ValueKey(selected),
           size: 22,
-          color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       );
 }

@@ -126,16 +126,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () => refreshWithNetworkMessage(context, () async {
-          await Future.wait([
-            ref.refresh(workEntriesForRangeProvider(todayRange).future),
-            ref.refresh(incomeForRangeProvider(todayRange).future),
-            ref.refresh(monthStatsProvider(DateKeys.month(now)).future),
-            ref.refresh(upcomingRemindersProvider.future),
-            ref.refresh(clientsListProvider.future),
-          ]);
+          // Reconnect the live streams, but don't keep the pull-to-refresh
+          // indicator open until every network query has returned.
+          ref.invalidate(workEntriesForRangeProvider(todayRange));
+          ref.invalidate(incomeForRangeProvider(todayRange));
+          ref.invalidate(monthStatsProvider(DateKeys.month(now)));
+          ref.invalidate(upcomingRemindersProvider);
+          ref.invalidate(clientsListProvider);
         }),
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            4,
+            16,
+            96 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             Row(
               children: [
@@ -222,6 +227,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   return GridView.count(
                     crossAxisCount: crossCount,
                     shrinkWrap: true,
+                    // Nested scrollables otherwise inherit the system safe
+                    // padding and leave a large blank strip after the grid.
+                    padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
@@ -286,7 +294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
             FadeSlideIn(
               delay: const Duration(milliseconds: 140),
               child: SectionCard(
@@ -307,7 +315,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             FadeSlideIn(
               delay: const Duration(milliseconds: 200),
               child: Column(
@@ -777,7 +785,7 @@ class _StatTile extends StatelessWidget {
                 fontSize: 19,
                 fontWeight: FontWeight.w700,
                 color: error ? scheme.error : null,
-                ),
+              ),
             ),
           ),
           const SizedBox(height: 3),

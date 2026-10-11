@@ -84,29 +84,41 @@ class _LaunchingScreenState extends ConsumerState<LaunchingScreen> {
     }
 
     final colors = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 360),
           child: Padding(
-            padding: const EdgeInsets.all(28),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(
-                  'assets/images/worklog_icon.png',
-                  width: 48,
-                  height: 48,
-                  semanticLabel: 'WorkLog',
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.work_outline_rounded,
+                      size: 27, color: colors.onPrimaryContainer),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 20),
                 Text('Getting your workspace ready',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 18),
+                    style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700, letterSpacing: -.2)),
+                const SizedBox(height: 8),
+                Text('Just a moment while we load your saved data.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant, height: 1.4)),
+                const SizedBox(height: 22),
                 SizedBox(
-                  width: 24,
-                  height: 24,
+                  width: 28,
+                  height: 28,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     color: colors.primary,

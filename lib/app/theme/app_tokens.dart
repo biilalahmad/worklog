@@ -49,3 +49,11 @@ class AppSpacing {
   /// Extra bottom padding so scrollable content clears the floating nav.
   static const double navClearance = 112;
 }
+
+class AppIconSize {
+  AppIconSize._();
+
+  static const double small = 18;
+  static const double standard = 22;
+  static const double large = 28;
+}

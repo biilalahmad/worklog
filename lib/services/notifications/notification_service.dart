@@ -4,6 +4,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../app/theme/app_tokens.dart';
+
 enum RepeatInterval { daily, weekly, monthly }
 
 enum ReminderScheduleOutcome { exact, approximate, notificationsDisabled }
@@ -22,6 +24,13 @@ class NotificationService {
   /// from main.dart/router wiring so a tap can navigate straight to
   /// the relevant reminder.
   void Function(String? payload)? onNotificationTap;
+  String? _launchPayload;
+
+  String? takeLaunchPayload() {
+    final payload = _launchPayload;
+    _launchPayload = null;
+    return payload;
+  }
 
   Future<void> init() async {
     tz_data.initializeTimeZones();
@@ -39,24 +48,38 @@ class NotificationService {
         onNotificationTap?.call(response.payload);
       },
     );
+    final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+    if (launchDetails?.didNotificationLaunchApp == true) {
+      _launchPayload = launchDetails?.notificationResponse?.payload;
+    }
 
+    const channelGroup = AndroidNotificationChannelGroup(
+      'worklog_alerts',
+      'WorkLog alerts',
+      description: 'Notifications created by WorkLog',
+    );
     const channel = AndroidNotificationChannel(
-      // New channel ID applies sound defaults to existing installs too;
-      // Android does not let apps modify a channel after its first creation.
-      'reminders_channel_v2',
+      // Android locks sound/vibration preferences once a channel is created.
+      'reminders_channel_v3',
       'Reminders',
       description: 'Scheduled reminders you created in WorkLog',
+      groupId: 'worklog_alerts',
       importance: Importance.high,
       playSound: true,
+      enableVibration: true,
     );
     const overdueChannel = AndroidNotificationChannel(
-      'overdue_channel',
+      'overdue_channel_v2',
       'Overdue Invoices',
       description: 'Alerts when a client invoice becomes overdue',
+      groupId: 'worklog_alerts',
       importance: Importance.high,
+      playSound: true,
+      enableVibration: true,
     );
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.createNotificationChannelGroup(channelGroup);
     await androidPlugin?.createNotificationChannel(channel);
     await androidPlugin?.createNotificationChannel(overdueChannel);
   }
@@ -132,13 +155,20 @@ class NotificationService {
   }) async {
     if (dateTime.isBefore(DateTime.now())) return;
     final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'reminders_channel_v2',
+        'reminders_channel_v3',
         'Reminders',
         importance: Importance.high,
         priority: Priority.high,
         playSound: true,
+        enableVibration: true,
+        icon: 'ic_stat_worklog',
+        color: AppColors.forestLight,
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        styleInformation: BigTextStyleInformation(body),
+        groupKey: 'worklog_reminders',
+        showWhen: true,
       ),
     );
 
@@ -181,13 +211,21 @@ class NotificationService {
       required String title,
       required String body,
       String? payload}) async {
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'overdue_channel',
+        'overdue_channel_v2',
         'Overdue Invoices',
         channelDescription: 'Alerts when a client invoice becomes overdue',
         importance: Importance.high,
         priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        icon: 'ic_stat_worklog',
+        color: AppColors.forestLight,
+        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+        styleInformation: BigTextStyleInformation(body),
+        groupKey: 'worklog_overdue',
+        showWhen: true,
       ),
     );
     await _plugin.show(id, title, body, details, payload: payload);

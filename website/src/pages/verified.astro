@@ -1,43 +1,101 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+
+const appLoginUrl = 'io.worklog.app://login-callback/';
 ---
-<SiteLayout title="Email verification — WorkLog" description="Confirm the result of your WorkLog email verification." noindex={true}>
-  <section class="section section-space">
-    <div class="container narrow center" aria-live="polite" aria-atomic="true">
-      <span class="download-icon verification-icon" id="verification-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg></span>
-      <span class="eyebrow">WORKLOG ACCOUNT</span>
-      <h1 id="verification-title">Checking your verification…</h1>
-      <p class="section-lede" id="verification-message">Please wait while we check the result from Supabase.</p>
-      <p><a class="button button-primary" href="/download/">Get WorkLog for Android <span aria-hidden="true">→</span></a></p>
-      <p class="page-meta"><a class="inline-link" href="/support/">Need help with verification?</a></p>
+<SiteLayout title="Email verification — WorkLog" description="Check your WorkLog email verification result and continue in the Android app." noindex={true}>
+  <section class="verified-bg">
+    <div class="container verified-card" id="verification-card" aria-live="polite" aria-atomic="true">
+      <span class="verified-icon verified-icon-neutral" id="verification-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3v18M7 8h8a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8" /></svg>
+      </span>
+      <span class="eyebrow" id="verification-eyebrow">WORKLOG ACCOUNT</span>
+      <h1 id="verification-title">Verification page</h1>
+      <p class="verified-message" id="verification-message">This page confirms the result of an email verification link. Open the link from your signup email to check its status.</p>
+      <div class="verified-actions">
+        <a class="button button-primary" id="verification-app-link" href={appLoginUrl} hidden>Open WorkLog app</a>
+        <a class="button button-outline" id="verification-download-link" href="/download/" hidden>Download for Android</a>
+        <a class="button button-outline" id="verification-home-link" href="/" hidden>Go to WorkLog home</a>
+      </div>
+      <ol class="verified-steps" id="verification-steps" hidden>
+        <li><span class="verified-step-num">1</span><span>Open WorkLog</span></li>
+        <li><span class="verified-step-num">2</span><span>Log in with your email and password</span></li>
+        <li><span class="verified-step-num">3</span><span>Add your first client</span></li>
+      </ol>
+      <p class="verified-desktop-note" id="verification-desktop-note" hidden>On your Android phone, choose “Open WorkLog app” to continue.</p>
+      <p class="verified-helper" id="verification-support" hidden>Need help? <a href="/support/">Contact WorkLog support</a>.</p>
     </div>
   </section>
   <script>
-    const title = document.querySelector<HTMLElement>('#verification-title');
-    const message = document.querySelector<HTMLElement>('#verification-message');
+    const title = document.querySelector('#verification-title');
+    const message = document.querySelector('#verification-message');
+    const eyebrow = document.querySelector('#verification-eyebrow');
+    const icon = document.querySelector('#verification-icon');
+    const appLink = document.querySelector('#verification-app-link');
+    const downloadLink = document.querySelector('#verification-download-link');
+    const homeLink = document.querySelector('#verification-home-link');
+    const steps = document.querySelector('#verification-steps');
+    const desktopNote = document.querySelector('#verification-desktop-note');
+    const support = document.querySelector('#verification-support');
+
     const query = new URLSearchParams(window.location.search);
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-    const error = query.get('error_description') || query.get('error') || query.get('error_code') ||
-      fragment.get('error_description') || fragment.get('error') || fragment.get('error_code');
-    // Supabase redirects here only after its confirmation endpoint has
-    // verified the one-time token. A `type=signup` parameter by itself is
-    // not proof of confirmation, so require the callback code or session
-    // token that Supabase returns on a successful verification.
-    const confirmationResult = query.has('code') || fragment.has('access_token');
+    const errorCode = (query.get('error_code') || fragment.get('error_code') || query.get('error') || fragment.get('error') || '').toLowerCase();
+    const errorDescription = (query.get('error_description') || fragment.get('error_description') || '').toLowerCase();
+    const hasRedirectData = window.location.search.length > 1 || window.location.hash.length > 1;
+    const hasConfirmationResult = query.has('code') || fragment.has('access_token');
 
-    if (error) {
-      if (title) title.textContent = 'Verification link unavailable';
-      if (message) message.textContent = 'This link may have expired or already been used. Return to the WorkLog Android app and request a new verification email.';
-    } else if (confirmationResult) {
-      if (title) title.textContent = 'Email verified successfully';
-      if (message) message.textContent = 'Your email is confirmed. Your account is ready—open WorkLog on Android and log in with your email and password.';
+    // Remove one-time codes and tokens from the address bar immediately. Never display or persist their values.
+    if (hasRedirectData) window.history.replaceState({}, document.title, window.location.pathname);
+
+    const show = (state) => {
+      if (icon) icon.className = `verified-icon ${state === 'success' ? 'verified-icon-success' : state === 'error' ? 'verified-icon-error' : 'verified-icon-neutral'}`;
+      if (appLink) appLink.hidden = false;
+      if (downloadLink) downloadLink.hidden = false;
+      if (support) support.hidden = true;
+      if (steps) steps.hidden = true;
+      if (desktopNote) desktopNote.hidden = true;
+      if (homeLink) homeLink.hidden = true;
+
+      if (state === 'success') {
+        if (eyebrow) eyebrow.textContent = 'ACCOUNT READY';
+        if (title) title.textContent = 'Your email is verified';
+        if (message) message.textContent = 'Your WorkLog account has been created successfully. Open the app and log in to get started.';
+        if (steps) steps.hidden = false;
+        if (desktopNote) desktopNote.hidden = false;
+      } else if (state === 'expired') {
+        if (eyebrow) eyebrow.textContent = 'VERIFICATION LINK';
+        if (title) title.textContent = 'This link has expired';
+        if (message) message.textContent = 'Request a new verification email from the WorkLog app, then open the newest link from your inbox.';
+        if (downloadLink) downloadLink.hidden = true;
+        if (support) support.hidden = false;
+      } else if (state === 'error') {
+        if (eyebrow) eyebrow.textContent = 'WORKLOG ACCOUNT';
+        if (title) title.textContent = 'You can try logging in';
+        if (message) message.textContent = 'This verification link may already have been used or could not be confirmed. Try logging in from WorkLog, or contact support if you still need help.';
+        if (downloadLink) downloadLink.hidden = true;
+        if (support) support.hidden = false;
+      } else {
+        if (eyebrow) eyebrow.textContent = 'WORKLOG ACCOUNT';
+        if (title) title.textContent = 'Verification page';
+        if (message) message.textContent = 'Open the verification link from your signup email to check its status.';
+        if (appLink) appLink.hidden = true;
+        if (downloadLink) downloadLink.hidden = true;
+        if (homeLink) homeLink.hidden = false;
+      }
+    };
+
+    if (hasConfirmationResult && !errorCode) {
+      show('success');
+    } else if (errorCode || errorDescription) {
+      const errorText = `${errorCode} ${errorDescription}`;
+      if (/otp_expired|expired|invalid.*token|access_denied/.test(errorText)) show('expired');
+      else show('error');
+    } else if (hasRedirectData) {
+      // `type=signup` alone is not evidence that Supabase confirmed the account.
+      show('error');
     } else {
-      if (title) title.textContent = 'Verify your email to continue';
-      if (message) message.textContent = 'Open the verification link sent to your email. After confirmation, you can log in to WorkLog on Android.';
-    }
-
-    if (window.location.search || window.location.hash) {
-      window.history.replaceState({}, document.title, window.location.pathname);
+      show('neutral');
     }
   </script>
 </SiteLayout>

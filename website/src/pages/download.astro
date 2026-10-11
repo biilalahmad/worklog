@@ -1,10 +1,47 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+
+const releaseUrl = 'https://github.com/bilalahmed70/worklog/releases/latest';
+const apkUrl = `${releaseUrl}/download/app-release.apk`;
+const releaseInfo = [
+  ['Version', 'Add latest version'],
+  ['APK size', 'Add file size'],
+  ['Minimum Android', 'Confirm before launch'],
+  ['Last updated', 'Add release date'],
+];
 ---
-<SiteLayout title="Get WorkLog for Android" description="Download the WorkLog Android app and keep your freelance work records organized on your phone.">
-  <section class="page-hero"><div class="container narrow"><span class="eyebrow">GET STARTED WITH WORKLOG</span><h1>Your work log, ready for Android.</h1><p class="hero-lede">WorkLog is an Android mobile app for keeping your freelance work, clients, time, invoices and finances organized.</p></div></section>
-  <section class="section section-space"><div class="container download-grid download-grid-single">
-    <article class="download-card download-card-primary"><span class="download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M10 18.5h4"/></svg></span><span class="eyebrow">ANDROID APP</span><h2>APK release is being prepared</h2><p>We’ll publish the signed Android installer and version notes here when the first release is ready.</p><button class="button button-disabled" type="button" disabled aria-disabled="true">Download not available yet</button></article>
-  </div></section>
-  <section class="section solution-section"><div class="container narrow"><h2>How app updates will work</h2><p>For direct APK releases, you’ll download and install the new version over the current app—no uninstall needed when the package ID and signing key stay the same. We’ll show the APK version and release notes on this page.</p></div></section>
+<SiteLayout title="Download WorkLog for Android" description="Download WorkLog for Android from the official GitHub release and find simple installation and update instructions.">
+  <section class="page-hero download-hero">
+    <div class="container narrow">
+      <span class="eyebrow">GET STARTED WITH WORKLOG</span>
+      <h1>Your freelance work log, ready for Android.</h1>
+      <p class="hero-lede">Download the Android app from the official WorkLog release. Keep your clients, projects, work history, invoices and finances close at hand.</p>
+      <a class="button button-primary" href={apkUrl}>Download APK <span aria-hidden="true">↓</span></a>
+      <p class="download-source-note">Official download hosted on <a class="inline-link" href={releaseUrl}>GitHub Releases</a>.</p>
+    </div>
+  </section>
+  <section class="section section-space download-details-section">
+    <div class="container download-layout">
+      <div>
+        <span class="eyebrow">RELEASE DETAILS</span>
+        <h2>Before you install</h2>
+        <p class="section-lede">Check the release information and make sure you are downloading WorkLog from this official page.</p>
+        <dl class="download-info-grid">
+          {releaseInfo.map(([label, value]) => <div class="download-info-item"><dt>{label}</dt><dd>{value}</dd></div>)}
+        </dl>
+        <p class="release-notes-link">Release notes are published with each <a class="inline-link" href={releaseUrl}>GitHub release</a>.</p>
+      </div>
+      <aside class="install-panel">
+        <span class="eyebrow">INSTALL IN A FEW STEPS</span>
+        <ol class="install-steps">
+          <li class="install-step"><p>Tap <strong>Download APK</strong> above and wait for the file to finish downloading.</p></li>
+          <li class="install-step"><p>If Android asks, allow your browser to <strong>install unknown apps</strong>. You can turn this permission off again afterwards.</p></li>
+          <li class="install-step"><p>Open the downloaded APK file and tap <strong>Install</strong>.</p></li>
+          <li class="install-step"><p>Open WorkLog and sign in. New accounts still need email verification and an internet connection.</p></li>
+        </ol>
+        <p class="install-note"><strong>Android security note</strong>Your browser may warn that the app is not from Google Play. Only install the APK downloaded from this official WorkLog page and the linked GitHub release.</p>
+      </aside>
+    </div>
+  </section>
+  <section class="section solution-section"><div class="container narrow"><span class="eyebrow">UPDATING WORKLOG</span><h2>Keep your existing app and data.</h2><p>When a newer release is available, download it and install it over the current WorkLog app. You should not need to uninstall first as long as the package identity and signing key remain the same. Always keep a backup of your important records.</p></div></section>
 </SiteLayout>

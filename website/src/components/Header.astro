@@ -1,21 +1,26 @@
 ---
 const currentPath = Astro.url.pathname;
+const isHome = currentPath === '/';
 const isCurrent = (path: string) => currentPath === path || currentPath.startsWith(`${path}/`);
+const anchorBase = isHome ? '' : '/';
+const faqHref = isHome ? '#faq' : isCurrent('/help') ? '/help/#faq' : '/#faq';
 ---
 <header class="site-header">
-  <div class="container header-inner">
+  <div class="header-inner">
     <a class="brand" href="/" aria-label="WorkLog home">
-      <img src="/brand/worklog-icon.png" width="40" height="40" alt="" />
+      <img src="/brand/worklog-icon.png" width="36" height="36" alt="" />
       <span>Work<span class="brand-light">Log</span></span>
     </a>
     <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
     </button>
     <nav id="site-menu" class="site-nav" data-site-menu aria-label="Main navigation">
-      <a href="/features/" aria-current={isCurrent('/features') ? 'page' : undefined}>Features</a>
-      <a href="/help/" aria-current={isCurrent('/help') ? 'page' : undefined}>Help &amp; FAQ</a>
+      <a href={isCurrent('/features') ? '/features/' : `${anchorBase}#features`} aria-current={isCurrent('/features') ? 'page' : undefined}>Features</a>
+      <a href={`${anchorBase}#how-it-works`}>How it works</a>
+      <a href={`${anchorBase}#screenshots`}>Screenshots</a>
+      <a href={faqHref} aria-current={isCurrent('/help') ? 'page' : undefined}>FAQ</a>
       <a href="/support/" aria-current={isCurrent('/support') ? 'page' : undefined}>Support</a>
-      <a class="button button-small button-primary" href="/download/">Get WorkLog</a>
+      <a class="button button-small button-primary" href="/download/">Download for Android</a>
     </nav>
   </div>
 </header>

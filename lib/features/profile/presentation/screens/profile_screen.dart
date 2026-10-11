@@ -14,7 +14,6 @@ import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../core/widgets/app_select_field.dart';
 import '../../../../core/widgets/money_display.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../assistant/presentation/providers/assistant_providers.dart';
 import '../../../clients/presentation/providers/client_providers.dart';
 import '../../../finance/presentation/providers/finance_providers.dart';
 import '../../../work/presentation/providers/work_providers.dart';
@@ -225,7 +224,7 @@ class _PreferencesCard extends ConsumerWidget {
     final result = await AppSelectSheet.show<String>(
       context: context,
       title: 'Select Currency',
-      value: profile.defaultCurrency,
+      value: ref.read(defaultCurrencyProvider),
       options: supportedCurrencies
           .map((c) => AppSelectOption(value: c, label: c))
           .toList(),
@@ -249,6 +248,7 @@ class _PreferencesCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ratesIssue = ref.watch(currencyRatesIssueProvider);
+    final selectedCurrency = ref.watch(defaultCurrencyProvider);
     final themeMode = ref.watch(themeModeProvider);
     return Container(
       decoration: BoxDecoration(
@@ -262,7 +262,7 @@ class _PreferencesCard extends ConsumerWidget {
             title: const Text('Select Currency'),
             subtitle: const Text(
                 'Display amounts use daily reference rates; saved values stay in their original currency'),
-            trailing: Text(profile.defaultCurrency,
+            trailing: Text(selectedCurrency,
                 style: const TextStyle(fontWeight: FontWeight.w700)),
             onTap: () => _pickCurrency(context, ref),
           ),
@@ -318,20 +318,12 @@ class _PreferencesCard extends ConsumerWidget {
             ),
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
-          SwitchListTile(
-            secondary: const Icon(Icons.auto_awesome_outlined),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome_outlined),
             title: const Text('AI Assistant'),
-            subtitle: const Text('Use aggregated app trends for suggestions'),
-            value: ref.watch(assistantConsentProvider).valueOrNull ?? false,
-            onChanged: (enabled) async {
-              if (enabled) {
-                await context.push('/assistant');
-              } else {
-                await ref
-                    .read(assistantConsentControllerProvider)
-                    .setEnabled(false);
-              }
-            },
+            subtitle: const Text('Ask questions and manage your workspace'),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => context.push('/assistant'),
           ),
         ],
       ),

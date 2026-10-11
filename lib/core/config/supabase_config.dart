@@ -4,8 +4,7 @@
 ///
 ///   flutter run \
 ///     --dart-define=SUPABASE_URL=https://xxxx.supabase.co \
-///     --dart-define=SUPABASE_ANON_KEY=xxxxx \
-///     --dart-define=GOOGLE_WEB_CLIENT_ID=xxxx.apps.googleusercontent.com
+///     --dart-define=SUPABASE_ANON_KEY=xxxxx
 ///
 /// Only the public "anon" key ever belongs in the app. Never put the
 /// service-role key here — it bypasses Row Level Security entirely.
@@ -23,18 +22,11 @@ class SupabaseConfig {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlemVsZm95c3V0eXdwYXFvZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDUyNDIsImV4cCI6MjEwNjMyMTI0Mn0.QrsRYUyp9cKoMTxb8ZV6_GmOMns2ALc-40dcZmczxKQ',
   );
 
-  /// OAuth *Web* client ID from Google Cloud Console (used as the
-  /// `serverClientId` so Supabase can verify the Google ID token).
-  static const String googleWebClientId =
-      String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
-
   static bool get isConfigured =>
       url.isNotEmpty &&
       anonKey.isNotEmpty &&
       !url.contains('YOUR-PROJECT') &&
       !anonKey.contains('YOUR-ANON-KEY');
-
-  static bool get isGoogleConfigured => googleWebClientId.isNotEmpty;
 
   /// Android app-return auth callbacks; signup verification uses the public
   /// website route below. Keep both links in Supabase's redirect allow-list.

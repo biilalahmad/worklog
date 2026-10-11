@@ -1,7 +1,5 @@
-import 'dart:convert';
-
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:convert';
 
 import '../../../core/config/supabase_config.dart';
 import '../../../core/errors/failure.dart';
@@ -74,31 +72,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<bool> signInWithGoogle() async {
-    final google = GoogleSignIn(
-      serverClientId: SupabaseConfig.googleWebClientId,
+    return _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: SupabaseConfig.authRedirect,
+      authScreenLaunchMode: LaunchMode.externalApplication,
     );
-    final account = await google.signIn();
-    if (account == null) return false; // user cancelled — stay silent
-    final auth = await account.authentication;
-    final idToken = auth.idToken;
-    if (idToken == null) {
-      throw const Failure('Google sign-in failed. Please try again.');
-    }
-    await _client.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: auth.accessToken,
-    );
-    return true;
   }
 
   @override
   Future<void> signOut() async {
-    try {
-      await GoogleSignIn().signOut();
-    } catch (_) {
-      // Not signed in with Google (or plugin unavailable) — ignore.
-    }
     await _client.auth.signOut();
   }
 
@@ -164,11 +146,6 @@ class AuthRepositoryImpl implements AuthRepository {
       } catch (_) {
         // Remote deletion succeeded; local cleanup must not turn that into a
         // retryable failure or send the user back to the verification step.
-      }
-      try {
-        await GoogleSignIn().signOut();
-      } catch (_) {
-        // The account may not have been signed in with Google.
       }
     }
   }

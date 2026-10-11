@@ -50,69 +50,78 @@ class AuthScaffold extends StatelessWidget {
             if (topLeft != null) Positioned(top: 4, left: 4, child: topLeft!),
             Align(
               alignment: Alignment.topCenter,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 70,
-                          height: 70,
-                          padding: const EdgeInsets.all(4),
+              child: LayoutBuilder(
+                builder: (context, viewport) => SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: 480,
+                      minHeight: viewport.maxHeight - 44,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3)),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(18),
+                              child: ColoredBox(
+                                color: AppColors.forest,
+                                child: Icon(headerIcon,
+                                    color: AppColors.lime, size: 32),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(title,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(color: Colors.white)),
+                        const SizedBox(height: 5),
+                        Text(subtitle,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                    color:
+                                        Colors.white.withValues(alpha: 0.78))),
+                        const SizedBox(height: 22),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(22, 24, 22, 16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.16),
-                            borderRadius: BorderRadius.circular(22),
+                            color: scheme.surface,
+                            borderRadius: BorderRadius.circular(28),
                             border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3)),
+                                color: scheme.outlineVariant
+                                    .withValues(alpha: 0.55)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.forest.withValues(alpha: 0.12),
+                                blurRadius: 30,
+                                offset: const Offset(0, 14),
+                              ),
+                            ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(18),
-                            child: ColoredBox(
-                              color: AppColors.forest,
-                              child: Icon(headerIcon,
-                                  color: AppColors.lime, size: 32),
-                            ),
-                          ),
+                          child: child,
                         ),
-                      ),
-                      const SizedBox(height: 18),
-                      Text(title,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(color: Colors.white)),
-                      const SizedBox(height: 5),
-                      Text(subtitle,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.78))),
-                      const SizedBox(height: 22),
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(22, 24, 22, 16),
-                        decoration: BoxDecoration(
-                          color: scheme.surface,
-                          borderRadius: BorderRadius.circular(28),
-                          border: Border.all(
-                              color: scheme.outlineVariant
-                                  .withValues(alpha: 0.55)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.forest.withValues(alpha: 0.12),
-                              blurRadius: 30,
-                              offset: const Offset(0, 14),
-                            ),
-                          ],
-                        ),
-                        child: child,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

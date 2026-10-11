@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/theme/app_tokens.dart';
+import '../../../../core/config/app_info.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/utils/password_strength.dart';
 import '../../../../core/widgets/auth_scaffold.dart';
@@ -193,6 +195,51 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Sign Up'),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  'By signing up, you agree to the',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 44),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
+                  onPressed: busy
+                      ? null
+                      : () => launchUrl(
+                            Uri.parse(AppInfo.termsOfServiceUrl),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                  child: const Text('Terms of Service'),
+                ),
+                Text(
+                  'and acknowledge the',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 44),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
+                  onPressed: busy
+                      ? null
+                      : () => launchUrl(
+                            Uri.parse(AppInfo.privacyPolicyUrl),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                  child: const Text('Privacy Policy'),
+                ),
+              ],
             ),
             const SizedBox(height: 22),
             const OrDivider(label: 'or sign up with'),

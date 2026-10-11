@@ -1,45 +1,98 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import FeatureIcon from '../components/FeatureIcon.astro';
+
+const features = [
+  { icon: 'clients', title: 'Clients & projects', desc: 'Keep contact details and project context in one place.' },
+  { icon: 'work', title: 'Work log & timer', desc: 'Record what you did, how long it took, and delivery status.' },
+  { icon: 'invoice', title: 'Invoices', desc: 'Create PDFs and share a private, read-only invoice link.' },
+  { icon: 'finance', title: 'Income & expenses', desc: 'Track payments and spending in their original currencies.' },
+  { icon: 'report', title: 'Financial reports', desc: 'Review monthly summaries and export reports as PDFs.' },
+  { icon: 'reminder', title: 'Reminders', desc: 'Set one-time or repeating reminders so nothing slips.' },
+  { icon: 'search', title: 'Global search', desc: 'Find a client, project, invoice, or work entry.' },
+  { icon: 'export', title: 'CSV export & income import', desc: 'Export supported records and import income from a CSV file.' },
+  { icon: 'sync', title: 'Sync across devices', desc: 'Keep your workspace current when you reconnect.' },
+  { icon: 'theme', title: 'Dark & light theme', desc: 'Choose the look that suits your eyes.' },
+  { icon: 'wellness', title: 'Optional gym & diet', desc: 'Track workouts and meals if it helps your routine.' },
+  { icon: 'assistant', title: 'Optional AI assistant', desc: 'Get suggestions only when you choose to use it.' },
+];
+
+const audience = [
+  { title: 'Video editors', desc: 'Track projects, hours, and client feedback in one log.' },
+  { title: 'Designers', desc: 'Organize briefs, revisions, invoices, and payments.' },
+  { title: 'Developers', desc: 'Log tasks, track time, and invoice clients directly.' },
+  { title: 'Writers', desc: 'Keep deadlines, word counts, and earnings together.' },
+  { title: 'Marketers', desc: 'Manage campaigns, retainers, and monthly reports.' },
+  { title: 'Consultants', desc: 'Record sessions, expenses, and follow-up reminders.' },
+];
+
+const faqPreview = [
+  ['How much does WorkLog cost?', 'Pricing information is not listed on this site yet. Contact support for current availability details.'],
+  ['Does it work on iPhone?', 'Not yet. WorkLog is currently available for Android only. An iOS version may come in the future.'],
+  ['Is my data safe?', 'WorkLog uses Supabase row-level security to help separate account records. No online service can promise absolute security; read the Privacy Policy for details.'],
+  ['Can I export my data?', 'Use the app’s CSV tools for supported records. The export screen shows which records are available.'],
+  ['How do I delete my account?', 'You can delete your account and all data from the account settings in the app.'],
+];
+
+const screenshots = [
+  { src: '/brand/screenshots/screenshot-clients.svg', alt: 'Placeholder for a real WorkLog client list screenshot', caption: 'Clients & projects' },
+  { src: '/brand/screenshots/screenshot-worklog.svg', alt: 'Placeholder for a real WorkLog work log screenshot', caption: 'Work log' },
+  { src: '/brand/screenshots/screenshot-invoice.svg', alt: 'Placeholder for a real WorkLog invoice screenshot', caption: 'Invoices' },
+  { src: '/brand/screenshots/screenshot-finance.svg', alt: 'Placeholder for a real WorkLog finance screenshot', caption: 'Finances' },
+  { src: '/brand/screenshots/screenshot-reminders.svg', alt: 'Placeholder for a real WorkLog reminders screenshot', caption: 'Reminders' },
+  { src: '/brand/screenshots/screenshot-search.svg', alt: 'Placeholder for a real WorkLog search screenshot', caption: 'Search' },
+];
 ---
 <SiteLayout title="WorkLog — your freelance work, clearly tracked" description="Log clients, projects, tasks, time, invoices and finances in one simple workspace. WorkLog is a personal work log for freelancers across every field.">
+
+  <!-- 1. Hero -->
   <section class="hero-section">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR FREELANCE WORKSPACE</div>
-        <h1>Your work,<br /><span class="text-blue">clearly tracked.</span></h1>
-        <p class="hero-lede">Keep a reliable record of your clients, projects, work delivered, time and money—without spreading everything across notes and spreadsheets.</p>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> A CALMER WAY TO FREELANCE</div>
+        <h1>Turn scattered freelance work<br /><span class="text-blue">into a clearer picture.</span></h1>
+        <p class="hero-lede">Keep clients, projects, work delivered, time and money together in one practical work log—so the details are easier to find when you need them.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="/download/">Get WorkLog <span aria-hidden="true">→</span></a>
-          <a class="button button-outline" href="/features/">Explore WorkLog</a>
+          <a class="button button-primary" href="/download/">Download for Android</a>
+          <a class="button button-outline" href="#features">See features</a>
         </div>
-        <p class="hero-note">For independent freelancers in every kind of work.</p>
       </div>
-      <div class="hero-visual" aria-label="WorkLog app preview">
-        <div class="preview-topline"><span class="preview-brand"><img src="/brand/worklog-icon.png" alt="" /> WorkLog</span><span class="preview-avatar">W</span></div>
-        <div class="preview-heading"><div><span class="preview-label">YOUR WORKSPACE</span><h2>A clearer view of your work</h2></div><span class="preview-date">Overview</span></div>
-        <div class="preview-summary"><span class="preview-label">THIS MONTH</span><div class="summary-values"><div><strong>12</strong><span>work entries</span></div><div><strong>4</strong><span>active clients</span></div><div><strong>18.5h</strong><span>logged</span></div></div></div>
-        <div class="preview-section-title"><strong>Recent work</strong><a href="/features/">View all</a></div>
-        <div class="preview-work"><span class="work-symbol">W</span><span><strong>Client project update</strong><small>Project · Today</small></span><b>2.5 hr</b></div>
-        <div class="preview-work"><span class="work-symbol pale">W</span><span><strong>Weekly project review</strong><small>Client work · Yesterday</small></span><b>1 hr</b></div>
-        <div class="preview-footer"><span class="preview-check">✓</span><span>Everything in one organized place</span></div>
+      <div class="hero-visual" aria-label="Illustrative WorkLog app preview">
+        <span class="hero-preview-label">ILLUSTRATIVE APP PREVIEW</span>
+        <div class="hero-phone" role="img" aria-label="Illustration of the WorkLog Android home screen">
+          <div class="phone-camera" aria-hidden="true"></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span aria-hidden="true">● ● ▰</span></div>
+            <div class="phone-greeting"><span class="phone-app-icon"><img src="/brand/worklog-icon.png" width="26" height="26" alt="" /></span><span><small>YOUR WORKSPACE</small><strong>Good morning</strong></span><span class="phone-avatar">W</span></div>
+            <div class="phone-overview"><span>WORK LOG OVERVIEW</span><strong>Your work,<br />in one place.</strong><div><span><b>Clients</b><small>Projects</small></span><i aria-hidden="true"></i><span><b>Work</b><small>Time &amp; delivery</small></span></div></div>
+            <div class="phone-section-heading"><strong>Recent activity</strong><span>Preview</span></div>
+            <div class="phone-entry"><span class="phone-entry-icon"><FeatureIcon name="work" /></span><span><b>Project work</b><small>Log time and details</small></span><span class="phone-entry-dot"></span></div>
+            <div class="phone-entry"><span class="phone-entry-icon"><FeatureIcon name="invoice" /></span><span><b>Client invoice</b><small>PDF or private link</small></span><span class="phone-entry-dot"></span></div>
+            <div class="phone-bottom-nav"><span>Home</span><span>Clients</span><span>Finance</span><span>Profile</span></div>
+          </div>
+        </div>
+        <div class="hero-float-card float-invoice"><span class="float-icon"><FeatureIcon name="invoice" /></span><span><strong>Invoice ready</strong><small>Share PDF or private link</small></span></div>
+        <div class="hero-float-card float-earnings"><span class="float-icon"><FeatureIcon name="finance" /></span><span><strong>Income &amp; expenses</strong><small>Keep money connected to work</small></span></div>
+        <div class="hero-float-card float-reminder"><span class="float-icon"><FeatureIcon name="reminder" /></span><span><strong>Next reminder</strong><small>Keep important dates close</small></span></div>
       </div>
     </div>
   </section>
 
   <section class="trust-strip"><div class="container trust-content"><span>ONE WORK LOG FOR THE WAY YOU FREELANCE</span><div><span>Clients</span><i></i><span>Projects</span><i></i><span>Time</span><i></i><span>Finances</span></div></div></section>
 
+  <!-- 2. Problem → Solution -->
   <section class="section section-space">
-    <div class="container narrow center"><span class="eyebrow">THE EVERYDAY PROBLEM</span><h2>Freelance work gets scattered fast.</h2><p class="section-lede">Client details in one place, project notes in another, hours in a spreadsheet—and later, you’re trying to remember what you actually delivered.</p></div>
+    <div class="container narrow center"><span class="eyebrow">THE EVERYDAY PROBLEM</span><h2>Freelance work gets scattered fast.</h2><p class="section-lede">Client details in one place, project notes in another, hours in a spreadsheet — and later, you're trying to remember what you actually delivered.</p></div>
     <div class="container problem-grid">
       <article class="problem-item"><span class="problem-number">01</span><h3>Details get lost</h3><p>Important client, project and task information is spread across apps and messages.</p></article>
-      <article class="problem-item"><span class="problem-number">02</span><h3>Work is hard to recall</h3><p>Without a simple work history, it’s difficult to review what you completed and how long it took.</p></article>
+      <article class="problem-item"><span class="problem-number">02</span><h3>Work is hard to recall</h3><p>Without a simple work history, it's difficult to review what you completed and how long it took.</p></article>
       <article class="problem-item"><span class="problem-number">03</span><h3>Money feels disconnected</h3><p>Invoices, payments and expenses are easier to understand when they connect to your work.</p></article>
     </div>
   </section>
 
   <section class="section solution-section">
     <div class="container solution-grid">
-      <div><span class="eyebrow">ONE PRACTICAL SOLUTION</span><h2>A personal work log built for freelancers.</h2><p class="section-lede">WorkLog gives your day-to-day work a home. Record what you did, who it was for and what happened next—then find it again when you need it.</p><a class="text-link" href="/features/">See all features <span aria-hidden="true">→</span></a></div>
+      <div><span class="eyebrow">ONE PRACTICAL SOLUTION</span><h2>A personal work log built for freelancers.</h2><p class="section-lede">WorkLog gives your day-to-day work a home. Record what you did, who it was for and what happened next — then find it again when you need it.</p><a class="text-link" href="/features/">See all features <span aria-hidden="true">→</span></a></div>
       <div class="solution-list">
         <div><span class="solution-check">✓</span><span><strong>Keep client and project details together</strong><small>Find the context behind each piece of work.</small></span></div>
         <div><span class="solution-check">✓</span><span><strong>Record work and time as it happens</strong><small>Build a useful history of work delivered.</small></span></div>
@@ -49,10 +102,92 @@ import SiteLayout from '../layouts/SiteLayout.astro';
     </div>
   </section>
 
-  <section class="section section-space">
-    <div class="container section-heading-row"><div><span class="eyebrow">MADE FOR INDEPENDENT WORK</span><h2>Whatever your freelance work looks like.</h2></div><p>WorkLog is for the people who manage their own work—across services, projects and clients.</p></div>
-    <div class="container audience-grid"><div><strong>Creative services</strong><span>Design, writing, editing, photography</span></div><div><strong>Professional services</strong><span>Consulting, development, marketing</span></div><div><strong>Project-based work</strong><span>One-off jobs, retainers, ongoing clients</span></div><div><strong>Your own mix</strong><span>Track the work you actually do</span></div></div>
+  <!-- 3. How it works -->
+  <section class="section section-space" id="how-it-works">
+    <div class="container narrow center">
+      <span class="eyebrow">HOW IT WORKS</span>
+      <h2>Get started in three steps.</h2>
+      <p class="section-lede">No complicated setup. Just sign up, add your first client, and start keeping track of your work.</p>
+    </div>
+    <div class="container steps-grid">
+      <div class="step-card"><span class="step-number">1</span><h3>Sign up and verify your email</h3><p>Create an account in the app. Check your inbox for a verification link.</p></div>
+      <div class="step-card"><span class="step-number">2</span><h3>Add clients and projects</h3><p>Enter your client details and create projects to organize your work.</p></div>
+      <div class="step-card"><span class="step-number">3</span><h3>Log work, send invoices, track money</h3><p>Record what you do each day. Invoice clients and keep your finances in view.</p></div>
+    </div>
   </section>
 
-  <section class="section final-cta-section"><div class="container final-cta"><div><span class="eyebrow eyebrow-light">START WITH A CLEARER WORK LOG</span><h2>Make your work easier to keep track of.</h2><p>Get WorkLog for Android and keep your work history close at hand.</p></div><div class="final-cta-actions"><a class="button button-white" href="/download/">Get WorkLog <span aria-hidden="true">→</span></a></div></div></section>
+  <!-- 4. Feature cards grid -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="narrow"><span class="eyebrow">EVERYTHING YOU NEED</span><h2>Features that fit the way you work.</h2><p class="section-lede">WorkLog covers the essentials without overcomplicating things. Use what helps — skip what doesn't.</p></div>
+      <div class="feature-cards-grid">
+        {features.map(f => (
+          <div class="feature-card">
+          <div class="feature-card-icon"><FeatureIcon name={f.icon} /></div>
+            <h3>{f.title}</h3>
+            <p>{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Who it's for -->
+  <section class="section section-space">
+    <div class="container section-heading-row"><div><span class="eyebrow">MADE FOR INDEPENDENT WORK</span><h2>Whatever your freelance work looks like.</h2></div><p>WorkLog is for the people who manage their own work — across services, projects and clients.</p></div>
+    <div class="container audience-grid">
+      {audience.map(a => (
+        <div><strong>{a.title}</strong><span>{a.desc}</span></div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 6. Screenshots gallery -->
+  <section class="section screenshots-section" id="screenshots">
+    <div class="container">
+      <span class="eyebrow">SEE IT IN ACTION</span>
+      <h2>Screenshots from the app.</h2>
+      <p class="section-lede">A quick look at how WorkLog keeps your freelance work organized.</p>
+      <div class="screenshots-scroll">
+        {screenshots.map(s => (
+          <figure class="screenshot-item">
+            <img src={s.src} alt={s.alt} width="360" height="640" loading="lazy" decoding="async" />
+            <figcaption>{s.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Trust section -->
+  <section class="section trust-section">
+    <div class="container">
+      <div class="narrow center"><span class="eyebrow">YOUR DATA, YOUR CONTROL</span><h2>Built with your privacy in mind.</h2><p class="section-lede">WorkLog is designed for keeping your work records in one place. Read the Privacy Policy to understand what information the app and its service providers handle.</p></div>
+      <div class="trust-grid">
+        <div class="trust-card"><div class="trust-card-icon"><FeatureIcon name="shield" /></div><h3>Account-scoped data</h3><p>WorkLog uses Supabase row-level security to help keep account records separated. Read the <a class="inline-link" href="/privacy/">Privacy Policy</a> for details.</p></div>
+        <div class="trust-card"><div class="trust-card-icon"><FeatureIcon name="choice" /></div><h3>Optional means optional</h3><p>Gym and diet tracking and the AI assistant are extras. Choose whether they fit your routine.</p></div>
+        <div class="trust-card"><div class="trust-card-icon"><FeatureIcon name="export" /></div><h3>Take your records with you</h3><p>Export supported records as CSV and request account deletion from the app.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. FAQ preview -->
+  <section class="section section-space" id="faq">
+    <div class="container">
+      <div class="narrow"><span class="eyebrow">FREQUENTLY ASKED</span><h2>Common questions.</h2></div>
+      <div class="faq-list">
+        {faqPreview.map(([q, a]) => (
+          <details class="faq-item">
+            <summary>{q}<span aria-hidden="true">+</span></summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </div>
+      <p style="margin-top: 24px;"><a class="text-link" href="/help/">See all questions <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <!-- 9. Final CTA band -->
+  <section class="section final-cta-section"><div class="container final-cta"><div><span class="eyebrow eyebrow-light">START WITH A CLEARER WORK LOG</span><h2>Make your work easier to keep track of.</h2><p>Get WorkLog for Android and keep your work history close at hand.</p></div><div class="final-cta-actions"><a class="button button-white" href="/download/">Download for Android <span aria-hidden="true">→</span></a></div></div></section>
+
 </SiteLayout>

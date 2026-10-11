@@ -118,6 +118,35 @@ class AssistantDraftAction {
     if (rawFields != null && rawFields is! Map<String, dynamic>) {
       throw const FormatException('Invalid assistant draft fields');
     }
+    const allowedFields = {
+      'title',
+      'taskName',
+      'workType',
+      'clientName',
+      'date',
+      'dateTime',
+      'date_time',
+      'hoursWorked',
+      'notes',
+      'description',
+      'priority',
+      'repeat',
+      'sets',
+      'reps',
+      'exercise',
+      'duration',
+      'calories',
+      'targetCalories',
+      'quantity',
+      'amount',
+      'currency',
+    };
+    if (rawFields is Map<String, dynamic> &&
+        (rawFields.keys.any((key) => !allowedFields.contains(key)) ||
+            rawFields.values.any((value) =>
+                value is! String && value is! num && value is! bool))) {
+      throw const FormatException('Invalid assistant draft fields');
+    }
     return AssistantDraftAction(
       operation: operation,
       domain: domain,

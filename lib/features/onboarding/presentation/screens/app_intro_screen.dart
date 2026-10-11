@@ -184,43 +184,56 @@ class _IntroContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 160,
-            height: 160,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: scheme.primaryContainer.withValues(alpha: .75),
-              border: Border.all(
-                  color: scheme.outlineVariant.withValues(alpha: .7)),
-              boxShadow: [
-                BoxShadow(
-                    color: scheme.primary.withValues(alpha: .10),
-                    blurRadius: 32,
-                    offset: const Offset(0, 12))
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 520;
+        final illustrationSize = compact ? 112.0 : 160.0;
+        return SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: illustrationSize,
+                    height: illustrationSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: scheme.primaryContainer.withValues(alpha: .75),
+                      border: Border.all(
+                          color: scheme.outlineVariant.withValues(alpha: .7)),
+                      boxShadow: [
+                        BoxShadow(
+                            color: scheme.primary.withValues(alpha: .10),
+                            blurRadius: 32,
+                            offset: const Offset(0, 12))
+                      ],
+                    ),
+                    child: Icon(page.icon,
+                        size: compact ? 52 : 68, color: scheme.primary),
+                  ),
+                  SizedBox(height: compact ? 20 : 42),
+                  Text(page.eyebrow,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                          color: scheme.primary, letterSpacing: 1.5)),
+                  const SizedBox(height: 12),
+                  Text(page.title,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineSmall),
+                  const SizedBox(height: 12),
+                  Text(page.body,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                          color: scheme.onSurfaceVariant, height: 1.45)),
+                ],
+              ),
             ),
-            child: Icon(page.icon, size: 68, color: scheme.primary),
           ),
-          const SizedBox(height: 42),
-          Text(page.eyebrow,
-              style: theme.textTheme.labelMedium
-                  ?.copyWith(color: scheme.primary, letterSpacing: 1.5)),
-          const SizedBox(height: 12),
-          Text(page.title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 12),
-          Text(page.body,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge
-                  ?.copyWith(color: scheme.onSurfaceVariant, height: 1.45)),
-        ],
-      ),
+        );
+      },
     );
   }
 }

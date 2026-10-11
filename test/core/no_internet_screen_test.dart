@@ -12,6 +12,7 @@ void main() {
     );
 
     expect(find.text('No internet connection'), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
     expect(find.text('Retry'), findsOneWidget);
     await tester.tap(find.text('Retry'));
     expect(retries, 1);

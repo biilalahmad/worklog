@@ -7,10 +7,17 @@ const questions = [
   ['Can I download a PDF invoice?', 'Yes. Use the PDF invoice action on a project. The online invoice link is an additional option, not a replacement for the PDF.'],
   ['How do Android app updates work?', 'For direct APK releases, download the newer version from the Download page and install it over the current app. You should not need to uninstall when the package identity and signing key match.'],
   ['Do I have to use the gym and diet features?', 'No. Gym and diet tracking is optional. WorkLog is designed to help you keep a record of your freelance work first.'],
+  ['How much does WorkLog cost?', 'Pricing information is not listed on this site yet. Contact WorkLog support for current availability details.'],
+  ['Does WorkLog work on iPhone?', 'WorkLog is currently an Android app. The website provides invoice sharing and email-verification pages, but it is not a web version of the app.'],
+  ['Can I use WorkLog offline?', 'If you have already signed in on this device, saved workspace data can remain available offline and supported changes can wait to sync when you reconnect. New sign-in, sign-up and email verification need internet access.'],
+  ['Is my data safe?', 'WorkLog uses Supabase with row-level security to help separate account records. No online service can promise absolute security; read the Privacy Policy for details about data and service providers.'],
+  ['How do I delete my account and data?', 'Use the account controls in the Android app to request account deletion. For help, contact support from the email address on your account.'],
+  ['Is it safe to install the APK?', 'Download it only from the official WorkLog Download page and its linked GitHub release. Android may show a warning because the app is distributed directly rather than through Google Play.'],
+  ['How do I export my data?', 'Use the CSV export tools in the app for supported records. Check the export screen for the available record types.'],
 ];
 ---
 <SiteLayout title="Help and frequently asked questions — WorkLog" description="Answers about WorkLog accounts, invoices, app updates, work logs and optional wellness features.">
   <section class="page-hero"><div class="container narrow"><span class="eyebrow">HELP &amp; FAQ</span><h1>Quick answers for using WorkLog.</h1><p class="hero-lede">Need something else? <a class="inline-link" href="/support/">Contact WorkLog support</a>.</p></div></section>
-  <section class="section section-space"><div class="container faq-list">{questions.map(([question, answer]) => <details class="faq-item"><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
+  <section class="section section-space" id="faq"><div class="container faq-list">{questions.map(([question, answer]) => <details class="faq-item"><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
   <section class="section solution-section"><div class="container narrow"><h2>Still need a hand?</h2><p>Send us a message and include the email address associated with your WorkLog account. Don’t include passwords or security codes.</p><a class="button button-primary" href="/support/">Contact support <span aria-hidden="true">→</span></a></div></section>
 </SiteLayout>

@@ -1,17 +1,79 @@
 ---
+import FeatureIcon from '../components/FeatureIcon.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
-const features = [
-  { n: '01', title: 'Clients and projects', body: 'Keep client contact details, project context, invoice amounts and payment status connected in one place.' },
-  { n: '02', title: 'Work log and time', body: 'Record the kind of work you did, delivery status, notes, tasks completed and hours worked. Use a timer or enter time manually.' },
-  { n: '03', title: 'Invoices and online sharing', body: 'Create project invoices, download a polished PDF or share a private, read-only invoice link with your client.' },
-  { n: '04', title: 'Income and expenses', body: 'Log payments and spending in their original currencies, then review clear summaries and downloadable reports.' },
-  { n: '05', title: 'Reminders', body: 'Set one-time or repeating reminders for the things you don’t want to forget.' },
-  { n: '06', title: 'Optional gym and diet', body: 'If it helps your routine, track workouts, personal routines, meals and saved foods. Keep it off if it’s not for you.' },
+
+const groups = [
+  {
+    id: 'work',
+    title: 'Keep the work connected',
+    intro: 'Start with the people and projects behind your day-to-day work.',
+    features: [
+      { icon: 'clients', title: 'Clients and projects', body: 'Keep client details, project context, work, invoices and payment status together.' },
+      { icon: 'work', title: 'Work log and timer', body: 'Record what you did, delivery status, notes and hours. Use a timer or enter time manually.' },
+      { icon: 'invoice', title: 'Invoices and online sharing', body: 'Create PDF invoices and share a private, read-only link by email or WhatsApp. Anyone with the link may be able to view it.' },
+      { icon: 'reminder', title: 'Retainers and payment reminders', body: 'Set up recurring retainer invoices and reminders for late payments.' },
+    ],
+  },
+  {
+    id: 'money',
+    title: 'Understand the money',
+    intro: 'Keep records in their original currency and review what came in or went out.',
+    features: [
+      { icon: 'finance', title: 'Income and expenses', body: 'Log income and spending in multiple currencies. WorkLog keeps currencies separate and does not automatically convert them.' },
+      { icon: 'report', title: 'Monthly financial reports', body: 'Review and download PDF summaries of your monthly finances.' },
+    ],
+  },
+  {
+    id: 'daily-tools',
+    title: 'Make everyday tracking easier',
+    intro: 'Find records, keep reminders and move supported data when you need to.',
+    features: [
+      { icon: 'reminder', title: 'One-time and repeating reminders', body: 'Set reminders for a date or a recurring schedule.' },
+      { icon: 'search', title: 'Global search', body: 'Search across clients, projects and work records.' },
+      { icon: 'export', title: 'CSV export and import', body: 'Export or import supported records in CSV format.' },
+      { icon: 'sync', title: 'Sync and offline access', body: 'Previously signed-in users can view saved workspace data offline and queue supported entries. Pending changes sync when the connection returns.' },
+    ],
+  },
+  {
+    id: 'account',
+    title: 'Make WorkLog yours',
+    intro: 'Choose how you sign in and which personal tools you want to use.',
+    features: [
+      { icon: 'clients', title: 'Email or Google sign-in', body: 'Create an account with email verification or use Google sign-in. Sign-in and verification need an internet connection.' },
+      { icon: 'theme', title: 'Light and dark themes', body: 'Choose a theme that is comfortable for your screen and surroundings.' },
+      { icon: 'wellness', title: 'Optional gym and diet tools', body: 'Track workouts, routines, meals and saved foods if you want a personal wellness log too.' },
+      { icon: 'assistant', title: 'Optional AI assistant', body: 'Use it only when you choose. The assistant receives selected allow-listed metrics—not client names, notes or transaction rows.' },
+    ],
+  },
 ];
 ---
-<SiteLayout title="WorkLog features — a work log for freelancers" description="Explore WorkLog features for client and project organization, work history, time, invoices, finance, reminders and optional wellness tracking.">
-  <section class="page-hero"><div class="container narrow"><span class="eyebrow">WHAT YOU CAN KEEP TRACK OF</span><h1>Your work and the details around it.</h1><p class="hero-lede">A useful work log should fit the way you already work. Start with clients and projects, then add the records that help you stay organized.</p><a class="button button-primary" href="/download/">Get WorkLog for Android <span aria-hidden="true">→</span></a></div></section>
-  <section class="section section-space"><div class="container feature-list">{features.map((feature) => <article class="feature-row"><span class="feature-index">{feature.n}</span><div><h2>{feature.title}</h2><p>{feature.body}</p></div></article>)}</div></section>
-  <section class="section solution-section"><div class="container section-heading-row"><div><span class="eyebrow">SIMPLE BY DESIGN</span><h2>Your records stay connected.</h2></div><p>WorkLog is a personal workspace—not a complicated project-management system. Keep what matters, and find it when it’s useful.</p></div></section>
-  <section class="section final-cta-section"><div class="container final-cta"><div><span class="eyebrow eyebrow-light">YOUR WORK, IN ONE PLACE</span><h2>Start your WorkLog.</h2><p>Build a clearer record of your freelance work, one entry at a time.</p></div><div class="final-cta-actions"><a class="button button-white" href="/download/">Get WorkLog <span aria-hidden="true">→</span></a></div></div></section>
+<SiteLayout title="WorkLog features — a work log for freelancers" description="Explore WorkLog tools for clients, projects, work history, time, invoices, finances, reminders, exports and optional wellness features.">
+  <section class="page-hero features-hero">
+    <div class="container narrow">
+      <span class="eyebrow">BUILT AROUND YOUR WORKDAY</span>
+      <h1>The details of freelance work, in one clear place.</h1>
+      <p class="hero-lede">From a client conversation to a finished invoice, keep the useful parts of your work history close at hand.</p>
+      <a class="button button-primary" href="/download/">Explore WorkLog for Android <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+  <nav class="container feature-mini-nav" aria-label="Feature categories">
+    {groups.map((group) => <a href={`#${group.id}`}>{group.title}</a>)}
+  </nav>
+  {groups.map((group, index) => (
+    <section class:list={['section', 'feature-category', index % 2 === 1 && 'feature-category-muted']} id={group.id}>
+      <div class="container">
+        <div class="feature-category-heading"><span class="eyebrow">{String(index + 1).padStart(2, '0')} / WORKLOG TOOLS</span><h2>{group.title}</h2><p class="section-lede">{group.intro}</p></div>
+        <div class="feature-detail-grid">
+          {group.features.map((feature) => (
+            <article class="feature-detail">
+              <span class="feature-detail-icon"><FeatureIcon name={feature.icon} /></span>
+              <h3>{feature.title}</h3>
+              <p>{feature.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+  <section class="section final-cta-section"><div class="container final-cta"><div><span class="eyebrow eyebrow-light">A CLEARER RECORD STARTS WITH ONE ENTRY</span><h2>Build your WorkLog as you go.</h2><p>Start with the tools that fit your freelance work. The extra features can wait.</p></div><div class="final-cta-actions"><a class="button button-white" href="/download/">Download for Android <span aria-hidden="true">→</span></a></div></div></section>
 </SiteLayout>

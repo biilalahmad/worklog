@@ -82,7 +82,7 @@ class _WorkScreenState extends ConsumerState<WorkScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
             child: Row(
               children: [
                 Expanded(
@@ -169,7 +169,7 @@ class _WorkScreenState extends ConsumerState<WorkScreen> {
           ),
           Expanded(
             child: entriesAsync.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const AppListSkeleton(),
               error: (e, _) => ErrorView(message: Failure.from(e).message),
               data: (entries) {
                 final clientsById = {
@@ -178,7 +178,8 @@ class _WorkScreenState extends ConsumerState<WorkScreen> {
                 };
                 final query = _searchQuery.trim();
                 final filtered = entries.where((entry) {
-                  if (_clientFilter != null && entry.clientId != _clientFilter) {
+                  if (_clientFilter != null &&
+                      entry.clientId != _clientFilter) {
                     return false;
                   }
                   if (query.isEmpty) return true;
@@ -201,7 +202,12 @@ class _WorkScreenState extends ConsumerState<WorkScreen> {
                   );
                 }
                 return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 80),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    4,
+                    16,
+                    96 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   itemCount: filtered.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) =>

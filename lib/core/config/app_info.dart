@@ -4,7 +4,7 @@
 class AppInfo {
   AppInfo._();
   static const version = '0.5.0';
-  static const privacyPolicyUrl = 'https://worklog.app/privacy';
-  static const termsOfServiceUrl = 'https://worklog.app/terms';
+  static const privacyPolicyUrl = 'https://worklog-site.netlify.app/privacy/';
+  static const termsOfServiceUrl = 'https://worklog-site.netlify.app/terms/';
   static const supportEmail = 'worklog.support@gmail.com';
 }

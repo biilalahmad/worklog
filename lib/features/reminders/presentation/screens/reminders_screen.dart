@@ -24,6 +24,7 @@ class RemindersScreen extends ConsumerStatefulWidget {
 class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   bool? _notificationsEnabled;
   Timer? _expiryRefresh;
+  bool _openedNotificationTarget = false;
 
   @override
   void initState() {
@@ -71,9 +72,25 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
             }),
           Expanded(
             child: remindersAsync.when(
-              loading: () => const LoadingIndicator(),
+              loading: () => const AppListSkeleton(),
               error: (e, _) => ErrorView(message: Failure.from(e).message),
               data: (reminders) {
+                final targetId =
+                    GoRouterState.of(context).uri.queryParameters['open'];
+                if (!_openedNotificationTarget && targetId != null) {
+                  final matching =
+                      reminders.where((item) => item.id == targetId);
+                  if (matching.isNotEmpty) {
+                    final target = matching.first;
+                    _openedNotificationTarget = true;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        context.push('/reminders/$targetId/edit',
+                            extra: target);
+                      }
+                    });
+                  }
+                }
                 if (reminders.isEmpty) {
                   return const EmptyState(
                     icon: Icons.notifications_none,
@@ -115,7 +132,12 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
                     .toList();
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    8,
+                    16,
+                    96 + MediaQuery.paddingOf(context).bottom,
+                  ),
                   children: [
                     if (overdue.isNotEmpty)
                       _Section(title: 'Overdue', reminders: overdue),

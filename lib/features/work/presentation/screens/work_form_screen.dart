@@ -179,7 +179,12 @@ class _WorkFormScreenState extends ConsumerState<WorkFormScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            96 + MediaQuery.paddingOf(context).bottom,
+          ),
           children: [
             clientsAsync.when(
               loading: () => const LinearProgressIndicator(),

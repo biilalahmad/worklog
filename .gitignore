@@ -36,7 +36,11 @@ migrate_working_dir/
 /website/node_modules/
 /website/dist/
 /website/.astro/
-/website/public/brand/
+/website/public/brand/*
+!/website/public/brand/screenshots/
+/website/public/brand/screenshots/*
+!/website/public/brand/screenshots/*.svg
+!/website/public/brand/screenshots/README.md
 /website/public/favicon.png
 /website/public/robots.txt
 /android/key.properties
