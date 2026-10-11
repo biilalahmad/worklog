@@ -1,191 +1,160 @@
 # WorkLog
 
-A Flutter freelancer app — work tracking, clients & invoicing, finance,
-and an optional Gym & Diet module — backed by Supabase (Postgres +
-Auth + Storage), for a USA + Pakistan freelancer/creator audience
-(video editors, AI UGC, motion graphics). Multi-user accounts with
-real email/password + Google authentication, Riverpod + repository
-pattern, multi-currency, realtime, responsive (phone bottom nav /
-tablet side rail).
+**Your freelance work, clearly tracked.**
 
-## What's included
+WorkLog is an Android app that helps freelancers keep clients, projects, work logs, time, invoices and finances in one place. It is built for independent workers such as video editors, AI UGC creators, motion designers, developers, writers and marketers, with multi-currency support for freelancers working with clients in the USA, Pakistan and beyond.
 
-**Auth** — Email/password sign-up with email verification (resend +
-cooldown), Google Sign-In, forgot/reset password, all the specified
-error states (generic "incorrect email or password", unverified-email
-resend prompt, rate-limit message, etc.) — see
-`lib/features/auth/`.
+- **Website:** https://worklog-site.netlify.app
+- **Download the app:** https://worklog-site.netlify.app/download/
+- **Latest APK (direct):** https://github.com/bilalahmed70/worklog/releases/latest/download/app-release.apk
+- **Support:** worklog.support@gmail.com
 
-**Onboarding** — 4-screen flow shown once right after first sign-in:
-Welcome → "track fitness too?" choice → notification permission →
-Done. Sets `gym_enabled` on the profile row, which is what actually
-drives the nav below. See `lib/features/onboarding/`.
+<!--
+SCREENSHOTS: add real app screenshots here, for example:
+![Home](docs/screenshots/home.png)
+-->
 
-**Profile tab** (replaces the old Settings screen) — avatar (upload
-via Storage) + name, default currency, invoice name, theme
-(Light/Dark/Auto), the Gym & Diet toggle (with a confirm dialog on
-turning it off — data is hidden, never deleted), change password,
-logout, delete account, and the About section (version, privacy
-policy, terms, feedback). See `lib/features/profile/`.
+---
 
-**Bottom navigation** — 5 slots, "+" Quick Entry fixed in the center
-slot *inside* the bar (not a separate floating button), Profile
-always last:
-- Gym **ON**: Home · Gym · **+** · Finance · Profile — Clients has no
-  tab; it's reached from the **+** sheet instead (full add/manage).
-- Gym **OFF**: Home · Finance · **+** · Clients · Profile — Clients is
-  a normal tab.
+## Features
 
-See `lib/app/app_shell.dart`.
+**Clients and projects**
+Add clients with Call, Email and WhatsApp quick actions, notes, and sorting by name, total earned or pending amount. Client and project totals are maintained by Postgres triggers, so they never drift.
 
-**Home** — time-of-day greeting with the user's name, hero earnings
-card, today's videos/tasks/hours/income stat grid, upcoming reminders,
-a first-run "Add your first client" prompt, pull-to-refresh.
+**Work log and time**
+Log work entries with filters and a Video Stats screen. Each entry has a Start/Stop timer that adds to Hours Worked instead of overwriting it.
 
-**Clients** — CRUD, Call/Email/WhatsApp quick-action buttons on Client
-Detail (native intents), sort by name/total earned/pending amount,
-free-text notes, rollup totals maintained by Postgres triggers (never
-written by the app directly) so they can't drift.
+**Invoices**
+Create a PDF invoice per project (with invoice number and optional payment instructions). Share it through the native share sheet (Email, WhatsApp and more), or copy a private, read-only online invoice link for your client.
 
-**Work** — Work entry CRUD, filters, Video Stats screen.
+**Income and expenses**
+Track income and expenses in their original currencies (never auto-converted), see Pending Payments ("Money I Need to Receive"), view analytics and download monthly PDF financial reports.
 
-**Finance** — Income/expense entry, multi-currency (never
-auto-converted — each transaction keeps its own ISO currency code),
-Pending Payments ("Money I Need to Receive") with an invoice-download
-icon per project, Analytics, monthly PDF Financial Reports.
+**Recurring (retainer) invoices**
+Mark a client as a retainer (monthly amount, currency, billing day). A new invoice is created automatically once a month, or any time with "Generate Now".
 
-**Invoices** — Per-project PDF (now includes an invoice number and an
-optional Payment Instructions block from the Profile). Download →
-native OS share sheet, which is how Email (subject/body pre-filled but
-fully editable) and WhatsApp sharing both work — one flow, per spec
-Section 4, rather than separate custom integrations.
+**Late-payment reminders**
+Newly overdue invoices trigger a local notification once.
 
-**Gym & Diet** (optional module, see the Profile toggle) — Workouts,
-routines, exercise library, diet/meal logging, body stats & goals.
+**Reminders and search**
+One-time or repeating reminders with priority and local notifications, plus global search across clients, work entries and reminders.
 
-**Time tracking** — a Start/Stop timer on each Work Entry (shown once
-the entry is saved/edited), adding elapsed time to Hours Worked rather
-than overwriting it; a small clock icon marks entries with a timer
-currently running, wherever they show up in lists.
+**CSV export and import**
+Export clients, work entries, income and expenses as CSV files. Import income from CSV.
 
-**Recurring (retainer) invoices** — mark a client as a retainer on the
-Client form (monthly amount, currency, billing day). A new invoice is
-created automatically once a month, checked on Home launch (and
-available any time via "Generate Now" on Client Detail); the DB
-function behind it (`generate_due_retainer_invoices`) is also ready
-for an optional pg_cron schedule so it still fires on days nobody
-opens the app — see the commented block at the end of `schema.sql`.
+**Accounts**
+Email/password sign-up with email verification (resend with cooldown), Google Sign-In, forgot/reset password, a 4-screen onboarding flow, and a Profile tab with avatar, default currency, theme (Light/Dark/Auto), change password, logout and delete account.
 
-**Late-payment reminders** — on Home launch, newly-overdue invoices
-(past due date, not fully paid, not already alerted) get an immediate
-local notification; each is marked so it only fires once. Same
-pg_cron-ready pattern as retainer invoices if you want a true
-server-side check later.
+**Optional: Gym and Diet**
+Workouts, routines, exercise library, meal logging, body stats and goals. Turn it on or off in Profile. Turning it off hides the data but never deletes it.
 
-**CSV export/import** — Profile → Data → "Export Data (CSV)" shares
-four files in one go (clients, work entries, income, expenses) via the
-native share sheet; "Import Income (CSV)" reads a file back in using
-the same column layout, matching each row's client by exact name.
+**Optional: AI assistant**
+Suggestions and drafts based on fixed task selections and allow-listed aggregate metrics only. No free-text prompts, client details, notes or transaction rows are sent. It requires explicit consent on first use and can be disabled in Profile.
 
-**Reminders** — CRUD, priority, repeat, local notification scheduling.
+---
 
-**Search** — Global search across clients, work entries, reminders.
+## Install the app (Android)
 
-**AI assistant (optional)** — Home and the Gym, Work, Finance, and
-Reminders screens provide an assistant entry point. It sends fixed task
-selections plus allow-listed aggregate metrics through the authenticated
-`worklog-assistant` Edge Function. No free-text prompt, client details,
-notes, or transaction rows are sent. The first use requires explicit
-consent; the feature can be disabled from Profile. The function only
-returns recommendations/drafts; users review them in the app before
-making any changes. To enable it, configure `GEMINI_API_KEY` as a
-Supabase Edge Function secret and deploy `worklog-assistant`. Keep the
-key out of Flutter defines, browser assets, and source control. Gemini's
-free-tier privacy terms may permit submitted content to improve Google
-products; review Google's current terms and limits before enabling it.
+1. Open the [download page](https://worklog-site.netlify.app/download/) on your Android phone.
+2. Download the APK.
+3. When asked, allow your browser to **Install unknown apps**.
+4. Open the downloaded file and install.
 
-## Architecture notes
+To update, download the newer APK and install it over the current app. You do not need to uninstall first.
 
-- **Rollups live in Postgres, not Dart.** Client/project totals are
-  maintained by triggers in `supabase/schema.sql` — the app's
-  repositories never write those columns directly.
-- **Realtime.** Every repository's `watch*` method streams from
-  Supabase, including the profile row itself — so toggling Gym on one
-  device updates the nav on every other signed-in session live.
-- **Auth-state-driven routing.** `lib/app/router.dart`'s `redirect`
-  handles, in priority order: mid password-recovery → signed-out →
-  signed-in-but-not-onboarded → normal navigation. A `ChangeNotifier`
-  bridges the async auth/profile streams into GoRouter's
-  `refreshListenable`.
-- **RLS.** Every table needs Row Level Security scoping rows to
-  `auth.uid()` — the base `schema.sql` sets this up; double-check
-  after any schema change with the query at the bottom of the v2
-  migration section.
+---
 
-## Getting it running
+## Tech stack
+
+| Area | Technology |
+| --- | --- |
+| App | Flutter (Dart), Android only |
+| State management | Riverpod, repository pattern |
+| Navigation | GoRouter (auth-state-driven) |
+| Backend | Supabase (Postgres, Auth, Storage, Realtime, Edge Functions) |
+| Website | Static site on Netlify, with Netlify Functions |
+| CI/CD | GitHub Actions (website deploy) |
+
+### Architecture notes
+
+- **Rollups live in Postgres, not Dart.** Client and project totals are maintained by triggers in `supabase/schema.sql`. The app never writes those columns directly.
+- **Realtime.** Repository `watch*` methods stream from Supabase, including the profile row, so toggling Gym on one device updates every signed-in session.
+- **Auth-state-driven routing.** `lib/app/router.dart` redirects in this order: password recovery, signed out, signed in but not onboarded, then normal navigation.
+- **Row Level Security (RLS).** Every table has RLS scoping rows to `auth.uid()`. Re-check this after any schema change using the query at the bottom of the V2 migration in `schema.sql`.
+
+---
+
+## Developer setup
+
+### 1. Supabase
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. **SQL Editor** → paste the entire contents of `supabase/schema.sql`
-   (base schema **and** the "V2 — PROFILE SETTINGS..." section
-   appended at the bottom — it's all one file, safe to run as one
-   paste) → **Run**.
-3. **Authentication → Providers** → enable **Google** if you want
-   Google Sign-In; you'll need an OAuth **Web** client ID from Google
-   Cloud Console. For Android, also add your app's SHA-1 fingerprint
-   there.
-4. **Authentication → URL Configuration → Redirect URLs** → add:
-   - `https://worklog-site.netlify.app/verified/` for signup email confirmation
-   - `io.worklog.app://login-callback/` and `io.worklog.app://reset-callback/` for Android auth flows
-5. **Authentication → SMTP Settings** → connect a real provider
-   (Resend or Brevo recommended) before any public launch — Supabase's
-   built-in sender is capped at 2 emails/hour, nowhere near enough for
-   verification + reset emails.
-6. **Project Settings → API** → copy the Project URL and **anon** key.
-7. Run with your keys (never commit real ones):
-   ```
-   flutter run \
-     --dart-define=SUPABASE_URL=https://your-project.supabase.co \
-     --dart-define=SUPABASE_ANON_KEY=your-anon-key \
-     --dart-define=GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com
-   ```
-8. `flutter pub get` then `flutter run`.
+2. **SQL Editor:** paste the entire contents of `supabase/schema.sql` (base schema and the V2 section at the bottom) and run it.
+3. **Authentication > Providers:** enable **Google** if you want Google Sign-In. You need an OAuth **Web** client ID from Google Cloud Console, and for Android also your app's SHA-1 fingerprint.
+4. **Authentication > URL Configuration > Redirect URLs:** add
+   - `https://worklog-site.netlify.app/verified/` (signup email confirmation)
+   - `io.worklog.app://login-callback/`
+   - `io.worklog.app://reset-callback/`
+5. **Authentication > SMTP Settings:** connect a real provider (Resend or Brevo) before any public launch. Supabase's built-in sender is limited to 2 emails per hour.
+6. **Project Settings > API:** copy the Project URL and the **anon** key.
 
-The app is an Android-only mobile app. The Netlify website contains
-public product information, support, account-verification results and
-read-only shared invoices; it does not run the Flutter app in a browser.
+### 2. Run the app
 
-Without the dart-defines set, the app shows a "Connect Supabase" screen
-instead of crashing.
+```bash
+flutter pub get
+flutter run \
+  --dart-define=SUPABASE_URL=https://your-project.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=your-anon-key \
+  --dart-define=GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com
+```
 
-## Known simplifications / not-yet-built
+Without these `--dart-define` values, the app shows a "Connect Supabase" screen instead of crashing.
 
-- Section 2.7's CAPTCHA ("Attack Protection") and MFA are Supabase
-  **Dashboard** toggles, not app code — MFA is explicitly deferred per
-  spec anyway.
-- Direct public invoice link (Section 4.4): the database side already
-  exists in `schema.sql` (`share_token` column + `get_public_invoice`
-  function, safe for the anon key to call). What's still missing is
-  the actual public page and Netlify deployment, plus the in-app
-  button that reveals the link once that page exists.
-- Recurring invoices, automated late-payment reminders, CSV
-  export/import, and built-in time tracking (roadmap items 5–9) are
-  all built now — see "What's included" above for how each works and
-  its specific limits (e.g. retainer generation and the overdue check
-  both run client-side on Home launch; wire up the commented pg_cron
-  jobs in `schema.sql` if you want them to also run server-side on
-  days nobody opens the app).
-- A few "detail pass" polish items from the UI spec are partial: swipe
-  actions on Work Entries, shimmer skeleton loaders (today it's a
-  lightweight `···` placeholder instead), recurring-expense flag,
-  client sort is name/earned/pending only (no explicit filter chips
-  yet).
-- **This code has not been compiled or run** — no Flutter SDK is
-  available in the environment it was written in, so nothing has been
-  through `flutter analyze` or a real build. It's been checked by hand
-  (bracket-balance scans, cross-checking every provider/repository
-  call against its definition, tracing every import path). Expect to
-  fix a small issue or two on first `flutter pub get` / `flutter run`;
-  paste any error back and it'll get fixed.
+### 3. Build a release APK
+
+```bash
+flutter build apk --release \
+  --dart-define=SUPABASE_URL=https://your-project.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=your-anon-key \
+  --dart-define=GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com
+```
+
+The APK is created at `build/app/outputs/flutter-apk/app-release.apk`.
+
+### 4. Publish a new release
+
+1. Increase `version` in `pubspec.yaml` (for example `1.0.1+2`). Android will not install an update with the same or lower build number.
+2. Build the APK with the **same signing keystore** every time. A different key means existing users cannot update.
+3. On GitHub, go to **Releases > Draft a new release**, create a tag such as `v1.0.1`, upload the APK named exactly `app-release.apk`, and publish it as the latest release.
+
+The website download button points to `releases/latest/download/app-release.apk`, so it always serves the newest release.
+
+### 5. Website and Netlify
+
+The `website/` folder and `netlify/functions/` are deployed to Netlify by GitHub Actions on push. The website provides product information, support, the email-verification result page and read-only shared invoices. It does not run the Flutter app in a browser. The Android APK is built and released manually (step 4).
+
+---
+
+## Security
+
+- Never commit secrets: `.env` files, signing keystores (`*.jks`, `*.keystore`), `key.properties`, service-account JSON files, API tokens or the Supabase **service_role** key. These are listed in `.gitignore`.
+- The Supabase **anon** key is designed to be public, but only RLS protects your data, so keep RLS enabled on every table.
+- Keep `GEMINI_API_KEY` as a Supabase Edge Function secret. Do not put it in Flutter defines, website assets or source control.
+- Online invoice links are private token links, not identity checks. Share them only with the intended recipient.
+- To enable the AI assistant, deploy the `worklog-assistant` Edge Function and set the secret. Review Google's current terms before enabling it, since free-tier terms may allow submitted content to improve Google products.
+
+Found a security issue? Please email worklog.support@gmail.com instead of opening a public issue.
+
+---
+
+## Known limitations
+
+- Retainer invoice generation and the overdue-invoice check run on the client when the Home screen launches. An optional `pg_cron` schedule is included (commented) at the end of `supabase/schema.sql` if you want them to also run server-side.
+- A few polish items are partial: swipe actions on Work Entries, shimmer skeleton loaders (a lightweight placeholder is used today), a recurring-expense flag, and filter chips for client sorting.
+- CAPTCHA (Attack Protection) and MFA are Supabase Dashboard settings, not app code. MFA is deferred.
+- Android only. There is no iOS or web version of the app.
+
+---
 
 ## Folder structure
 
@@ -195,16 +164,32 @@ lib/
   core/             config, error handling, shared widgets, utils, pdf
   features/
     auth/           sign-up, login, forgot/reset password, Google
-    onboarding/      4-screen first-run flow
-    profile/         Profile tab, edit profile, change password
+    onboarding/     4-screen first-run flow
+    profile/        Profile tab, edit profile, change password
     home/
     work/
     clients/
     finance/
-    gym/             optional module (toggle in Profile)
+    gym/            optional module (toggle in Profile)
     reminders/
     search/
   services/notifications/
-supabase/
-  schema.sql        base schema + appended V2 migration — run once
+android/            Android project
+assets/images/      app images
+supabase/           schema.sql (base schema + V2 migration) and Edge Functions
+website/            public Netlify website
+netlify/functions/  serverless functions for the website
+.github/workflows/  GitHub Actions workflow(s)
+scripts/            helper scripts
+docs/               documentation
+test/               tests
 ```
+
+---
+
+## Support
+
+Questions or problems? Visit the [support page](https://worklog-site.netlify.app/support/) or email worklog.support@gmail.com.
+
+- [Privacy Policy](https://worklog-site.netlify.app/privacy/)
+- [Terms](https://worklog-site.netlify.app/terms/)
