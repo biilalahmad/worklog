@@ -122,8 +122,9 @@ class Reminder {
       id: data['id'] as String,
       title: data['title'] as String? ?? '',
       description: data['description'] as String?,
-      dateTime: DateTime.tryParse(data['date_time'] as String? ?? '') ??
-          DateTime.now(),
+      dateTime: (DateTime.tryParse(data['date_time'] as String? ?? '') ??
+              DateTime.now())
+          .toLocal(),
       clientId: data['client_id'] as String?,
       projectId: data['project_id'] as String?,
       priority: ReminderPriorityX.fromString(data['priority'] as String?),
@@ -139,7 +140,10 @@ class Reminder {
     return {
       'title': title,
       'description': description,
-      'date_time': dateTime.toIso8601String(),
+      // timestamptz must receive an explicit offset. A timezone-less local
+      // ISO string is interpreted in the database's UTC timezone and shifts
+      // reminders by the user's UTC offset when read back.
+      'date_time': dateTime.toUtc().toIso8601String(),
       'client_id': clientId,
       'project_id': projectId,
       'priority': priority.asString,

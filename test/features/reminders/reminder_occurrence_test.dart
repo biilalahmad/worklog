@@ -37,4 +37,24 @@ void main() {
     );
     expect(oneTime.nextOccurrence(DateTime(2026, 10, 11)), oneTime.dateTime);
   });
+
+  test('reminder timestamps round-trip through Supabase as UTC instants', () {
+    final selectedLocalTime = DateTime(2026, 10, 12, 16, 5);
+    final reminder = Reminder(
+      id: 'timezone-round-trip',
+      title: 'Timezone check',
+      dateTime: selectedLocalTime,
+    );
+
+    final writable = reminder.toWritableMap();
+    expect(writable['date_time'], endsWith('Z'));
+
+    final loaded = Reminder.fromMap({
+      'id': reminder.id,
+      'title': reminder.title,
+      ...writable,
+    });
+    expect(loaded.dateTime.isUtc, isFalse);
+    expect(loaded.dateTime.isAtSameMomentAs(selectedLocalTime), isTrue);
+  });
 }

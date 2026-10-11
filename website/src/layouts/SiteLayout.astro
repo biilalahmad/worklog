@@ -33,10 +33,27 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <script>
       const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
       const menu = document.querySelector<HTMLElement>('[data-site-menu]');
+      const setMenuOpen = (open: boolean) => {
+        toggle?.setAttribute('aria-expanded', String(open));
+        toggle?.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+        menu?.classList.toggle('is-open', open);
+      };
       toggle?.addEventListener('click', () => {
-        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', String(!expanded));
-        menu?.classList.toggle('is-open', !expanded);
+        setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
+      });
+      menu?.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setMenuOpen(false));
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+          setMenuOpen(false);
+          toggle.focus();
+        }
+      });
+      document.addEventListener('click', (event) => {
+        if (event.target instanceof Node && !menu?.contains(event.target) && !toggle?.contains(event.target)) {
+          setMenuOpen(false);
+        }
       });
     </script>
   </body>

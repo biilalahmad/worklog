@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    show AndroidScheduleMode;
 
 import '../../../../services/notifications/notification_service.dart';
 import '../../domain/reminder.dart';
@@ -11,7 +13,15 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 });
 
 extension ReminderNotificationScheduling on NotificationService {
-  Future<void> scheduleForReminder(Reminder reminder) {
+  Future<ReminderScheduleOutcome> scheduleForReminder(Reminder reminder) async {
+    final outcome = await prepareReminderSchedule();
+    if (outcome == ReminderScheduleOutcome.notificationsDisabled) {
+      return outcome;
+    }
+
+    final scheduleMode = outcome == ReminderScheduleOutcome.exact
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
     RepeatInterval? repeat;
     switch (reminder.repeat) {
       case RepeatOption.daily:
@@ -36,6 +46,7 @@ extension ReminderNotificationScheduling on NotificationService {
         dateTime: reminder.dateTime,
         repeat: repeat,
         payload: reminder.id,
+        androidScheduleMode: scheduleMode,
       ),
     ];
     if (reminder.priority == ReminderPriority.high) {
@@ -49,10 +60,12 @@ extension ReminderNotificationScheduling on NotificationService {
           dateTime: reminder.dateTime.add(Duration(minutes: followUp * 5)),
           repeat: repeat,
           payload: reminder.id,
+          androidScheduleMode: scheduleMode,
         ));
       }
     }
-    return Future.wait(schedules).then((_) {});
+    await Future.wait(schedules);
+    return outcome;
   }
 
   Future<void> cancelReminderNotifications(Reminder reminder) async {

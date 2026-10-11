@@ -3,8 +3,8 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 <SiteLayout title="Email verification — WorkLog" description="Confirm the result of your WorkLog email verification." noindex={true}>
   <section class="section section-space">
-    <div class="container narrow center" aria-live="polite">
-      <span class="download-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg></span>
+    <div class="container narrow center" aria-live="polite" aria-atomic="true">
+      <span class="download-icon verification-icon" id="verification-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" /></svg></span>
       <span class="eyebrow">WORKLOG ACCOUNT</span>
       <h1 id="verification-title">Checking your verification…</h1>
       <p class="section-lede" id="verification-message">Please wait while we check the result from Supabase.</p>
@@ -19,15 +19,18 @@ import SiteLayout from '../layouts/SiteLayout.astro';
     const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ''));
     const error = query.get('error_description') || query.get('error') || query.get('error_code') ||
       fragment.get('error_description') || fragment.get('error') || fragment.get('error_code');
-    const confirmationResult = query.has('code') || query.get('type') === 'signup' ||
-      fragment.has('access_token') || fragment.get('type') === 'signup';
+    // Supabase redirects here only after its confirmation endpoint has
+    // verified the one-time token. A `type=signup` parameter by itself is
+    // not proof of confirmation, so require the callback code or session
+    // token that Supabase returns on a successful verification.
+    const confirmationResult = query.has('code') || fragment.has('access_token');
 
     if (error) {
       if (title) title.textContent = 'Verification link unavailable';
       if (message) message.textContent = 'This link may have expired or already been used. Return to the WorkLog Android app and request a new verification email.';
     } else if (confirmationResult) {
       if (title) title.textContent = 'Email verified successfully';
-      if (message) message.textContent = 'Your account is ready. You can now log in to the WorkLog Android app.';
+      if (message) message.textContent = 'Your email is confirmed. Your account is ready—open WorkLog on Android and log in with your email and password.';
     } else {
       if (title) title.textContent = 'Verify your email to continue';
       if (message) message.textContent = 'Open the verification link sent to your email. After confirmation, you can log in to WorkLog on Android.';

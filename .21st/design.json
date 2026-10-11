@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "project": {
+    "name": "WorkLog",
+    "productType": "Freelancer work log and productivity app",
+    "stack": ["Astro marketing site", "Flutter Android app"]
+  },
+  "sources": {
+    "tokens": [],
+    "components": [],
+    "assets": [
+      "assets"
+    ],
+    "instructions": [
+      "AGENTS.md"
+    ]
+  },
+  "design": {
+    "colorMode": "light website; light and dark app",
+    "colors": {
+      "navy": "#173B61",
+      "blue": "#2F6F9F",
+      "sky": "#73BAF0",
+      "background": "#FFFFFF",
+      "pale": "#F2F7FB",
+      "ink": "#172B42"
+    },
+    "typography": {
+      "body": "Inter",
+      "headings": "Helvetica Neue, Helvetica, Inter, Arial, sans-serif"
+    },
+    "spacing": {"base": "8px", "marketing": "spacious"},
+    "radius": {"cards": "18-24px", "buttons": "pill"},
+    "shadows": {"cards": "soft blue-tinted shadow"},
+    "motion": {"style": "subtle purposeful transitions; honor reduced motion"},
+    "density": "spacious"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [
+      "Preserve WorkLog's blue/navy identity and supplied logo",
+      "Use responsive, keyboard-accessible native Astro components",
+      "Keep account sign-up and login in the Android app; website verifies email and shares invoices",
+      "Use free dependencies and respect prefers-reduced-motion"
+    ],
+    "avoid": ["Invented pricing or a fake APK download", "Unnecessary paid UI packages"]
+  },
+  "decisions": [
+    {
+      "choice": "Use Helvetica Neue/Helvetica for display headings with Inter for body copy, preserving the WorkLog navy/blue palette.",
+      "source": "User request",
+      "date": "2026-10-11"
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "project.instructions",
+      "source": "AGENTS.md"
+    }
+  ],
+  "generatedAt": "2026-10-11T09:07:10.432Z"
+}

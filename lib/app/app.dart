@@ -8,6 +8,9 @@ import 'router.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_mode_provider.dart';
 
+final _appScrollBehavior =
+    const MaterialScrollBehavior().copyWith(overscroll: false);
+
 class WorkLogApp extends ConsumerWidget {
   const WorkLogApp({super.key});
 
@@ -19,6 +22,7 @@ class WorkLogApp extends ConsumerWidget {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         darkTheme: AppTheme.dark(),
+        scrollBehavior: _appScrollBehavior,
         home: const SetupRequiredScreen(),
       );
     }
@@ -32,6 +36,7 @@ class WorkLogApp extends ConsumerWidget {
       themeMode: ref.watch(themeModeProvider),
       themeAnimationDuration: const Duration(milliseconds: 360),
       themeAnimationCurve: Curves.easeInOutCubic,
+      scrollBehavior: _appScrollBehavior,
       routerConfig: router,
       builder: (context, child) => OfflineStartupNotice(
         child: child ?? const SizedBox.shrink(),

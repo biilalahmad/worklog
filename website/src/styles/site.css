@@ -1249,3 +1249,235 @@ h1 {
     display: block;
   }
 }
+
+/* WorkLog's shared visual language: calm blue/navy, clear type, and small,
+   useful motion. The fonts remain free/system-safe if Google Fonts is blocked. */
+:root {
+  font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --navy: #173b61;
+  --blue: #2f6f9f;
+  --sky: #73baf0;
+  --ink: #172b42;
+  --muted: #586f86;
+  --line: #d8e4ee;
+  --pale: #f2f7fb;
+  --shadow: 0 24px 72px #123c6218;
+  --shadow-card: 0 12px 34px #183b620d;
+}
+
+html {
+  scroll-padding-top: 92px;
+}
+
+body {
+  font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+.brand,
+.button {
+  font-family: "Helvetica Neue", Helvetica, Inter, Arial, sans-serif;
+}
+
+.site-header {
+  background: rgb(255 255 255 / 92%);
+  border-bottom-color: #dfe9f1;
+  box-shadow: 0 3px 18px #153d5f08;
+}
+
+.site-nav > a[aria-current="page"]:not(.button) {
+  color: var(--navy);
+  text-decoration: underline;
+  text-decoration-color: #79bde9;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+
+.menu-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+.menu-toggle:hover {
+  background: #eaf4fb;
+}
+
+.button {
+  transition:
+    transform 180ms cubic-bezier(.2, .75, .25, 1),
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #78c4f4 0%, #5eaddf 100%);
+  box-shadow: 0 7px 18px #347eae2b;
+}
+
+.button-primary:hover {
+  background: linear-gradient(135deg, #8bcdf6 0%, #70b8e7 100%);
+  box-shadow: 0 10px 24px #347eae35;
+}
+
+.button:active {
+  transform: translateY(0) scale(.985);
+}
+
+.hero-section {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 82% 14%, #dcedfa 0%, transparent 34%),
+    linear-gradient(180deg, #f3f9fe 0%, #fff 94%);
+}
+
+.hero-section::before {
+  position: absolute;
+  z-index: -1;
+  top: 28px;
+  right: -110px;
+  width: 330px;
+  height: 330px;
+  border: 1px solid #8abce222;
+  border-radius: 50%;
+  content: "";
+}
+
+.hero-copy {
+  animation: worklog-enter 540ms cubic-bezier(.2, .7, .25, 1) both;
+}
+
+.hero-visual {
+  position: relative;
+  border-color: #d2e2ee;
+  box-shadow: 0 26px 75px #133f641c, 0 4px 14px #143f640c;
+  animation: worklog-enter 660ms 90ms cubic-bezier(.2, .7, .25, 1) both;
+  transform-origin: center;
+}
+
+.hero-visual::before {
+  position: absolute;
+  z-index: -1;
+  inset: 20px -18px -18px 18px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #b9dcf4, #eaf5fc 68%, #d4e9f7);
+  content: "";
+}
+
+.problem-item,
+.audience-grid > div,
+.download-card,
+.support-aside {
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.problem-item:hover,
+.audience-grid > div:hover,
+.download-card:hover,
+.support-aside:hover {
+  transform: translateY(-3px);
+  border-color: #b8d4e8;
+  box-shadow: 0 17px 38px #183b6214;
+}
+
+.solution-section {
+  background:
+    radial-gradient(ellipse at 8% 50%, #e4f1fa 0%, transparent 46%),
+    #f3f8fc;
+}
+
+.solution-list {
+  box-shadow: 0 16px 40px #173b620c;
+}
+
+.feature-row {
+  transition: border-color 180ms ease, padding-left 180ms ease;
+}
+
+.feature-row:hover {
+  border-color: #b8d4e8;
+  padding-left: 8px;
+}
+
+.final-cta-section {
+  background: linear-gradient(120deg, #153758 0%, #1a456e 58%, #255c86 100%);
+}
+
+.support-form input:focus-visible,
+.support-form select:focus-visible,
+.support-form textarea:focus-visible {
+  border-color: #428bb9;
+  box-shadow: 0 0 0 4px #70b9e52b;
+}
+
+.faq-item summary span {
+  transition: transform 180ms ease;
+}
+
+.invoice-card {
+  box-shadow: 0 20px 60px #1639581a;
+}
+
+@keyframes worklog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 680px) {
+  .site-nav.is-open {
+    animation: menu-enter 160ms ease-out both;
+  }
+
+  .hero-visual::before {
+    inset: 12px -8px -10px 8px;
+  }
+
+  .problem-item:hover,
+  .audience-grid > div:hover,
+  .download-card:hover,
+  .support-aside:hover,
+  .feature-row:hover {
+    transform: none;
+    padding-left: initial;
+  }
+}
+
+@keyframes menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

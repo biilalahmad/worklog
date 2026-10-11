@@ -1,9 +1,12 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 enum RepeatInterval { daily, weekly, monthly }
+
+enum ReminderScheduleOutcome { exact, approximate, notificationsDisabled }
 
 /// Thin wrapper around flutter_local_notifications for every local,
 /// on-device notification the app schedules — currently Reminders.
@@ -22,6 +25,12 @@ class NotificationService {
 
   Future<void> init() async {
     tz_data.initializeTimeZones();
+    try {
+      final timeZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZone.identifier));
+    } catch (_) {
+      // Keep startup resilient if the OS timezone plugin is unavailable.
+    }
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const settings = InitializationSettings(android: androidInit);
     await _plugin.initialize(
@@ -32,10 +41,13 @@ class NotificationService {
     );
 
     const channel = AndroidNotificationChannel(
-      'reminders_channel',
+      // New channel ID applies sound defaults to existing installs too;
+      // Android does not let apps modify a channel after its first creation.
+      'reminders_channel_v2',
       'Reminders',
       description: 'Scheduled reminders you created in WorkLog',
       importance: Importance.high,
+      playSound: true,
     );
     const overdueChannel = AndroidNotificationChannel(
       'overdue_channel',
@@ -74,6 +86,28 @@ class NotificationService {
     return status.isGranted;
   }
 
+  /// Checks notification visibility and asks for Android's special exact
+  /// alarm access only when a user schedules a reminder. If declined, we can
+  /// still schedule a best-effort inexact alarm rather than losing it.
+  Future<ReminderScheduleOutcome> prepareReminderSchedule() async {
+    if (!await areNotificationsEnabled()) {
+      return ReminderScheduleOutcome.notificationsDisabled;
+    }
+
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin == null) return ReminderScheduleOutcome.exact;
+
+    final canScheduleExact =
+        await androidPlugin.canScheduleExactNotifications() ?? true;
+    if (canScheduleExact) return ReminderScheduleOutcome.exact;
+
+    final granted = await androidPlugin.requestExactAlarmsPermission() ?? false;
+    return granted
+        ? ReminderScheduleOutcome.exact
+        : ReminderScheduleOutcome.approximate;
+  }
+
   /// Opens the device's app-settings screen so the user can turn
   /// notifications on manually after having denied them once (the OS
   /// won't show the in-app prompt again).
@@ -93,12 +127,14 @@ class NotificationService {
     required DateTime dateTime,
     RepeatInterval? repeat,
     String? payload,
+    AndroidScheduleMode androidScheduleMode =
+        AndroidScheduleMode.exactAllowWhileIdle,
   }) async {
     if (dateTime.isBefore(DateTime.now())) return;
     final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
     const details = NotificationDetails(
       android: AndroidNotificationDetails(
-        'reminders_channel',
+        'reminders_channel_v2',
         'Reminders',
         importance: Importance.high,
         priority: Priority.high,
@@ -127,7 +163,7 @@ class NotificationService {
       body,
       scheduledDate,
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: androidScheduleMode,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: matchComponents,

@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:sembast/sembast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide SortOrder;
 import 'package:uuid/uuid.dart';
 import 'local_database_factory.dart';
+import '../utils/backend_connection.dart';
 
 class OfflineWrite {
   const OfflineWrite({
@@ -36,6 +38,7 @@ class OfflineDataStore {
   static const _uuid = Uuid();
   final _cache = stringMapStoreFactory.store(_cacheName);
   final _queue = intMapStoreFactory.store(_queueName);
+  final pendingWritesRevision = ValueNotifier<int>(0);
   Future<Database>? _databaseFuture;
   Future<void> _syncLock = Future.value();
   final Map<String, Set<void Function()>> _listeners = {};
@@ -141,6 +144,7 @@ class OfflineDataStore {
           (rows) async {
             final currentDb = await _database;
             if (canceled || sessionGeneration != generation) return;
+            BackendConnection.instance.reportAvailable();
             remoteInitialized = true;
             await _cache.record(key).put(currentDb, {
               'user': user,
@@ -152,6 +156,9 @@ class OfflineDataStore {
           },
           onError: (Object error, StackTrace stack) async {
             if (canceled || sessionGeneration != generation) return;
+            if (isNetworkError(error)) {
+              BackendConnection.instance.reportUnavailable();
+            }
             final currentDb = await _database;
             final cached = await _cache.record(key).getSnapshot(currentDb);
             if (canceled || sessionGeneration != generation) return;
@@ -204,6 +211,7 @@ class OfflineDataStore {
     final db = await _database;
     try {
       final rows = await fetch();
+      BackendConnection.instance.reportAvailable();
       await _cache.record(key).put(db, {
         'user': user,
         'table': table,
@@ -212,6 +220,7 @@ class OfflineDataStore {
       return await _applyPending(user, table, queryKey, rows);
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
+      BackendConnection.instance.reportUnavailable();
       var cached = await _cache.record(key).getSnapshot(db);
       if (cached == null && seedFromAll && queryKey != 'all') {
         cached =
@@ -234,12 +243,14 @@ class OfflineDataStore {
     final db = await _database;
     try {
       final value = await fetch();
+      BackendConnection.instance.reportAvailable();
       if (value != null) {
         await _cache.record(key).put(db, {'user': user, 'value': value});
       }
       return value;
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
+      BackendConnection.instance.reportUnavailable();
       final cached = await _cache.record(key).getSnapshot(db);
       if (cached == null) rethrow;
       return Map<String, dynamic>.from(cached.value['value'] as Map);
@@ -248,7 +259,7 @@ class OfflineDataStore {
 
   Future<String> insert(
       SupabaseClient client, String table, Map<String, dynamic> values,
-      {String? id, bool localFirst = false}) async {
+      {String? id, bool localFirst = true}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final recordId = id ?? _newId();
@@ -270,7 +281,7 @@ class OfflineDataStore {
 
   Future<void> update(SupabaseClient client, String table, String id,
       Map<String, dynamic> values,
-      {bool localFirst = false}) async {
+      {bool localFirst = true}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final row = <String, dynamic>{...values, 'id': id, 'user_id': uid};
@@ -289,7 +300,7 @@ class OfflineDataStore {
   }
 
   Future<void> delete(SupabaseClient client, String table, String id,
-      {bool localFirst = false}) async {
+      {bool localFirst = true}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     if (localFirst) {
@@ -308,7 +319,7 @@ class OfflineDataStore {
 
   Future<void> upsert(
       SupabaseClient client, String table, Map<String, dynamic> values,
-      {required String conflictColumn, bool localFirst = false}) async {
+      {required String conflictColumn, bool localFirst = true}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final row = <String, dynamic>{...values, 'user_id': uid};
@@ -370,8 +381,12 @@ class OfflineDataStore {
               }
           }
           await _queue.record(write.key).delete(db);
+          pendingWritesRevision.value++;
         } catch (error) {
           synced = false;
+          if (isNetworkError(error)) {
+            BackendConnection.instance.reportUnavailable();
+          }
           if (!isNetworkError(error)) {
             await _queue.record(write.key).update(db, {
               'lastError': 'Sync needs attention',
@@ -381,6 +396,7 @@ class OfflineDataStore {
           break;
         }
       }
+      if (synced) BackendConnection.instance.reportAvailable();
     } finally {
       completer.complete();
     }
@@ -406,6 +422,7 @@ class OfflineDataStore {
       'createdAt': DateTime.now().microsecondsSinceEpoch,
       'attempts': 0,
     });
+    pendingWritesRevision.value++;
   }
 
   Future<void> _queueAndApply(SupabaseClient client, String user, String table,

@@ -104,8 +104,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final profileState = ref.read(profileProvider);
       final onboardingState = ref.read(onboardingDoneProvider);
-      if (profileState.isLoading || onboardingState.isLoading) {
-        return loc == '/launching' ? null : '/launching';
+      // Onboarding completion is monotonic for a signed-in account. A cached
+      // completed profile is enough to enter the saved workspace while the
+      // live onboarding stream reconnects in the background.
+      if (profileState.valueOrNull?.onboardingDone == true &&
+          onboardingState.isLoading) {
+        return loc == '/launching' ? '/home' : null;
       }
       if (profileState.hasError || onboardingState.hasError) {
         // If the server is unreachable but we have a cached signed-in profile,
@@ -113,6 +117,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return profileState.valueOrNull == null
             ? (loc == '/launching' ? null : '/launching')
             : (loc == '/onboarding' ? '/home' : null);
+      }
+      if (profileState.isLoading || onboardingState.isLoading) {
+        return loc == '/launching' ? null : '/launching';
       }
 
       // A missing profile must complete setup rather than bypass it;

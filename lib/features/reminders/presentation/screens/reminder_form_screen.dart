@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +12,7 @@ import '../../domain/reminder.dart';
 import '../providers/notification_provider.dart';
 import '../providers/reminder_providers.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../services/notifications/notification_service.dart';
 
 class ReminderFormScreen extends ConsumerStatefulWidget {
   final Reminder? reminder;
@@ -78,7 +81,10 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
       return;
     }
     final repo = ref.read(reminderRepositoryProvider);
+    final notifications = ref.read(notificationServiceProvider);
+    final wasEditing = _isEditing;
     setState(() => _saving = true);
+    late final Reminder savedReminder;
     try {
       final reminder = Reminder(
         id: widget.reminder?.id ?? '',
@@ -95,13 +101,10 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
       if (_isEditing) {
         await repo.updateReminder(reminder);
         id = reminder.id;
-        await ref
-            .read(notificationServiceProvider)
-            .cancelReminderNotifications(reminder);
       } else {
         id = await repo.addReminder(reminder);
       }
-      final scheduled = Reminder(
+      savedReminder = Reminder(
         id: id,
         title: reminder.title,
         description: reminder.description,
@@ -110,17 +113,62 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
         priority: reminder.priority,
         repeat: reminder.repeat,
       );
-      await ref
-          .read(notificationServiceProvider)
-          .scheduleForReminder(scheduled);
-      if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
+        setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Could not save reminder: $e')));
       }
-    } finally {
-      if (mounted) setState(() => _saving = false);
+      return;
+    }
+
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    context.pop();
+
+    // Saving the reminder must not keep the form (or the Home screen behind
+    // it) waiting on Android permission/settings UI. Persist first, return to
+    // the app immediately, then schedule notifications and report any issue.
+    unawaited(_scheduleSavedReminder(
+      notifications,
+      savedReminder,
+      messenger,
+      reschedule: wasEditing,
+    ));
+  }
+
+  Future<void> _scheduleSavedReminder(
+    NotificationService notifications,
+    Reminder reminder,
+    ScaffoldMessengerState messenger, {
+    required bool reschedule,
+  }) async {
+    try {
+      if (reschedule) {
+        await notifications.cancelReminderNotifications(reminder);
+      }
+      final outcome = await notifications.scheduleForReminder(reminder);
+      if (!messenger.mounted) return;
+      switch (outcome) {
+        case ReminderScheduleOutcome.exact:
+          return;
+        case ReminderScheduleOutcome.approximate:
+          messenger.showSnackBar(const SnackBar(
+            content: Text(
+                'Reminder saved. Android may deliver its notification a little late because precise alarm access is off.'),
+          ));
+        case ReminderScheduleOutcome.notificationsDisabled:
+          messenger.showSnackBar(const SnackBar(
+            content: Text(
+                'Reminder saved, but notifications are disabled. Enable them in WorkLog settings to receive alerts.'),
+          ));
+      }
+    } catch (_) {
+      if (!messenger.mounted) return;
+      messenger.showSnackBar(const SnackBar(
+        content: Text(
+            'Reminder saved, but its notification could not be scheduled. Check notification permissions and try again.'),
+      ));
     }
   }
 

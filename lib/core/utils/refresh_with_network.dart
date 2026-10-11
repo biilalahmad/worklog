@@ -1,23 +1,28 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../errors/failure.dart';
-
-/// Fast transport hint only. Never probe a remote endpoint before refresh:
-/// the real request is the source of truth and can fall back to local data.
-Future<bool> hasInternetForWorkLog() async {
-  final transport = await Connectivity().checkConnectivity();
-  return transport.isNotEmpty &&
-      transport.any((result) => result != ConnectivityResult.none);
-}
+import 'backend_connection.dart';
 
 Future<void> refreshWithNetworkMessage(
     BuildContext context, Future<void> Function() refresh) async {
+  // Local-cache fallbacks can make a refresh future complete successfully
+  // while the server is still unreachable, so confirm WorkLog connectivity
+  // before treating Retry as successful.
+  final reachable =
+      await BackendConnection.instance.check(Supabase.instance.client);
+  if (!reachable) {
+    if (context.mounted) _showOfflineMessage(context);
+    return;
+  }
+
   try {
     await refresh();
+    BackendConnection.instance.reportAvailable();
   } catch (error) {
     if (!context.mounted) return;
     if (Failure.from(error).isNetwork) {
+      BackendConnection.instance.reportUnavailable();
       _showOfflineMessage(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
