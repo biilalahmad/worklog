@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/utils/money.dart';
 import '../../../../core/utils/search_match.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../core/widgets/app_fab.dart';
 import '../../../../core/widgets/app_select_field.dart';
 import '../../../../core/widgets/money_display.dart';
 import '../../../profile/presentation/widgets/avatar_circle.dart';
@@ -88,9 +90,9 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: AppFab(
+        tooltip: 'Add client',
         onPressed: () => context.push('/clients/new'),
-        child: const Icon(Icons.add),
       ),
       body: clientsAsync.when(
         loading: () => const LoadingIndicator(),
@@ -108,7 +110,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
               .toList();
           final sorted = _sorted(filtered, sort);
           return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 112),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              12,
+              16,
+              AppInsets.belowNavigation(context),
+            ),
             itemCount: sorted.length + 1,
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {

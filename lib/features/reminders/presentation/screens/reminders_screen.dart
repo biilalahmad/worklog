@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_fab.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
@@ -58,9 +59,10 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
           AssistantShortcutButton(agent: AssistantAgent.reminders)
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: AppFab(
+        tooltip: 'Add reminder',
+        aboveNavigation: false,
         onPressed: () => context.push('/reminders/new'),
-        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [

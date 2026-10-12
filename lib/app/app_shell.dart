@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -170,7 +172,7 @@ class _FloatingNavBar extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: Container(
-            height: 72,
+            height: AppSpacing.navBarHeight,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               color: isDark
@@ -223,6 +225,15 @@ class _NavBarItem extends StatelessWidget {
             color: selected ? scheme.primary : scheme.onSurfaceVariant,
           ),
         );
+        final labelWidth = TextPainter(
+          text: TextSpan(text: tab.label, style: label.style),
+          maxLines: 1,
+          textDirection: Directionality.of(context),
+        )..layout();
+        final desiredPillWidth =
+            labelWidth.width + 2 * AppSpacing.navPillHorizontal;
+        final maxPillWidth = math.max(0.0, constraints.maxWidth - 8);
+        final pillWidth = math.min(desiredPillWidth, maxPillWidth);
 
         return Semantics(
           button: true,
@@ -235,15 +246,15 @@ class _NavBarItem extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 260),
                 curve: Curves.easeOutCubic,
-                padding: EdgeInsets.symmetric(
-                    horizontal: compact ? 5 : 10, vertical: 8),
-                decoration: BoxDecoration(
+                width: selected ? pillWidth : null,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: ShapeDecoration(
                   color: selected
                       ? (scheme.brightness == Brightness.dark
                           ? scheme.primaryContainer.withValues(alpha: 0.86)
                           : AppColors.limeSoft.withValues(alpha: 0.86))
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  shape: const StadiumBorder(),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

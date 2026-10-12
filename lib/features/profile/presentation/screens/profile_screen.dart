@@ -37,7 +37,12 @@ class ProfileScreen extends ConsumerWidget {
         data: (profile) {
           if (profile == null) return const LoadingIndicator();
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              8,
+              16,
+              AppInsets.belowNavigation(context),
+            ),
             children: [
               _Header(profile: profile, email: email),
               const SizedBox(height: 24),
