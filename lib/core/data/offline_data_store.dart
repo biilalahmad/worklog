@@ -259,7 +259,7 @@ class OfflineDataStore {
 
   Future<String> insert(
       SupabaseClient client, String table, Map<String, dynamic> values,
-      {String? id, bool localFirst = true}) async {
+      {String? id, bool localFirst = false}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final recordId = id ?? _newId();
@@ -268,20 +268,36 @@ class OfflineDataStore {
       await _queueAndApply(client, uid, table, 'insert', row, recordId);
       return recordId;
     }
+    var committedRow = row;
     try {
-      await client.from(table).insert(row);
+      if (table == 'projects') {
+        // The server creates the public invoice token. Return it with the
+        // insert so the newly-created project can show its copy-link action
+        // without waiting for a Realtime event.
+        final created =
+            await client.from(table).insert(row).select('share_token').single();
+        committedRow = {...row, ...Map<String, dynamic>.from(created)};
+      } else if (table == 'income') {
+        final created = await client.from(table).insert(row).select().single();
+        committedRow = {...row, ...Map<String, dynamic>.from(created)};
+      } else {
+        await client.from(table).insert(row);
+      }
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
       await _enqueue(uid, table, 'insert', row, recordId);
     }
-    await _applyToCachedRows(uid, table, 'insert', row, recordId);
+    await _applyToCachedRows(uid, table, 'insert', committedRow, recordId);
     _notify(uid, table);
+    if (table == 'income') {
+      unawaited(_refreshIncomeEffects(client, uid, committedRow));
+    }
     return recordId;
   }
 
   Future<void> update(SupabaseClient client, String table, String id,
       Map<String, dynamic> values,
-      {bool localFirst = true}) async {
+      {bool localFirst = false}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final row = <String, dynamic>{...values, 'id': id, 'user_id': uid};
@@ -289,37 +305,66 @@ class OfflineDataStore {
       await _queueAndApply(client, uid, table, 'update', row, id);
       return;
     }
+    var committedRow = row;
     try {
-      await client.from(table).update(values).eq('id', id);
+      if (table == 'income') {
+        final updated = await client
+            .from(table)
+            .update(values)
+            .eq('id', id)
+            .select()
+            .maybeSingle();
+        if (updated == null) {
+          throw StateError(
+              'Income record was not found or could not be updated.');
+        }
+        committedRow = {...row, ...Map<String, dynamic>.from(updated)};
+      } else {
+        await client.from(table).update(values).eq('id', id);
+      }
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
       await _enqueue(uid, table, 'update', row, id);
     }
-    await _applyToCachedRows(uid, table, 'update', row, id);
+    await _applyToCachedRows(uid, table, 'update', committedRow, id);
     _notify(uid, table);
+    if (table == 'income') {
+      unawaited(_refreshIncomeEffects(client, uid, committedRow));
+    }
   }
 
   Future<void> delete(SupabaseClient client, String table, String id,
-      {bool localFirst = true}) async {
+      {bool localFirst = false}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
+    var previousRow = await _cachedRow(uid, table, id) ?? const {};
     if (localFirst) {
-      await _queueAndApply(client, uid, table, 'delete', const {}, id);
+      await _queueAndApply(client, uid, table, 'delete', previousRow, id);
       return;
     }
     try {
+      if (table == 'income' && previousRow.isEmpty) {
+        final existing =
+            await client.from(table).select().eq('id', id).maybeSingle();
+        if (existing != null) {
+          previousRow = Map<String, dynamic>.from(existing);
+        }
+      }
       await client.from(table).delete().eq('id', id);
     } catch (error) {
       if (!isNetworkError(error)) rethrow;
-      await _enqueue(uid, table, 'delete', const {}, id);
+      await _enqueue(uid, table, 'delete', previousRow, id);
     }
     await _applyToCachedRows(uid, table, 'delete', const {}, id);
     _notify(uid, table);
+    if (table == 'income') {
+      unawaited(_refreshIncomeEffects(client, uid, previousRow));
+    }
   }
 
   Future<void> upsert(
       SupabaseClient client, String table, Map<String, dynamic> values,
-      {required String conflictColumn, bool localFirst = true}) async {
+      {required String conflictColumn, bool localFirst = false}) async {
     final uid = userId(client);
     if (uid == null) throw StateError('Sign in to save changes.');
     final row = <String, dynamic>{...values, 'user_id': uid};
@@ -380,8 +425,30 @@ class OfflineDataStore {
                 throw StateError('Unsupported queued change');
               }
           }
+          if (write.table == 'projects' &&
+              write.operation == 'insert' &&
+              write.recordId != null) {
+            final savedProject = await client
+                .from('projects')
+                .select('share_token')
+                .eq('id', write.recordId!)
+                .maybeSingle();
+            if (savedProject != null) {
+              await _applyToCachedRows(
+                uid,
+                'projects',
+                'update',
+                {...write.values, ...Map<String, dynamic>.from(savedProject)},
+                write.recordId,
+              );
+            }
+          }
+          if (write.table == 'income') {
+            unawaited(_refreshIncomeEffects(client, uid, write.values));
+          }
           await _queue.record(write.key).delete(db);
           pendingWritesRevision.value++;
+          _notify(uid, write.table);
         } catch (error) {
           synced = false;
           if (isNetworkError(error)) {
@@ -482,6 +549,61 @@ class OfflineDataStore {
         await record.update(transaction, {'rows': rows});
       }
     });
+  }
+
+  Future<Map<String, dynamic>?> _cachedRow(
+      String user, String table, String id) async {
+    final db = await _database;
+    final snapshots = await _cache.find(
+      db,
+      finder: Finder(
+        filter: Filter.custom(
+          (record) => record.key.toString().startsWith('$user/$table/'),
+        ),
+      ),
+    );
+    for (final snapshot in snapshots) {
+      for (final row in _mapRows(snapshot.value['rows'])) {
+        if (row['id']?.toString() == id) return row;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _refreshIncomeEffects(
+    SupabaseClient client,
+    String user,
+    Map<String, dynamic> income,
+  ) async {
+    final projectId = income['project_id']?.toString();
+    final clientId = income['client_id']?.toString();
+    for (final (table, id) in <(String, String?)>[
+      ('projects', projectId),
+      ('clients', clientId),
+    ]) {
+      if (id == null || id.isEmpty) continue;
+      try {
+        final row =
+            await client.from(table).select().eq('id', id).maybeSingle();
+        if (row == null) continue;
+        BackendConnection.instance.reportAvailable();
+        await _applyToCachedRows(
+          user,
+          table,
+          'update',
+          Map<String, dynamic>.from(row),
+          id,
+        );
+        _notify(user, table);
+      } catch (error) {
+        if (isNetworkError(error)) {
+          BackendConnection.instance.reportUnavailable();
+        } else {
+          debugPrint(
+              'Could not refresh linked $table data after an income save.');
+        }
+      }
+    }
   }
 
   Future<List<Map<String, dynamic>>> _applyPending(String user, String table,

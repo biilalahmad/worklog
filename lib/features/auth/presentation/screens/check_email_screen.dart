@@ -10,7 +10,7 @@ import '../../../../core/widgets/auth_scaffold.dart';
 import '../providers/auth_providers.dart';
 
 /// Shown right after signup — NOT logged into the app yet. The user
-/// must tap the verification link in their email before they can log in.
+/// must complete email verification before they can log in.
 class CheckEmailScreen extends ConsumerStatefulWidget {
   final String email;
   const CheckEmailScreen({super.key, required this.email});
@@ -53,7 +53,10 @@ class _CheckEmailScreenState extends ConsumerState<CheckEmailScreen> {
     });
     try {
       await ref.read(authRepositoryProvider).resendVerification(widget.email);
-      if (mounted) setState(() => _info = 'Verification email sent again.');
+      if (mounted) {
+        setState(() => _info =
+            'If this address is eligible, a fresh verification email will arrive shortly.');
+      }
       _startCooldown();
     } catch (e) {
       if (mounted) setState(() => _info = Failure.from(e).message);
@@ -68,7 +71,8 @@ class _CheckEmailScreenState extends ConsumerState<CheckEmailScreen> {
     return AuthScaffold(
       headerIcon: Icons.mark_email_read_outlined,
       title: 'Check your email',
-      subtitle: 'We sent a verification link to\n${widget.email}',
+      subtitle:
+          'If this address is eligible, check your inbox at\n${widget.email}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -82,7 +86,7 @@ class _CheckEmailScreenState extends ConsumerState<CheckEmailScreen> {
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Tap "Verify Your Account" in that email. You’ll see a success message on the WorkLog website, then return here to log in. The link expires in 24 hours.',
+                    'If you receive a WorkLog verification email, tap "Verify Your Account". Then return here to log in. The link expires in 24 hours.',
                     style: TextStyle(color: AppColors.forest),
                   ),
                 ),

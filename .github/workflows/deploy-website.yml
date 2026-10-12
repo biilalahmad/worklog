@@ -50,12 +50,20 @@ jobs:
         run: npm ci
       - name: Test contact function
         run: npm run test:contact
+      - name: Verify production invoice configuration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || vars.PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          test -n "$PUBLIC_SUPABASE_URL" || { echo "Missing GitHub Actions variable PUBLIC_SUPABASE_URL"; exit 1; }
+          test -n "$PUBLIC_SUPABASE_PUBLISHABLE_KEY" || { echo "Missing GitHub Actions variable PUBLIC_SUPABASE_PUBLISHABLE_KEY (or legacy-named PUBLIC_SUPABASE_ANON_KEY)"; exit 1; }
       - name: Build website
         run: npm run build --prefix website
         env:
           PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
           PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
-          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || vars.PUBLIC_SUPABASE_ANON_KEY }}
       - name: Check published website routes
         run: |
           test ! -e website/dist/app

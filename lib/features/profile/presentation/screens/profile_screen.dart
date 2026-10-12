@@ -41,7 +41,7 @@ class ProfileScreen extends ConsumerWidget {
               16,
               8,
               16,
-              AppInsets.belowNavigation(context),
+              AppInsets.belowNavigation(context, gap: 48),
             ),
             children: [
               _Header(profile: profile, email: email),

@@ -111,16 +111,19 @@ class _InvoiceDownloadButtonState extends ConsumerState<InvoiceDownloadButton> {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: _saving ? null : _download,
-      icon: _saving
-          ? SizedBox(
-              width: widget.iconSize,
-              height: widget.iconSize,
-              child: const CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Icon(Icons.download_rounded, size: widget.iconSize),
-      label: const Text('Download PDF'),
+    return SizedBox.square(
+      dimension: 48,
+      child: IconButton(
+        tooltip: 'Download PDF',
+        onPressed: _saving ? null : _download,
+        icon: _saving
+            ? SizedBox(
+                width: widget.iconSize,
+                height: widget.iconSize,
+                child: const CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Icon(Icons.download_rounded, size: widget.iconSize),
+      ),
     );
   }
 }

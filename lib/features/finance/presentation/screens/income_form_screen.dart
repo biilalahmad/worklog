@@ -38,6 +38,7 @@ class _IncomeFormScreenState extends ConsumerState<IncomeFormScreen> {
   String? _clientId;
   String? _clientError;
   String? _projectId;
+  String? _projectCurrency;
   String _currency = 'PKR';
   String _method = _paymentMethods.first;
   DateTime _date = DateTime.now();
@@ -71,25 +72,43 @@ class _IncomeFormScreenState extends ConsumerState<IncomeFormScreen> {
   /// owed on it (so recording a payment defaults to clearing the
   /// balance) — the field stays fully editable for a partial payment.
   void _onProjectSelected(String? projectId, List<Project> projects) {
-    setState(() => _projectId = projectId);
-    if (projectId == null) return;
     Project? project;
-    for (final p in projects) {
-      if (p.id == projectId) {
-        project = p;
+    for (final candidate in projects) {
+      if (candidate.id == projectId) {
+        project = candidate;
         break;
       }
     }
-    if (project == null) return;
-    final remaining =
-        project.amountRemainingMinor > 0 ? project.amountRemainingMinor : 0;
-    _amountCtrl.text =
-        Money(remaining, project.currency).asDouble.toStringAsFixed(2);
-    setState(() => _currency = project!.currency);
+    setState(() {
+      _projectId = projectId;
+      _projectCurrency = project?.currency;
+      if (project == null) {
+        _amountCtrl.clear();
+        _currency = ref.read(defaultCurrencyProvider);
+        return;
+      }
+      _amountCtrl.text = Money(
+        project.amountRemainingMinor,
+        project.currency,
+      ).asDouble.toStringAsFixed(2);
+      _currency = project.currency;
+    });
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_projectId != null &&
+        _projectCurrency != null &&
+        _currency != _projectCurrency) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Income linked to this project must use $_projectCurrency.',
+          ),
+        ),
+      );
+      return;
+    }
     if (_clientId == null) {
       setState(() => _clientError = 'Select a client');
       return;
@@ -155,7 +174,9 @@ class _IncomeFormScreenState extends ConsumerState<IncomeFormScreen> {
                   _clientId = id;
                   _clientError = null;
                   _projectId = null;
+                  _projectCurrency = null;
                   _amountCtrl.clear();
+                  _currency = ref.read(defaultCurrencyProvider);
                 }),
               ),
             ),
@@ -212,6 +233,19 @@ class _IncomeFormScreenState extends ConsumerState<IncomeFormScreen> {
                 ),
               ],
             ),
+            if (_projectId != null &&
+                _projectCurrency != null &&
+                _currency != _projectCurrency) ...[
+              const SizedBox(height: 8),
+              Text(
+                'To apply this payment to the project invoice, use $_projectCurrency. '
+                'Clear the project to record income in another currency.',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             TextFormField(
               controller: _tipCtrl,

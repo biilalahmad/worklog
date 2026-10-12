@@ -45,26 +45,25 @@ class RoutineRepositoryImpl implements RoutineRepository {
   Future<String> addRoutine(WorkoutRoutine routine) async {
     return OfflineDataStore.instance.insert(
         _client, 'workout_routines', routine.toWritableMap(),
-        id: routine.id.isEmpty ? null : routine.id, localFirst: true);
+        id: routine.id.isEmpty ? null : routine.id);
   }
 
   @override
   Future<void> deleteRoutine(String routineId) {
     return OfflineDataStore.instance
-        .delete(_client, 'workout_routines', routineId, localFirst: true);
+        .delete(_client, 'workout_routines', routineId);
   }
 
   @override
   Future<void> addRoutineExercise(RoutineExercise re) {
     return OfflineDataStore.instance
         .insert(_client, 'routine_exercises', re.toWritableMap(),
-            id: re.id.isEmpty ? null : re.id, localFirst: true)
+            id: re.id.isEmpty ? null : re.id)
         .then((_) {});
   }
 
   @override
   Future<void> deleteRoutineExercise(String id) {
-    return OfflineDataStore.instance
-        .delete(_client, 'routine_exercises', id, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'routine_exercises', id);
   }
 }

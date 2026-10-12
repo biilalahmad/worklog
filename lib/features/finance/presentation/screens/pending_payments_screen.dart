@@ -175,7 +175,7 @@ class PendingPaymentsScreen extends ConsumerWidget {
                                                       return;
                                                     }
                                                     await Share.share(
-                                                      'View your WorkLog invoice: $invoiceUrl',
+                                                      invoiceUrl,
                                                       subject:
                                                           'Invoice: ${p.title}',
                                                     );

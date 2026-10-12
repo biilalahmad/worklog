@@ -514,7 +514,7 @@ class _ProjectTile extends StatelessWidget {
                       const SnackBar(content: Text('Invoice link copied')),
                     );
                     await Share.share(
-                      'View your WorkLog invoice: $invoiceUrl',
+                      invoiceUrl,
                       subject: 'Invoice: ${project.title}',
                     );
                   },

@@ -28,6 +28,10 @@ export function normalizePublicInvoice(invoice) {
     Number(invoice[field] ?? (legacyField ? invoice[legacyField] : undefined) ?? 0);
   const totalAmountMinor = readMinor('totalAmountMinor', 'totalAmount');
   const amountPaidMinor = readMinor('amountPaidMinor', 'amountPaid');
+  const storedRemaining = invoice.amountRemainingMinor ?? invoice.amountRemaining;
+  const amountRemainingMinor = storedRemaining == null
+    ? Math.max(0, totalAmountMinor - amountPaidMinor)
+    : Math.min(totalAmountMinor, Math.max(0, Number(storedRemaining)));
 
   return {
     ...invoice,
@@ -36,8 +40,8 @@ export function normalizePublicInvoice(invoice) {
     taxRateBps: readMinor('taxRateBps'),
     totalAmountMinor,
     amountPaidMinor,
-    // The stored rollup can be stale, or negative for historical overpayment.
-    // A customer-facing invoice must never show a negative amount due.
-    amountRemainingMinor: Math.max(0, totalAmountMinor - amountPaidMinor),
+    // Use the backend's trigger-maintained outstanding balance when present;
+    // older payloads fall back to total minus paid. Never show a negative due.
+    amountRemainingMinor,
   };
 }

@@ -80,8 +80,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       headerIcon: Icons.lock_reset_rounded,
       title: _codeSent ? 'Verify your email' : 'Reset password',
       subtitle: _codeSent
-          ? 'Enter the code we sent to your email.'
-          : 'We’ll send a secure reset code to your email.',
+          ? 'Enter the code sent to your email.'
+          : 'Enter the email linked to your WorkLog account to receive a reset code.',
       compactHeader: true,
       child: Form(
         key: _formKey,

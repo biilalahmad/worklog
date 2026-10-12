@@ -117,20 +117,18 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   Future<String> addWorkout(Workout workout) async {
     return OfflineDataStore.instance.insert(
         _client, 'workouts', workout.toWritableMap(),
-        id: workout.id.isEmpty ? null : workout.id, localFirst: true);
+        id: workout.id.isEmpty ? null : workout.id);
   }
 
   @override
   Future<void> updateWorkout(Workout workout) {
-    return OfflineDataStore.instance.update(
-        _client, 'workouts', workout.id, workout.toWritableMap(),
-        localFirst: true);
+    return OfflineDataStore.instance
+        .update(_client, 'workouts', workout.id, workout.toWritableMap());
   }
 
   @override
   Future<void> deleteWorkout(String workoutId) {
-    return OfflineDataStore.instance
-        .delete(_client, 'workouts', workoutId, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'workouts', workoutId);
   }
 
   @override
@@ -164,7 +162,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   Future<String> addSet(WorkoutSet set) async {
     return OfflineDataStore.instance.insert(
         _client, 'workout_sets', set.toWritableMap(),
-        id: set.id.isEmpty ? null : set.id, localFirst: true);
+        id: set.id.isEmpty ? null : set.id);
   }
 
   @override
@@ -175,8 +173,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
   @override
   Future<void> deleteSet(String setId) {
-    return OfflineDataStore.instance
-        .delete(_client, 'workout_sets', setId, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'workout_sets', setId);
   }
 
   @override

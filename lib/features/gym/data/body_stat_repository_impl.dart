@@ -29,12 +29,11 @@ class BodyStatRepositoryImpl implements BodyStatRepository {
   Future<String> addBodyStat(BodyStat stat) async {
     return OfflineDataStore.instance.insert(
         _client, 'body_stats', stat.toWritableMap(),
-        id: stat.id.isEmpty ? null : stat.id, localFirst: true);
+        id: stat.id.isEmpty ? null : stat.id);
   }
 
   @override
   Future<void> deleteBodyStat(String id) {
-    return OfflineDataStore.instance
-        .delete(_client, 'body_stats', id, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'body_stats', id);
   }
 }

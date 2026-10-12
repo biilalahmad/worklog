@@ -31,7 +31,7 @@ class DietRepositoryImpl implements DietRepository {
   Future<String> addFood(Food food) async {
     return OfflineDataStore.instance.insert(
         _client, 'foods', food.toWritableMap(),
-        id: food.id.isEmpty ? null : food.id, localFirst: true);
+        id: food.id.isEmpty ? null : food.id);
   }
 
   @override
@@ -58,13 +58,12 @@ class DietRepositoryImpl implements DietRepository {
   Future<String> addMeal(MealEntry meal) async {
     return OfflineDataStore.instance.insert(
         _client, 'meal_entries', meal.toWritableMap(),
-        id: meal.id.isEmpty ? null : meal.id, localFirst: true);
+        id: meal.id.isEmpty ? null : meal.id);
   }
 
   @override
   Future<void> deleteMeal(String id) {
-    return OfflineDataStore.instance
-        .delete(_client, 'meal_entries', id, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'meal_entries', id);
   }
 
   @override
@@ -90,8 +89,8 @@ class DietRepositoryImpl implements DietRepository {
     }
     final map = target.toWritableMap();
     map['user_id'] = userId;
-    await OfflineDataStore.instance.upsert(_client, 'diet_targets', map,
-        conflictColumn: 'user_id', localFirst: true);
+    await OfflineDataStore.instance
+        .upsert(_client, 'diet_targets', map, conflictColumn: 'user_id');
   }
 
   @override
@@ -117,13 +116,11 @@ class DietRepositoryImpl implements DietRepository {
       _client,
       'water_logs',
       WaterLog(id: '', date: date, milliliters: milliliters).toWritableMap(),
-      localFirst: true,
     );
   }
 
   @override
   Future<void> deleteWaterLog(String id) async {
-    await OfflineDataStore.instance
-        .delete(_client, 'water_logs', id, localFirst: true);
+    await OfflineDataStore.instance.delete(_client, 'water_logs', id);
   }
 }

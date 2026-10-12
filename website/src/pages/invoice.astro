@@ -1,11 +1,11 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 const endpoint = import.meta.env.PUBLIC_SUPABASE_URL || '';
-const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
+const publishableKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 ---
 <SiteLayout title="WorkLog invoice" description="A private, read-only invoice shared with you through WorkLog." noindex={true}>
   <div class="invoice-wrap">
-    <main class="invoice-card" id="invoice" data-endpoint={endpoint} data-anon-key={anonKey} aria-live="polite">
+    <main class="invoice-card" id="invoice" data-endpoint={endpoint} data-api-key={publishableKey} aria-live="polite">
       <div class="invoice-status" id="invoice-status"><div class="invoice-loading" aria-hidden="true"></div><h1>Loading invoice</h1><p>Please wait while we retrieve the shared invoice.</p></div>
       <article id="invoice-content" class="invoice-hidden" aria-label="Shared invoice">
         <div class="invoice-top"><div><a class="invoice-brand" href="/" aria-label="WorkLog"><img src="/brand/worklog-icon.png" alt="" />WorkLog</a><h1>INVOICE</h1></div><div class="invoice-meta"><span>INVOICE DATE<strong id="invoice-date"></strong></span><span>STATUS<strong id="invoice-status-value"></strong></span></div></div>
@@ -51,12 +51,12 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
       formatInvoiceMoney(amount, currency, undefined);
     const load = async () => {
       const endpoint = card?.dataset.endpoint || '';
-      const anonKey = card?.dataset.anonKey || '';
+      const publishableKey = card?.dataset.apiKey || '';
       if (!token || !uuid.test(token)) return fail('This invoice link is invalid. Please ask the sender to check the link.');
-      if (!endpoint || !anonKey) return fail('Invoice sharing is temporarily unavailable. Please contact the sender.');
+      if (!endpoint || !publishableKey) return fail('Invoice sharing is temporarily unavailable. Please contact the sender.');
       try {
         const response = await fetch(`${endpoint.replace(/\/$/, '')}/rest/v1/rpc/get_public_invoice`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+          method: 'POST', headers: { 'Content-Type': 'application/json', apikey: publishableKey },
           body: JSON.stringify({ p_token: token }),
         });
         if (!response.ok) throw new Error('request failed');

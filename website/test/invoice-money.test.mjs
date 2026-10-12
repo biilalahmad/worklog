@@ -62,6 +62,18 @@ test('an overpaid invoice never displays a negative amount due', () => {
   assert.equal(formatInvoiceMoney(invoice.amountRemainingMinor, 'EUR', 'en-US'), '€0.00');
 });
 
+test('uses the server-calculated outstanding balance when it differs from arithmetic', () => {
+  const invoice = normalizePublicInvoice({
+    totalAmountMinor: 10000,
+    amountPaidMinor: 6000,
+    amountRemainingMinor: 3200,
+    currency: 'PKR',
+  });
+
+  assert.equal(invoice.amountRemainingMinor, 3200);
+  assert.equal(formatInvoiceMoney(invoice.amountRemainingMinor, 'PKR', 'en-PK'), 'Rs 32.00');
+});
+
 test('downloads a real PDF blob with the invoice line item and amount contract', () => {
   let downloadedName = '';
   let removed = false;

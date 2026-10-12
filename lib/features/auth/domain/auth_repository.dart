@@ -1,8 +1,7 @@
 enum AuthEvent { signedIn, signedOut, passwordRecovery, other }
 
 class SignUpResult {
-  /// True when the account exists but the email is still unverified
-  /// (the normal case for email/password sign-up).
+  /// True when email confirmation is required before the user can sign in.
   final bool needsVerification;
   const SignUpResult({required this.needsVerification});
 }

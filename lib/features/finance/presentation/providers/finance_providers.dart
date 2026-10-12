@@ -218,19 +218,19 @@ class DeletedFinanceActivityNotifier extends StateNotifier<Set<String>> {
 }
 
 final incomeForRangeProvider =
-    StreamProvider.family<List<Income>, DateRange>((ref, range) {
+    StreamProvider.autoDispose.family<List<Income>, DateRange>((ref, range) {
   return ref
       .watch(financeRepositoryProvider)
       .watchIncomeForRange(range.start, range.end);
 });
 
 final incomeForClientProvider =
-    StreamProvider.family<List<Income>, String>((ref, clientId) {
+    StreamProvider.autoDispose.family<List<Income>, String>((ref, clientId) {
   return ref.watch(financeRepositoryProvider).watchIncomeForClient(clientId);
 });
 
 final expensesForRangeProvider =
-    StreamProvider.family<List<Expense>, DateRange>((ref, range) {
+    StreamProvider.autoDispose.family<List<Expense>, DateRange>((ref, range) {
   return ref
       .watch(financeRepositoryProvider)
       .watchExpensesForRange(range.start, range.end);

@@ -53,8 +53,8 @@ List<_TabItem> _tabsFor({required bool gymEnabled}) {
 }
 
 class AppShell extends ConsumerWidget {
-  final Widget child;
-  const AppShell({super.key, required this.child});
+  final StatefulNavigationShell navigationShell;
+  const AppShell({super.key, required this.navigationShell});
 
   int _currentIndex(BuildContext context, List<_TabItem> tabs) {
     final location = GoRouterState.of(context).uri.toString();
@@ -74,7 +74,8 @@ class AppShell extends ConsumerWidget {
           children: [
             NavigationRail(
               selectedIndex: currentIndex == -1 ? null : currentIndex,
-              onDestinationSelected: (index) => context.go(tabs[index].path!),
+              onDestinationSelected: (index) =>
+                  navigationShell.goBranch(_branchIndex(tabs[index])),
               labelType: NavigationRailLabelType.all,
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -84,8 +85,15 @@ class AppShell extends ConsumerWidget {
                       padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                           color: AppColors.forest, shape: BoxShape.circle),
-                      child:
-                          const Icon(Icons.bolt_rounded, color: AppColors.lime),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          'assets/images/worklog_icon.png',
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -108,7 +116,7 @@ class AppShell extends ConsumerWidget {
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 1120),
-                        child: child,
+                        child: navigationShell,
                       ),
                     ),
                   ),
@@ -122,14 +130,23 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: _FloatingNavBar(
         tabs: tabs,
         currentIndex: currentIndex,
-        onTap: (index) => context.go(tabs[index].path!),
+        onTap: (index) => navigationShell.goBranch(_branchIndex(tabs[index])),
       ),
     );
   }
+
+  int _branchIndex(_TabItem tab) => switch (tab.path) {
+        '/home' => 0,
+        '/clients' => 1,
+        '/finance' => 2,
+        '/gym' => 3,
+        '/profile' => 4,
+        _ => 0,
+      };
 }
 
 /// A responsive frosted-glass navigation pill. Each destination keeps

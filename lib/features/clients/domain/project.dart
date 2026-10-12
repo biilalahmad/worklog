@@ -89,6 +89,7 @@ class Project {
   factory Project.fromMap(Map<String, dynamic> data) {
     final totalAmountMinor = (data['total_amount'] as num?)?.toInt() ?? 0;
     final amountPaidMinor = (data['amount_paid'] as num?)?.toInt() ?? 0;
+    final storedRemaining = (data['amount_remaining'] as num?)?.toInt();
     return Project(
       id: data['id'] as String,
       clientId: data['client_id'] as String? ?? '',
@@ -110,9 +111,10 @@ class Project {
           ? DateTime.tryParse(data['updated_at'] as String)
           : null,
       amountPaidMinor: amountPaidMinor,
-      amountRemainingMinor: (totalAmountMinor - amountPaidMinor)
-          .clamp(0, totalAmountMinor)
-          .toInt(),
+      amountRemainingMinor:
+          (storedRemaining ?? (totalAmountMinor - amountPaidMinor))
+              .clamp(0, totalAmountMinor)
+              .toInt(),
       status: ProjectStatusX.fromString(data['status'] as String?),
       shareToken: data['share_token'] as String?,
     );

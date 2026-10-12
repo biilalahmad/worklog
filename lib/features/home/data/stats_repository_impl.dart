@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/data/offline_data_store.dart';
+import '../../../core/utils/backend_connection.dart';
 import '../domain/stats.dart';
 import '../domain/stats_repository.dart';
 
@@ -42,9 +44,8 @@ class StatsRepositoryImpl implements StatsRepository {
   Stream<List<MonthStats>> _watchAll(List<StatsRange> ranges) {
     late final StreamController<List<MonthStats>> controller;
     final subs = <StreamSubscription>[];
-    StreamSubscription<AuthState>? authSub;
+    Timer? refreshTimer;
     var active = true;
-    var sessionUserId = _client.auth.currentUser?.id;
     var refreshGeneration = 0;
 
     Future<void> refresh() async {
@@ -65,15 +66,32 @@ class StatsRepositoryImpl implements StatsRepository {
       }
     }
 
+    void scheduleRefresh() {
+      refreshTimer?.cancel();
+      refreshTimer = Timer(const Duration(milliseconds: 120), refresh);
+    }
+
     void watchTables() {
       for (final subscription in subs) {
         unawaited(subscription.cancel());
       }
       subs.clear();
       for (final table in ['work_entries', 'income', 'expenses']) {
-        subs.add(_client.from(table).stream(primaryKey: ['id']).listen(
-            (_) => refresh(),
-            onError: (Object _, StackTrace __) {}));
+        subs.add(OfflineDataStore.instance
+            .watchRows(
+          client: _client,
+          table: table,
+          queryKey: 'all',
+          remote: _client.from(table).stream(primaryKey: ['id']),
+        )
+            .listen((_) => scheduleRefresh(),
+                onError: (Object error, StackTrace stack) {
+          debugPrint('Stats subscription for $table failed: $error');
+          if (OfflineDataStore.instance.isNetworkError(error)) {
+            BackendConnection.instance.reportUnavailable();
+          }
+          scheduleRefresh();
+        }));
       }
     }
 
@@ -81,19 +99,11 @@ class StatsRepositoryImpl implements StatsRepository {
       onListen: () {
         watchTables();
         refresh();
-        authSub = _client.auth.onAuthStateChange.listen((state) {
-          final nextUserId = state.session?.user.id;
-          if (nextUserId == sessionUserId) return;
-          sessionUserId = nextUserId;
-          refreshGeneration++;
-          watchTables();
-          refresh();
-        });
       },
       onCancel: () {
         active = false;
+        refreshTimer?.cancel();
         refreshGeneration++;
-        unawaited(authSub?.cancel() ?? Future<void>.value());
         for (final s in subs) {
           unawaited(s.cancel());
         }

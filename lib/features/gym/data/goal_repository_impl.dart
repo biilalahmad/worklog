@@ -26,20 +26,18 @@ class GoalRepositoryImpl implements GoalRepository {
   Future<String> addGoal(GymGoal goal) async {
     return OfflineDataStore.instance.insert(
         _client, 'gym_goals', goal.toWritableMap(),
-        id: goal.id.isEmpty ? null : goal.id, localFirst: true);
+        id: goal.id.isEmpty ? null : goal.id);
   }
 
   @override
   Future<void> updateGoal(GymGoal goal) {
-    return OfflineDataStore.instance.update(
-        _client, 'gym_goals', goal.id, goal.toWritableMap(),
-        localFirst: true);
+    return OfflineDataStore.instance
+        .update(_client, 'gym_goals', goal.id, goal.toWritableMap());
   }
 
   @override
   Future<void> deleteGoal(String id) {
-    return OfflineDataStore.instance
-        .delete(_client, 'gym_goals', id, localFirst: true);
+    return OfflineDataStore.instance.delete(_client, 'gym_goals', id);
   }
 
   @override
@@ -52,7 +50,6 @@ class GoalRepositoryImpl implements GoalRepository {
         'achieved': achieved,
         'achieved_at': achieved ? DateTime.now().toIso8601String() : null,
       },
-      localFirst: true,
     );
   }
 }

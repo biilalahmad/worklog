@@ -52,16 +52,9 @@ class AuthRepositoryImpl implements AuthRepository {
       data: {'display_name': displayName},
       emailRedirectTo: SupabaseConfig.verificationRedirect,
     );
-    // With email confirmation ON, Supabase does not error for an
-    // already-registered address (anti-enumeration) — it returns a
-    // user with an empty identities list. Surface the friendly message.
-    final identities = res.user?.identities;
-    if (res.user != null && identities != null && identities.isEmpty) {
-      throw const Failure(
-        'An account with this email already exists. Try logging in instead.',
-        code: Failure.codeConflict,
-      );
-    }
+    // Supabase intentionally makes duplicate-email signup responses
+    // indistinguishable when email confirmation is enabled. Do not turn its
+    // empty-identities response into an account-enumeration signal.
     return SignUpResult(needsVerification: res.session == null);
   }
 
@@ -204,6 +197,8 @@ class AuthRepositoryImpl implements AuthRepository {
         'rate_limited' => Failure.tooManyRequests,
         'password_reset_request_limit' =>
           'You’ve reached the limit of 7 password reset code requests in 24 hours. Please try again tomorrow.',
+        'account_not_found' =>
+          'An account with this email does not exist yet.',
         'password_change_request_limit' =>
           'You’ve reached the limit of 7 password-change code requests in 24 hours. Please try again tomorrow.',
         'delete_account_request_limit' =>

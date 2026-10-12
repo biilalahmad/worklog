@@ -92,6 +92,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       ),
       floatingActionButton: AppFab(
         tooltip: 'Add client',
+        extraBottomOffset: 14,
         onPressed: () => context.push('/clients/new'),
       ),
       body: clientsAsync.when(
@@ -141,14 +142,6 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
                                 icon: const Icon(Icons.close_rounded),
                               ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Search among ${clients.length} clients',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
                     ),
                     if (sorted.isEmpty)
                       const Padding(

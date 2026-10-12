@@ -109,6 +109,12 @@ class AuthScaffold extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  Image.asset(
+                                    'assets/images/worklog_icon.png',
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                  const SizedBox(height: 2),
                                   Text(
                                     title,
                                     maxLines: 2,
@@ -116,7 +122,7 @@ class AuthScaffold extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: baseTheme.textTheme.headlineSmall
                                         ?.copyWith(
-                                      fontSize: 22,
+                                      fontSize: 20,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -265,10 +271,9 @@ class AuthScaffold extends StatelessWidget {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(18),
-                              child: ColoredBox(
-                                color: AppColors.forest,
-                                child: Icon(headerIcon,
-                                    color: AppColors.lime, size: 32),
+                              child: Image.asset(
+                                'assets/images/worklog_icon.png',
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

@@ -10,6 +10,7 @@ class AppFab extends StatelessWidget {
     required this.tooltip,
     this.icon = Icons.add_rounded,
     this.aboveNavigation = true,
+    this.extraBottomOffset = 0,
   });
 
   final VoidCallback onPressed;
@@ -18,6 +19,7 @@ class AppFab extends StatelessWidget {
 
   /// True for screens inside the floating bottom-navigation shell.
   final bool aboveNavigation;
+  final double extraBottomOffset;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class AppFab extends StatelessWidget {
       aboveNavigation: aboveNavigation,
     );
     return Padding(
-      padding: EdgeInsets.only(right: 4, bottom: bottom),
+      padding: EdgeInsets.only(right: 4, bottom: bottom + extraBottomOffset),
       child: SizedBox.square(
         dimension: AppSpacing.fabSize,
         child: FloatingActionButton(

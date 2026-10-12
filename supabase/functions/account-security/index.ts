@@ -36,6 +36,34 @@ function sha256(value: string): Promise<string> {
   );
 }
 
+async function hmacSha256(value: string, secret: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const digest = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(value),
+  );
+  return [...new Uint8Array(digest)].map((byte) =>
+    byte.toString(16).padStart(2, "0")
+  ).join("");
+}
+
+function clientAddress(req: Request): string | null {
+  const direct = req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-real-ip");
+  const forwarded = req.headers.get("x-forwarded-for");
+  const address = direct?.trim() ||
+    forwarded?.split(",").map((part) => part.trim()).filter(Boolean).at(-1) ||
+    null;
+  return address && address.length <= 128 ? address : null;
+}
+
 function ticketValue(): string {
   return `${crypto.randomUUID()}${crypto.randomUUID()}`;
 }
@@ -125,6 +153,35 @@ Deno.serve(async (req) => {
       }
       if (!email) return response({ error: "invalid_request" }, 400);
 
+      if (action === "reset_password") {
+        const address = clientAddress(req);
+        if (!address) {
+          return response({ error: "security_service_unavailable" }, 503);
+        }
+
+        const { data: lookupAllowed, error: lookupLimitError } =
+          await service.rpc("reserve_auth_reset_lookup", {
+            p_ip_digest: await hmacSha256(address, serviceKey),
+          });
+        if (lookupLimitError) {
+          return response({ error: "security_service_unavailable" }, 500);
+        }
+        if (lookupAllowed !== true) {
+          return response({ error: "rate_limited" }, 429);
+        }
+
+        const { data: accountExists, error: accountLookupError } =
+          await service.rpc("auth_account_exists_by_email", {
+            p_email: email,
+          });
+        if (accountLookupError || typeof accountExists !== "boolean") {
+          return response({ error: "security_service_unavailable" }, 500);
+        }
+        if (!accountExists) {
+          return response({ error: "account_not_found" }, 404);
+        }
+      }
+
       // Enforce a per-account rolling 24-hour code-request limit before
       // replacing the existing challenge or asking Auth to send an email.
       const { data: requestAllowed, error: requestLimitError } =
@@ -181,7 +238,8 @@ Deno.serve(async (req) => {
           : response({ error: "code_request_failed" }, 502);
       }
 
-      // Keep reset responses indistinguishable for registered and unknown emails.
+      // Only existing accounts reach this point; do not reveal whether Auth
+      // actually delivered the email, since provider errors can be transient.
       return response({
         success: true,
         message: "If the account exists, a code was sent.",

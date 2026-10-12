@@ -128,6 +128,14 @@ class Failure {
 
     if (error is PostgrestException) {
       switch (error.code) {
+        case '23514':
+          if (error.message.toLowerCase().contains('project currency')) {
+            return const Failure(
+              'Income linked to a project must use that project’s currency.',
+              code: 'project_currency_mismatch',
+            );
+          }
+          break;
         case '23505':
           return const Failure('This record already exists.', code: 'conflict');
         case '23503':

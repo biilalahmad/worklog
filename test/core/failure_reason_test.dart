@@ -47,4 +47,14 @@ void main() {
     expect(failure.message, contains('table is missing'));
     expect(failure.message, contains('42P01'));
   });
+
+  test('explains project income currency mismatches', () {
+    final failure = Failure.from(const PostgrestException(
+      message: 'Income project currency mismatch.',
+      code: '23514',
+    ));
+
+    expect(failure.code, 'project_currency_mismatch');
+    expect(failure.message, contains('project’s currency'));
+  });
 }

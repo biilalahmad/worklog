@@ -54,31 +54,32 @@ final dietRepositoryProvider =
 final gymStatsRepositoryProvider =
     Provider<GymStatsRepository>((ref) => GymStatsRepositoryImpl());
 
-final exercisesListProvider = StreamProvider<List<Exercise>>((ref) {
+final exercisesListProvider = StreamProvider.autoDispose<List<Exercise>>((ref) {
   return ref.watch(exerciseRepositoryProvider).watchExercises();
 });
 
-final routinesListProvider = StreamProvider<List<WorkoutRoutine>>((ref) {
+final routinesListProvider =
+    StreamProvider.autoDispose<List<WorkoutRoutine>>((ref) {
   return ref.watch(routineRepositoryProvider).watchRoutines();
 });
 
-final routineExercisesProvider =
-    StreamProvider.family<List<RoutineExercise>, String>((ref, routineId) {
+final routineExercisesProvider = StreamProvider.autoDispose
+    .family<List<RoutineExercise>, String>((ref, routineId) {
   return ref.watch(routineRepositoryProvider).watchRoutineExercises(routineId);
 });
 
-final recentWorkoutsProvider = StreamProvider<List<Workout>>((ref) {
+final recentWorkoutsProvider = StreamProvider.autoDispose<List<Workout>>((ref) {
   return ref.watch(workoutRepositoryProvider).watchRecentWorkouts();
 });
 
 /// A broader window for the browsable workout history; dashboard and streak
 /// consumers keep the smaller recent list for faster updates.
-final workoutHistoryProvider = StreamProvider<List<Workout>>((ref) {
+final workoutHistoryProvider = StreamProvider.autoDispose<List<Workout>>((ref) {
   return ref.watch(workoutRepositoryProvider).watchRecentWorkouts(limit: 500);
 });
 
 final workoutDetailProvider =
-    StreamProvider.family<Workout?, String>((ref, workoutId) {
+    StreamProvider.autoDispose.family<Workout?, String>((ref, workoutId) {
   return ref.watch(workoutRepositoryProvider).watchWorkout(workoutId);
 });
 
@@ -93,38 +94,38 @@ class GymDateRange {
   int get hashCode => Object.hash(start, end);
 }
 
-final workoutsForRangeProvider =
-    StreamProvider.family<List<Workout>, GymDateRange>((ref, range) {
+final workoutsForRangeProvider = StreamProvider.autoDispose
+    .family<List<Workout>, GymDateRange>((ref, range) {
   return ref
       .watch(workoutRepositoryProvider)
       .watchWorkoutsForRange(range.start, range.end);
 });
 
 final gymStatsForRangeProvider =
-    StreamProvider.family<GymStats, GymDateRange>((ref, range) {
+    StreamProvider.autoDispose.family<GymStats, GymDateRange>((ref, range) {
   return ref
       .watch(gymStatsRepositoryProvider)
       .watchGymStats(range.start, range.end);
 });
 
-final bodyStatsListProvider = StreamProvider<List<BodyStat>>((ref) {
+final bodyStatsListProvider = StreamProvider.autoDispose<List<BodyStat>>((ref) {
   return ref.watch(bodyStatRepositoryProvider).watchBodyStats();
 });
 
-final goalsListProvider = StreamProvider<List<GymGoal>>((ref) {
+final goalsListProvider = StreamProvider.autoDispose<List<GymGoal>>((ref) {
   return ref.watch(goalRepositoryProvider).watchGoals();
 });
 
-final foodsListProvider = StreamProvider<List<Food>>((ref) {
+final foodsListProvider = StreamProvider.autoDispose<List<Food>>((ref) {
   return ref.watch(dietRepositoryProvider).watchFoods();
 });
 
 final mealsForDateProvider =
-    StreamProvider.family<List<MealEntry>, DateTime>((ref, date) {
+    StreamProvider.autoDispose.family<List<MealEntry>, DateTime>((ref, date) {
   return ref.watch(dietRepositoryProvider).watchMealsForDate(date);
 });
 
-final dietTargetProvider = StreamProvider<DietTarget>((ref) {
+final dietTargetProvider = StreamProvider.autoDispose<DietTarget>((ref) {
   return ref.watch(dietRepositoryProvider).watchDietTarget();
 });
 

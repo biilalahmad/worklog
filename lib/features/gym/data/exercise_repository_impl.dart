@@ -31,7 +31,6 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
       'exercises',
       exercise.toWritableMap(),
       id: exercise.id.isEmpty ? null : exercise.id,
-      localFirst: true,
     );
   }
 

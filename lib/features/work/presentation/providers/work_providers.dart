@@ -4,7 +4,8 @@ import '../../data/work_repository_impl.dart';
 import '../../domain/work_entry.dart';
 import '../../domain/work_repository.dart';
 
-final workRepositoryProvider = Provider<WorkRepository>((ref) => WorkRepositoryImpl());
+final workRepositoryProvider =
+    Provider<WorkRepository>((ref) => WorkRepositoryImpl());
 
 class DateRange {
   final DateTime start;
@@ -19,15 +20,18 @@ class DateRange {
 }
 
 final workEntriesForRangeProvider =
-    StreamProvider.family<List<WorkEntry>, DateRange>((ref, range) {
-  return ref.watch(workRepositoryProvider).watchEntriesForRange(range.start, range.end);
+    StreamProvider.autoDispose.family<List<WorkEntry>, DateRange>((ref, range) {
+  return ref
+      .watch(workRepositoryProvider)
+      .watchEntriesForRange(range.start, range.end);
 });
 
 final workEntriesForClientProvider =
-    StreamProvider.family<List<WorkEntry>, String>((ref, clientId) {
+    StreamProvider.autoDispose.family<List<WorkEntry>, String>((ref, clientId) {
   return ref.watch(workRepositoryProvider).watchEntriesForClient(clientId);
 });
 
-final recentWorkEntriesProvider = StreamProvider<List<WorkEntry>>((ref) {
+final recentWorkEntriesProvider =
+    StreamProvider.autoDispose<List<WorkEntry>>((ref) {
   return ref.watch(workRepositoryProvider).watchAllEntries();
 });

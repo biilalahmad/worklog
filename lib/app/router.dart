@@ -287,29 +287,40 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/work', builder: (context, state) => const WorkScreen()),
-      ShellRoute(
-        builder: (context, state, child) => AppShell(child: child),
-        routes: [
-          GoRoute(
-              path: '/home',
-              pageBuilder: (context, state) =>
-                  _fadeTab(state, const HomeScreen())),
-          GoRoute(
-              path: '/gym',
-              pageBuilder: (context, state) =>
-                  _fadeTab(state, const GymDashboardScreen())),
-          GoRoute(
-              path: '/finance',
-              pageBuilder: (context, state) =>
-                  _fadeTab(state, const FinanceScreen())),
-          GoRoute(
-              path: '/clients',
-              pageBuilder: (context, state) =>
-                  _fadeTab(state, const ClientsScreen())),
-          GoRoute(
-              path: '/profile',
-              pageBuilder: (context, state) =>
-                  _fadeTab(state, const ProfileScreen())),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/home',
+                pageBuilder: (context, state) =>
+                    _fadeTab(state, const HomeScreen())),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/clients',
+                pageBuilder: (context, state) =>
+                    _fadeTab(state, const ClientsScreen())),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/finance',
+                pageBuilder: (context, state) =>
+                    _fadeTab(state, const FinanceScreen())),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/gym',
+                pageBuilder: (context, state) =>
+                    _fadeTab(state, const GymDashboardScreen())),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/profile',
+                pageBuilder: (context, state) =>
+                    _fadeTab(state, const ProfileScreen())),
+          ]),
         ],
       ),
     ],
