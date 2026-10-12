@@ -438,45 +438,50 @@ class OfflineDataStore {
   Future<void> _applyToCachedRows(String user, String table, String operation,
       Map<String, dynamic> values, String? id) async {
     final db = await _database;
-    final snapshots = await _cache.find(db,
-        finder: Finder(
-            filter: Filter.custom((record) =>
-                record.key.toString().startsWith('$user/$table/'))));
-    if (snapshots.isEmpty &&
-        (operation == 'insert' || operation.startsWith('upsert:'))) {
-      await _cache.record(_cacheKey(user, table, 'all')).put(db, {
-        'user': user,
-        'table': table,
-        'rows': [values],
-      });
-      return;
-    }
-    for (final snapshot in snapshots) {
-      final record = _cache.record(snapshot.key);
-      final queryKey =
-          snapshot.key.toString().substring('$user/$table/'.length);
-      final rows = _mapRows(snapshot.value['rows']);
-      final column = operation.startsWith('upsert:')
-          ? operation.substring('upsert:'.length)
-          : 'id';
-      final index = rows.indexWhere((row) => row[column]?.toString() == id);
-      if (operation == 'delete') {
-        if (index >= 0) rows.removeAt(index);
-      } else if ((operation == 'insert' || operation.startsWith('upsert:')) &&
-          index < 0) {
-        if (_filterRowsForQuery(queryKey, [values]).isNotEmpty) {
-          rows.add(values);
-        }
-      } else if (index >= 0) {
-        final updated = {...rows[index], ...values};
-        if (_filterRowsForQuery(queryKey, [updated]).isEmpty) {
-          rows.removeAt(index);
-        } else {
-          rows[index] = updated;
-        }
+    // Batch all snapshots into one local commit. On slower phones, updating
+    // many watched filtered caches sequentially made an offline-first save
+    // appear to hang even though it was not waiting for the network.
+    await db.transaction((transaction) async {
+      final snapshots = await _cache.find(transaction,
+          finder: Finder(
+              filter: Filter.custom((record) =>
+                  record.key.toString().startsWith('$user/$table/'))));
+      if (snapshots.isEmpty &&
+          (operation == 'insert' || operation.startsWith('upsert:'))) {
+        await _cache.record(_cacheKey(user, table, 'all')).put(transaction, {
+          'user': user,
+          'table': table,
+          'rows': [values],
+        });
+        return;
       }
-      await record.update(db, {'rows': rows});
-    }
+      for (final snapshot in snapshots) {
+        final record = _cache.record(snapshot.key);
+        final queryKey =
+            snapshot.key.toString().substring('$user/$table/'.length);
+        final rows = _mapRows(snapshot.value['rows']);
+        final column = operation.startsWith('upsert:')
+            ? operation.substring('upsert:'.length)
+            : 'id';
+        final index = rows.indexWhere((row) => row[column]?.toString() == id);
+        if (operation == 'delete') {
+          if (index >= 0) rows.removeAt(index);
+        } else if ((operation == 'insert' || operation.startsWith('upsert:')) &&
+            index < 0) {
+          if (_filterRowsForQuery(queryKey, [values]).isNotEmpty) {
+            rows.add(values);
+          }
+        } else if (index >= 0) {
+          final updated = {...rows[index], ...values};
+          if (_filterRowsForQuery(queryKey, [updated]).isEmpty) {
+            rows.removeAt(index);
+          } else {
+            rows[index] = updated;
+          }
+        }
+        await record.update(transaction, {'rows': rows});
+      }
+    });
   }
 
   Future<List<Map<String, dynamic>>> _applyPending(String user, String table,

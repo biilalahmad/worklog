@@ -10,10 +10,11 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
       <article id="invoice-content" class="invoice-hidden" aria-label="Shared invoice">
         <div class="invoice-top"><div><a class="invoice-brand" href="/" aria-label="WorkLog"><img src="/brand/worklog-icon.png" alt="" />WorkLog</a><h1>INVOICE</h1></div><div class="invoice-meta"><span>INVOICE DATE<strong id="invoice-date"></strong></span><span>STATUS<strong id="invoice-status-value"></strong></span></div></div>
         <div class="invoice-parties"><section><h2>FROM</h2><p>WorkLog user</p></section><section><h2>BILL TO</h2><p id="invoice-client"></p></section></div>
-        <table class="invoice-table"><thead><tr><th>DESCRIPTION</th><th>AMOUNT</th></tr></thead><tbody><tr><td id="invoice-title"></td><td id="invoice-total-cell"></td></tr></tbody></table>
-        <div class="invoice-total"><div><span>Total</span><strong id="invoice-total"></strong></div><div><span>Paid</span><strong id="invoice-paid"></strong></div><div><span>Amount due</span><strong id="invoice-due"></strong></div></div>
+        <table class="invoice-table"><thead><tr><th>DESCRIPTION</th><th class="invoice-num">QTY</th><th class="invoice-num">RATE</th><th class="invoice-num">AMOUNT</th></tr></thead><tbody><tr><td id="invoice-title"></td><td class="invoice-num">1</td><td class="invoice-num" id="invoice-item-rate"></td><td class="invoice-num" id="invoice-item-amount"></td></tr></tbody></table>
+        <div class="invoice-total"><div><span>Subtotal</span><strong id="invoice-subtotal"></strong></div><div class="invoice-tax-row invoice-hidden" id="invoice-tax-row"><span id="invoice-tax-label">Tax</span><strong id="invoice-tax"></strong></div><div class="invoice-grand-total"><span>Total</span><strong id="invoice-total"></strong></div><div><span>Paid</span><strong id="invoice-paid"></strong></div><div class="invoice-balance-due"><span>Amount due</span><strong id="invoice-due"></strong></div></div>
         <section class="invoice-note"><h2 class="invoice-note-label">PAYMENT DETAILS</h2><p id="invoice-payment-note"></p></section>
-        <div class="invoice-actions"><button class="button button-outline invoice-download-button" type="button" id="invoice-print">Print / Save as PDF</button></div>
+        <div class="invoice-actions"><button class="button button-outline invoice-download-button" type="button" id="invoice-download">Download PDF</button></div>
+        <p class="invoice-download-status" id="invoice-download-status" role="status" aria-live="polite"></p>
         <p class="print-only">Shared securely with WorkLog.</p>
       </article>
     </main>
@@ -21,6 +22,9 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
   </div>
   <footer class="invoice-footer">Shared with WorkLog · Please contact the sender if you have a question about this invoice.</footer>
   <script>
+    import { downloadInvoicePdf } from '../utils/invoice-pdf.mjs';
+    import { formatInvoiceMoney, normalizePublicInvoice } from '../utils/invoice-money.mjs';
+
     const card = document.querySelector<HTMLElement>('#invoice');
     const status = document.querySelector<HTMLElement>('#invoice-status');
     const content = document.querySelector<HTMLElement>('#invoice-content');
@@ -43,13 +47,8 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
       const parsed = new Date(value);
       return Number.isNaN(parsed.valueOf()) ? '—' : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(parsed);
     };
-    const money = (amount: unknown, currency: unknown) => {
-      const numeric = Number(amount);
-      const code = typeof currency === 'string' ? currency.toUpperCase() : '';
-      if (!Number.isFinite(numeric) || !/^[A-Z]{3}$/.test(code)) return '—';
-      try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(numeric); }
-      catch { return `${code} ${numeric.toFixed(2)}`; }
-    };
+    const money = (amount: unknown, currency: unknown) =>
+      formatInvoiceMoney(amount, currency, undefined);
     const load = async () => {
       const endpoint = card?.dataset.endpoint || '';
       const anonKey = card?.dataset.anonKey || '';
@@ -64,16 +63,41 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
         const invoice = await response.json();
         if (!invoice || typeof invoice !== 'object' || Array.isArray(invoice)) return fail('This invoice link is invalid or has expired. Please ask the sender for a new link.');
         const currency = invoice.currency;
+        const publicInvoice = normalizePublicInvoice(invoice);
         text('invoice-date', dateLabel(invoice.createdAt));
         text('invoice-client', invoice.clientName);
         text('invoice-title', invoice.projectTitle);
-        text('invoice-total-cell', money(invoice.totalAmount, currency));
-        text('invoice-total', money(invoice.totalAmount, currency));
-        text('invoice-paid', money(invoice.amountPaid, currency));
-        text('invoice-due', money(invoice.amountRemaining, currency));
+        text('invoice-item-rate', money(publicInvoice.subtotalAmountMinor, currency));
+        text('invoice-item-amount', money(publicInvoice.subtotalAmountMinor, currency));
+        text('invoice-subtotal', money(publicInvoice.subtotalAmountMinor, currency));
+        text('invoice-total', money(publicInvoice.totalAmountMinor, currency));
+        text('invoice-paid', money(publicInvoice.amountPaidMinor, currency));
+        text('invoice-due', money(publicInvoice.amountRemainingMinor, currency));
+        if (publicInvoice.taxAmountMinor !== 0) {
+          const rate = publicInvoice.taxRateBps / 100;
+          text('invoice-tax-label', `${invoice.taxLabel || 'Tax'}${rate ? ` (${rate.toFixed(2)}%)` : ''}`);
+          text('invoice-tax', money(publicInvoice.taxAmountMinor, currency));
+          document.querySelector<HTMLElement>('#invoice-tax-row')?.classList.remove('invoice-hidden');
+        }
         const statusLabel = typeof invoice.status === 'string' ? invoice.status.replaceAll('_', ' ') : '';
         text('invoice-status-value', statusLabel);
         text('invoice-payment-note', invoice.dueDate ? `Due ${dateLabel(invoice.dueDate)}. Please contact the sender if you have a question about payment.` : 'Please contact the sender if you have a question about payment.');
+        document.querySelector<HTMLButtonElement>('#invoice-download')?.addEventListener('click', (event) => {
+          const button = event.currentTarget as HTMLButtonElement;
+          const statusEl = document.querySelector<HTMLElement>('#invoice-download-status');
+          button.disabled = true;
+          button.textContent = 'Preparing PDF…';
+          if (statusEl) statusEl.textContent = '';
+          try {
+            downloadInvoicePdf(publicInvoice);
+            if (statusEl) statusEl.textContent = 'Your invoice PDF is downloading.';
+          } catch {
+            if (statusEl) statusEl.textContent = 'Could not create the PDF. Please try again.';
+          } finally {
+            button.disabled = false;
+            button.textContent = 'Download PDF';
+          }
+        });
         status?.classList.add('invoice-hidden');
         content?.classList.remove('invoice-hidden');
         document.title = `${String(invoice.projectTitle || 'Invoice')} — WorkLog`;
@@ -81,7 +105,6 @@ const anonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
         fail('We couldn’t load this invoice right now. Please try again later or contact the sender.');
       }
     };
-    document.querySelector<HTMLButtonElement>('#invoice-print')?.addEventListener('click', () => window.print());
     void load();
   </script>
 </SiteLayout>

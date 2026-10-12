@@ -111,7 +111,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     return AuthScaffold(
       headerIcon: Icons.person_add_alt_1_rounded,
       title: 'Create Account',
-      subtitle: '',
+      subtitle: 'Set up your workspace in less than a minute.',
       compactHeader: true,
       child: Form(
         key: _formKey,

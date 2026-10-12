@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../../core/utils/invoice_url.dart';
 import '../../../../core/utils/money.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
@@ -84,52 +87,125 @@ class PendingPaymentsScreen extends ConsumerWidget {
                                     p.displayStatus == ProjectStatus.overdue
                                         ? StatusTone.bad
                                         : StatusTone.warning;
-                                return ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  onTap: () =>
-                                      context.push('/clients/${client.id}'),
-                                  title: Text(
-                                    p.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Column(
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      if (p.dueDate != null)
-                                        Text(
-                                          'Due: ${DateFormat('MMM d, yyyy').format(p.dueDate!)}',
+                                      InkWell(
+                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: () => context
+                                            .push('/clients/${client.id}'),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  p.title,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleSmall,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              ConstrainedBox(
+                                                constraints:
+                                                    const BoxConstraints(
+                                                        maxWidth: 130),
+                                                child: MoneyDisplay(
+                                                  Money(p.amountRemainingMinor,
+                                                      p.currency),
+                                                  textAlign: TextAlign.end,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Wrap(
+                                        spacing: 8,
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
                                         children: [
                                           StatusChip(
-                                            label: p.displayStatus.label,
-                                            tone: tone,
-                                          ),
-                                          InvoiceDownloadButton(
-                                            project: p,
-                                            client: client,
-                                            iconSize: 18,
-                                          ),
+                                              label: p.displayStatus.label,
+                                              tone: tone),
+                                          if (p.dueDate != null)
+                                            Text(
+                                              'Due ${DateFormat('MMM d, yyyy').format(p.dueDate!)}',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                            ),
                                         ],
                                       ),
+                                      const Divider(height: 20),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Wrap(
+                                          alignment: WrapAlignment.end,
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            if (p.shareToken != null)
+                                              OutlinedButton.icon(
+                                                onPressed: () async {
+                                                  final invoiceUrl =
+                                                      buildInvoiceUrl(
+                                                          p.shareToken!);
+                                                  try {
+                                                    await Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: invoiceUrl));
+                                                    if (!context.mounted) {
+                                                      return;
+                                                    }
+                                                    await Share.share(
+                                                      'View your WorkLog invoice: $invoiceUrl',
+                                                      subject:
+                                                          'Invoice: ${p.title}',
+                                                    );
+                                                  } catch (_) {
+                                                    if (context.mounted) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                              'Could not share the invoice link.'),
+                                                        ),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                                icon: const Icon(
+                                                    Icons.link_rounded),
+                                                label:
+                                                    const Text('Share invoice'),
+                                              ),
+                                            InvoiceDownloadButton(
+                                              project: p,
+                                              client: client,
+                                              iconSize: 18,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
-                                  ),
-                                  trailing: ConstrainedBox(
-                                    constraints:
-                                        const BoxConstraints(maxWidth: 130),
-                                    child: MoneyDisplay(
-                                      Money(p.amountRemainingMinor, p.currency),
-                                      textAlign: TextAlign.end,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w700),
-                                    ),
                                   ),
                                 );
                               }).toList(),

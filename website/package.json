@@ -2,16 +2,19 @@
   "name": "worklog-public-site",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "node scripts/copy-brand.mjs && astro dev",
     "build:site": "node scripts/copy-brand.mjs && astro build",
     "build": "node ../scripts/build-netlify.mjs",
     "preview": "astro preview",
-    "test": "node --test test/contact.test.mjs"
+    "test": "node --test"
   },
   "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
     "astro": "7.3.8",
-    "@astrojs/sitemap": "3.7.4"
+    "jspdf": "4.2.1"
   }
 }

@@ -100,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return AuthScaffold(
       headerIcon: Icons.login_rounded,
       title: 'Welcome Back!',
-      subtitle: '',
+      subtitle: 'Sign in to pick up where you left off.',
       compactHeader: true,
       child: Form(
         key: _formKey,

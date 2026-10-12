@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/errors/failure.dart';
+import '../../../../core/utils/invoice_url.dart';
 import '../../../../core/utils/money.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/empty_state.dart';
@@ -466,53 +467,65 @@ class _ProjectTile extends StatelessWidget {
     };
     return SectionCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(project.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 5),
-                MoneyDisplay(
-                  Money(project.totalAmountMinor, project.currency),
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(project.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 5),
+                    MoneyDisplay(
+                      Money(project.totalAmountMinor, project.currency),
+                      textAlign: TextAlign.start,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              StatusChip(label: project.displayStatus.label, tone: tone),
+            ],
           ),
-          const SizedBox(width: 8),
-          StatusChip(label: project.displayStatus.label, tone: tone),
-          const SizedBox(width: 4),
-          if (project.shareToken case final token?)
-            IconButton(
-              tooltip: 'Share online invoice',
-              visualDensity: VisualDensity.compact,
-              icon: const Icon(Icons.link_rounded),
-              onPressed: () async {
-                final invoiceUri = Uri.base
-                    .resolve('/invoice/')
-                    .replace(queryParameters: {'token': token});
-                await Clipboard.setData(
-                    ClipboardData(text: invoiceUri.toString()));
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Invoice link copied')),
-                );
-                await Share.share(
-                  'View your WorkLog invoice: $invoiceUri',
-                  subject: 'Invoice: ${project.title}',
-                );
-              },
-            ),
-          InvoiceDownloadButton(project: project, client: client),
+          const SizedBox(height: 8),
+          Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 4,
+            runSpacing: 4,
+            children: [
+              if (project.shareToken case final token?)
+                IconButton(
+                  tooltip: 'Share online invoice',
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.link_rounded),
+                  onPressed: () async {
+                    final invoiceUrl = buildInvoiceUrl(token);
+                    await Clipboard.setData(ClipboardData(text: invoiceUrl));
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Invoice link copied')),
+                    );
+                    await Share.share(
+                      'View your WorkLog invoice: $invoiceUrl',
+                      subject: 'Invoice: ${project.title}',
+                    );
+                  },
+                ),
+              InvoiceDownloadButton(
+                project: project,
+                client: client,
+                iconSize: 18,
+              ),
+            ],
+          ),
         ],
       ),
     );

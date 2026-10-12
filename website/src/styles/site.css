@@ -1583,6 +1583,9 @@ h2 {
 }
 .invoice-table th:last-child,
 .invoice-table td:last-child { text-align: right; }
+.invoice-table .invoice-num { text-align: right; white-space: nowrap; }
+.invoice-table th:first-child,
+.invoice-table td:first-child { width: 52%; }
 .invoice-total {
   margin: 21px 0 0 auto;
   max-width: 280px;
@@ -1602,6 +1605,16 @@ h2 {
   color: var(--navy);
   font-weight: 800;
   font-size: 17px;
+}
+.invoice-total .invoice-grand-total {
+  border-top: 1px solid #dfe7ed;
+  padding-top: 10px;
+  color: var(--navy);
+  font-weight: 800;
+  font-size: 16px;
+}
+.invoice-total .invoice-balance-due {
+  font-weight: 700;
 }
 .invoice-note {
   border-top: 1px solid #e7edf2;
@@ -1654,6 +1667,13 @@ h2 {
 @keyframes spin { to { transform: rotate(360deg); } }
 .invoice-hidden { display: none !important; }
 .invoice-download-button { border: 0; }
+.invoice-download-status {
+  min-height: 1em;
+  margin: 8px 0 0;
+  color: #617487;
+  text-align: center;
+  font-size: 13px;
+}
 .site-header.invoice-header { position: static; }
 .invoice-footer {
   text-align: center;

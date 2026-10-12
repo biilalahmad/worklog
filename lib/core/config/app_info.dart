@@ -6,5 +6,9 @@ class AppInfo {
   static const version = '0.5.0';
   static const privacyPolicyUrl = 'https://worklog-site.netlify.app/privacy/';
   static const termsOfServiceUrl = 'https://worklog-site.netlify.app/terms/';
+  static const invoiceBaseUrl = String.fromEnvironment(
+    'INVOICE_BASE_URL',
+    defaultValue: 'https://worklog-site.netlify.app',
+  );
   static const supportEmail = 'worklog.support@gmail.com';
 }

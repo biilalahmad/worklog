@@ -45,9 +45,25 @@ class InvoicePdfGenerator {
       location: location,
       website: website,
     );
+    await sharePdf(
+      bytes: bytes,
+      project: project,
+      client: client,
+      userName: userName,
+    );
+  }
+
+  static String fileNameFor(Project project) =>
+      'WorkLog-Invoice-${_invoiceNumber(project.id)}.pdf';
+
+  static Future<void> sharePdf({
+    required Uint8List bytes,
+    required Project project,
+    required Client client,
+    required String userName,
+  }) async {
     final invoiceNumber = _invoiceNumber(project.id);
-    final fileName =
-        'Invoice_${project.title.replaceAll(RegExp(r'[^\w\-]+'), '_')}.pdf';
+    final fileName = fileNameFor(project);
     final amount = _formatMoney(project.totalAmountMinor, project.currency);
 
     final dir = await getTemporaryDirectory();
@@ -441,6 +457,11 @@ class InvoicePdfGenerator {
   /// glyphs. Replace those symbols with ISO codes so exported PDFs never show
   /// missing-glyph boxes while preserving the exact amount and currency.
   static String _formatMoney(int minorUnits, String currency) {
+    return formatMoneyForPdf(minorUnits, currency);
+  }
+
+  /// The currency-safe display helper used by PDF rows and verified in tests.
+  static String formatMoneyForPdf(int minorUnits, String currency) {
     var formatted = Money(minorUnits, currency).format();
     const replacements = {
       '€': 'EUR ',

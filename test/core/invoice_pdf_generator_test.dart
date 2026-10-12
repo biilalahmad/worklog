@@ -57,5 +57,11 @@ void main() {
 
     expect(Money(project.amountRemainingMinor, project.currency).format(),
         '€800.00');
+    expect(InvoicePdfGenerator.formatMoneyForPdf(10000, 'USD'), '\$100.00');
+    expect(InvoicePdfGenerator.formatMoneyForPdf(50, 'USD'), '\$0.50');
+    expect(InvoicePdfGenerator.formatMoneyForPdf(199999, 'USD'), '\$1,999.99');
+    expect(InvoicePdfGenerator.formatMoneyForPdf(100000000, 'USD'),
+        '\$1,000,000.00');
+    expect(InvoicePdfGenerator.formatMoneyForPdf(10000, 'JPY'), 'JPY 10,000');
   });
 }

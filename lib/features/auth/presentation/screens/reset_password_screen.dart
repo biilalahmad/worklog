@@ -71,7 +71,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return AuthScaffold(
         headerIcon: Icons.password_rounded,
         title: 'Verification required',
-        subtitle: '',
+        subtitle: 'Request a code to securely reset your password.',
         compactHeader: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -92,7 +92,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return AuthScaffold(
       headerIcon: Icons.password_rounded,
       title: 'Set a new password',
-      subtitle: '',
+      subtitle: 'Choose a strong password for your account.',
       compactHeader: true,
       child: Form(
         key: _formKey,

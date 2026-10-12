@@ -78,28 +78,41 @@ class Project {
   /// isn't fully paid — computed live instead of needing a daily
   /// server-side sweep job.
   ProjectStatus get displayStatus {
-    if (status != ProjectStatus.paid && dueDate != null && dueDate!.isBefore(DateTime.now())) {
+    if (status != ProjectStatus.paid &&
+        dueDate != null &&
+        dueDate!.isBefore(DateTime.now())) {
       return ProjectStatus.overdue;
     }
     return status;
   }
 
   factory Project.fromMap(Map<String, dynamic> data) {
+    final totalAmountMinor = (data['total_amount'] as num?)?.toInt() ?? 0;
+    final amountPaidMinor = (data['amount_paid'] as num?)?.toInt() ?? 0;
     return Project(
       id: data['id'] as String,
       clientId: data['client_id'] as String? ?? '',
       title: data['title'] as String? ?? '',
-      totalAmountMinor: (data['total_amount'] as num?)?.toInt() ?? 0,
-      subtotalAmountMinor: (data['subtotal_amount'] as num?)?.toInt() ?? (data['total_amount'] as num?)?.toInt() ?? 0,
+      totalAmountMinor: totalAmountMinor,
+      subtotalAmountMinor:
+          (data['subtotal_amount'] as num?)?.toInt() ?? totalAmountMinor,
       taxAmountMinor: (data['tax_amount'] as num?)?.toInt() ?? 0,
       taxRateBps: (data['tax_rate_bps'] as num?)?.toInt() ?? 0,
       taxLabel: data['tax_label'] as String? ?? 'Tax',
       currency: data['currency'] as String? ?? 'PKR',
-      dueDate: data['due_date'] != null ? DateTime.tryParse(data['due_date'] as String) : null,
-      createdAt: data['created_at'] != null ? DateTime.tryParse(data['created_at'] as String) : null,
-      updatedAt: data['updated_at'] != null ? DateTime.tryParse(data['updated_at'] as String) : null,
-      amountPaidMinor: (data['amount_paid'] as num?)?.toInt() ?? 0,
-      amountRemainingMinor: (data['amount_remaining'] as num?)?.toInt() ?? 0,
+      dueDate: data['due_date'] != null
+          ? DateTime.tryParse(data['due_date'] as String)
+          : null,
+      createdAt: data['created_at'] != null
+          ? DateTime.tryParse(data['created_at'] as String)
+          : null,
+      updatedAt: data['updated_at'] != null
+          ? DateTime.tryParse(data['updated_at'] as String)
+          : null,
+      amountPaidMinor: amountPaidMinor,
+      amountRemainingMinor: (totalAmountMinor - amountPaidMinor)
+          .clamp(0, totalAmountMinor)
+          .toInt(),
       status: ProjectStatusX.fromString(data['status'] as String?),
       shareToken: data['share_token'] as String?,
     );

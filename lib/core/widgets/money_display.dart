@@ -85,7 +85,8 @@ class MoneyDisplay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final target = ref.watch(defaultCurrencyProvider);
-    final rates = ref.watch(currencyRatesProvider).valueOrNull;
+    final ratesState = ref.watch(currencyRatesProvider);
+    final rates = ratesState.valueOrNull;
     final converted = rates?.convert(money.asDouble, money.currency, target);
     final display = converted == null
         ? money.format()
@@ -145,11 +146,14 @@ class MoneyTotalsDisplay extends ConsumerWidget {
                       target),
                   target)
               .format()
-          : amounts.formatAll();
+          : '···';
     } else {
-      display = amounts.formatAll();
+      // Never flash a mixed-currency aggregate while exchange rates are being
+      // fetched (or unavailable). The dashboard can show one stable loading
+      // value until it can present a truthful total in the selected currency.
+      display = '···';
     }
-    return _AnimatedMoneyText(
+    return Text(
       display,
       style: style,
       textAlign: textAlign,

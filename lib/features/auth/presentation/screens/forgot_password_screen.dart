@@ -79,7 +79,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return AuthScaffold(
       headerIcon: Icons.lock_reset_rounded,
       title: _codeSent ? 'Verify your email' : 'Reset password',
-      subtitle: '',
+      subtitle: _codeSent
+          ? 'Enter the code we sent to your email.'
+          : 'We’ll send a secure reset code to your email.',
       compactHeader: true,
       child: Form(
         key: _formKey,

@@ -60,19 +60,37 @@ class AuthScaffold extends StatelessWidget {
                   left: 0,
                   right: 0,
                   height: headerHeight,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.forest,
-                          AppColors.forestLight.withValues(alpha: 0.92),
-                        ],
-                      ),
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(32),
-                      ),
+                  child: const ClipRRect(
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(32),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.forest,
+                                  AppColors.forestLight,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: -34,
+                          top: -64,
+                          child: _AuthGlow(size: 164),
+                        ),
+                        Positioned(
+                          left: -38,
+                          bottom: -92,
+                          child: _AuthGlow(size: 142),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -88,16 +106,36 @@ class AuthScaffold extends StatelessWidget {
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 56),
-                              child: Text(
-                                title,
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style:
-                                    baseTheme.textTheme.headlineSmall?.copyWith(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    title,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: baseTheme.textTheme.headlineSmall
+                                        ?.copyWith(
+                                      fontSize: 22,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  if (subtitle.trim().isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      subtitle,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: baseTheme.textTheme.bodySmall
+                                          ?.copyWith(
+                                        fontSize: 11,
+                                        color: Colors.white
+                                            .withValues(alpha: 0.84),
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
                           ),
@@ -112,44 +150,48 @@ class AuthScaffold extends StatelessWidget {
                               ScrollViewKeyboardDismissBehavior.onDrag,
                           padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.authOuter),
-                          child: Center(
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: math.max(
-                                  0,
-                                  math.min(
-                                    480,
-                                    bodyConstraints.maxWidth -
-                                        2 * AppSpacing.authOuter,
-                                  ),
-                                ),
-                                minHeight: bodyConstraints.maxHeight,
-                              ),
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.authInner,
-                                  AppSpacing.sm,
-                                  AppSpacing.authInner,
-                                  AppSpacing.sm,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: scheme.surface,
-                                  borderRadius: BorderRadius.circular(28),
-                                  border: Border.all(
-                                    color: scheme.outlineVariant
-                                        .withValues(alpha: 0.55),
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.forest
-                                          .withValues(alpha: 0.12),
-                                      blurRadius: 26,
-                                      offset: const Offset(0, 12),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: bodyConstraints.maxHeight,
+                            ),
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: math.max(
+                                    0,
+                                    math.min(
+                                      480,
+                                      bodyConstraints.maxWidth -
+                                          2 * AppSpacing.authOuter,
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                child: Theme(data: formTheme, child: child),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.authInner,
+                                    8,
+                                    AppSpacing.authInner,
+                                    8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: scheme.surface,
+                                    borderRadius: BorderRadius.circular(28),
+                                    border: Border.all(
+                                      color: scheme.outlineVariant
+                                          .withValues(alpha: 0.55),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.forest
+                                            .withValues(alpha: 0.12),
+                                        blurRadius: 26,
+                                        offset: const Offset(0, 12),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Theme(data: formTheme, child: child),
+                                ),
                               ),
                             ),
                           ),
@@ -277,6 +319,23 @@ class AuthScaffold extends StatelessWidget {
       ),
     );
   }
+}
+
+class _AuthGlow extends StatelessWidget {
+  const _AuthGlow({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.07),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        ),
+      );
 }
 
 /// Inline error / info banner used across auth screens.

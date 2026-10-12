@@ -6,7 +6,6 @@ import '../../../../core/errors/failure.dart';
 import '../../../../core/data/currency_rates_service.dart';
 import '../../../../core/utils/money.dart';
 import '../../../../core/widgets/error_view.dart';
-import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../core/widgets/section_card.dart';
 import '../../../../core/widgets/money_display.dart';
 import '../../../home/domain/stats.dart';
@@ -38,16 +37,13 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           currentPeriodAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: LoadingIndicator(),
-            ),
+            loading: () => const _CurrentPeriodSkeleton(),
             error: (e, _) => ErrorView(message: Failure.from(e).message),
             data: (periods) => _CurrentPeriodSummary(periods: periods),
           ),
           const SizedBox(height: 20),
           comparisonAsync.when(
-            loading: () => const SizedBox.shrink(),
+            loading: () => const _ComparisonSkeleton(),
             error: (e, _) => const SizedBox.shrink(),
             data: (cmp) => _MonthComparisonCard(
                 current: cmp.current, previous: cmp.previous),
@@ -68,10 +64,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           ),
           const SizedBox(height: 20),
           rangesAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: LoadingIndicator(),
-            ),
+            loading: () => const _TrendSkeleton(),
             error: (e, _) => ErrorView(message: Failure.from(e).message),
             data: (periods) {
               final totalIncome = _sum(periods.map((p) => p.income));
@@ -178,6 +171,140 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     }
     return MoneyByCurrency(map);
   }
+}
+
+class _AnalyticsSkeletonBlock extends StatelessWidget {
+  const _AnalyticsSkeletonBlock({
+    required this.width,
+    required this.height,
+  });
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
+}
+
+class _CurrentPeriodSkeleton extends StatelessWidget {
+  const _CurrentPeriodSkeleton();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: 'Loading current financial summary',
+        liveRegion: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('This Period', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                for (var i = 0; i < 3; i++) ...[
+                  if (i > 0) const SizedBox(width: 10),
+                  const Expanded(
+                    child: SectionCard(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _AnalyticsSkeletonBlock(width: 56, height: 11),
+                          SizedBox(height: 9),
+                          _AnalyticsSkeletonBlock(width: 90, height: 16),
+                          SizedBox(height: 7),
+                          _AnalyticsSkeletonBlock(width: 64, height: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      );
+}
+
+class _ComparisonSkeleton extends StatelessWidget {
+  const _ComparisonSkeleton();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: 'Loading monthly comparison',
+        liveRegion: true,
+        child: const SectionCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _AnalyticsSkeletonBlock(width: 176, height: 16),
+              SizedBox(height: 8),
+              _AnalyticsSkeletonBlock(width: 228, height: 11),
+              SizedBox(height: 22),
+              _AnalyticsSkeletonBlock(width: double.infinity, height: 16),
+              SizedBox(height: 16),
+              _AnalyticsSkeletonBlock(width: double.infinity, height: 16),
+            ],
+          ),
+        ),
+      );
+}
+
+class _TrendSkeleton extends StatelessWidget {
+  const _TrendSkeleton();
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        label: 'Loading analytics trend',
+        liveRegion: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Expanded(
+                    child: SectionCard(
+                        child: _AnalyticsSkeletonBlock(
+                            width: double.infinity, height: 36))),
+                SizedBox(width: 12),
+                Expanded(
+                    child: SectionCard(
+                        child: _AnalyticsSkeletonBlock(
+                            width: double.infinity, height: 36))),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text('Income vs Spending',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            const SectionCard(
+              child: SizedBox(
+                height: 200,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _AnalyticsSkeletonBlock(width: 18, height: 80),
+                    _AnalyticsSkeletonBlock(width: 18, height: 132),
+                    _AnalyticsSkeletonBlock(width: 18, height: 104),
+                    _AnalyticsSkeletonBlock(width: 18, height: 154),
+                    _AnalyticsSkeletonBlock(width: 18, height: 96),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const _AnalyticsSkeletonBlock(width: 112, height: 12),
+          ],
+        ),
+      );
 }
 
 class _ComparisonBarChart extends StatelessWidget {
