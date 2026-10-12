@@ -27,7 +27,9 @@
     },
     "typography": {
       "body": "Inter",
-      "headings": "Helvetica Neue, Helvetica, Inter, Arial, sans-serif"
+      "headings": "Helvetica Neue, Helvetica, Inter, Arial, sans-serif",
+      "authScreens": "Poppins (bundled)",
+      "website": "Poppins (self-hosted)"
     },
     "spacing": {"base": "8px", "marketing": "spacious"},
     "radius": {"cards": "18-24px", "buttons": "pill"},
@@ -54,6 +56,11 @@
       "choice": "Use Helvetica Neue/Helvetica for display headings with Inter for body copy, preserving the WorkLog navy/blue palette.",
       "source": "User request",
       "date": "2026-10-11"
+    },
+    {
+      "choice": "Use Poppins on login, sign-up, password recovery screens and across the public website; keep the rest of the app typography unchanged.",
+      "source": "User-provided auth mockups and font files",
+      "date": "2026-10-12"
     }
   ],
   "evidence": [
