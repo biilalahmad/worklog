@@ -52,10 +52,13 @@ class AuthRepositoryImpl implements AuthRepository {
       data: {'display_name': displayName},
       emailRedirectTo: SupabaseConfig.verificationRedirect,
     );
-    // Supabase intentionally makes duplicate-email signup responses
-    // indistinguishable when email confirmation is enabled. Do not turn its
-    // empty-identities response into an account-enumeration signal.
-    return SignUpResult(needsVerification: res.session == null);
+    // With email confirmation enabled, Supabase returns an empty identities
+    // list for an email that already has an account, instead of throwing.
+    final alreadyRegistered = res.user?.identities?.isEmpty ?? false;
+    return SignUpResult(
+      needsVerification: !alreadyRegistered && res.session == null,
+      alreadyRegistered: alreadyRegistered,
+    );
   }
 
   @override

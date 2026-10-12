@@ -26,9 +26,8 @@
       "ink": "#172B42"
     },
     "typography": {
-      "body": "Inter",
-      "headings": "Helvetica Neue, Helvetica, Inter, Arial, sans-serif",
-      "authScreens": "Poppins (bundled)",
+      "body": "Poppins (bundled)",
+      "headings": "Poppins (bundled)",
       "website": "Poppins (self-hosted)"
     },
     "spacing": {"base": "8px", "marketing": "spacious"},
@@ -53,12 +52,12 @@
   },
   "decisions": [
     {
-      "choice": "Use Helvetica Neue/Helvetica for display headings with Inter for body copy, preserving the WorkLog navy/blue palette.",
+      "choice": "Use Poppins throughout the app and public website while preserving the WorkLog navy/blue palette.",
       "source": "User request",
-      "date": "2026-10-11"
+      "date": "2026-10-12"
     },
     {
-      "choice": "Use Poppins on login, sign-up, password recovery screens and across the public website; keep the rest of the app typography unchanged.",
+      "choice": "Use Poppins across the app and public website; keep bundled font files for app rendering and self-host fonts on the website.",
       "source": "User-provided auth mockups and font files",
       "date": "2026-10-12"
     }

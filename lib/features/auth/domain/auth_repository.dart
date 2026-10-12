@@ -3,7 +3,12 @@ enum AuthEvent { signedIn, signedOut, passwordRecovery, other }
 class SignUpResult {
   /// True when email confirmation is required before the user can sign in.
   final bool needsVerification;
-  const SignUpResult({required this.needsVerification});
+  /// True when Supabase returned its empty-identities duplicate-email result.
+  final bool alreadyRegistered;
+  const SignUpResult({
+    required this.needsVerification,
+    this.alreadyRegistered = false,
+  });
 }
 
 class SecurityActionTicket {

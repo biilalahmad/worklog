@@ -10,8 +10,7 @@ read-only invoices. Account registration and app login stay in the Android app.
 ## Visual system
 
 - Palette: navy `#173B61`, blue `#2F6F9F`, sky `#73BAF0`, pale `#F2F7FB`, white.
-- Main app body: Inter. Display: Helvetica Neue / Helvetica with Inter and Arial fallbacks.
-- Auth forms: bundled Poppins. Public website: self-hosted Poppins in regular,
+- App and auth forms: bundled Poppins. Public website: self-hosted Poppins in regular,
   medium and bold weights; no external font request is needed.
 - The marketing site is light; the app supports both light and dark themes.
 - Use the supplied WorkLog logo, spacious spacing, soft blue-tinted card shadows,

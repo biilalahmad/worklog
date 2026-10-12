@@ -19,6 +19,8 @@ class Failure {
   static const saveOffline = 'You’re offline. Reconnect and try again.';
   static const pdfFailed = "Couldn't generate PDF. Please try again.";
   static const tooManyRequests = 'Too many requests, Please try again later.';
+  static const accountAlreadyExists =
+      'An account with this email already exists. Try logging in instead.';
 
   static const codeUnconfirmed = 'auth_unconfirmed';
   static const codeInvalid = 'auth_invalid';
@@ -52,10 +54,7 @@ class Failure {
       }
       if (msg.contains('already registered') ||
           msg.contains('already exists')) {
-        return const Failure(
-          'An account with this email already exists. Try logging in instead.',
-          code: codeConflict,
-        );
+        return const Failure(accountAlreadyExists, code: codeConflict);
       }
       if (msg.contains('password should be') || msg.contains('weak password')) {
         return const Failure('Password must be at least 8 characters.',

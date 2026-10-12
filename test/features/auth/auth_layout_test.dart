@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:worklog/app/theme/app_theme.dart';
+import 'package:worklog/core/errors/failure.dart';
 import 'package:worklog/features/auth/domain/auth_repository.dart';
 import 'package:worklog/features/auth/presentation/providers/auth_providers.dart';
 import 'package:worklog/features/auth/presentation/screens/forgot_password_screen.dart';
@@ -9,6 +11,43 @@ import 'package:worklog/features/auth/presentation/screens/reset_password_screen
 import 'package:worklog/features/auth/presentation/screens/signup_screen.dart';
 
 void main() {
+  test('light and dark app themes use the bundled Poppins family', () {
+    for (final theme in [AppTheme.light(), AppTheme.dark()]) {
+      expect(theme.textTheme.bodyMedium?.fontFamily, 'Poppins');
+      expect(theme.textTheme.headlineMedium?.fontFamily, 'Poppins');
+    }
+  });
+
+  testWidgets('signup shows a login hint when the email already has an account',
+      (tester) async {
+    final repository = _FakeAuthRepository(
+      signUpResult: const SignUpResult(
+        needsVerification: false,
+        alreadyRegistered: true,
+      ),
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+        child: const MaterialApp(home: SignupScreen()),
+      ),
+    );
+
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Test User');
+    await tester.enterText(fields.at(1), 'test@example.com');
+    await tester.enterText(fields.at(2), 'StrongPass123');
+    await tester.enterText(fields.at(3), 'StrongPass123');
+    await tester.tap(find.widgetWithText(FilledButton, 'Sign Up'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(Failure.accountAlreadyExists),
+      findsOneWidget,
+    );
+    expect(find.text('Check your email'), findsNothing);
+  });
+
   testWidgets('compact authentication forms fit a small phone viewport',
       (tester) async {
     addTearDown(tester.view.resetPhysicalSize);
@@ -83,6 +122,12 @@ Future<void> _expectNoScroll(
 }
 
 class _FakeAuthRepository implements AuthRepository {
+  _FakeAuthRepository({
+    this.signUpResult = const SignUpResult(needsVerification: true),
+  });
+
+  final SignUpResult signUpResult;
+
   @override
   bool get isSignedIn => false;
 
@@ -104,7 +149,7 @@ class _FakeAuthRepository implements AuthRepository {
     required String password,
     required String displayName,
   }) async =>
-      const SignUpResult(needsVerification: true);
+      signUpResult;
 
   @override
   Future<void> signIn(

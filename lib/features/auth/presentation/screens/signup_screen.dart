@@ -70,6 +70,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             displayName: _nameCtrl.text.trim(),
           );
       if (!mounted) return;
+      if (result.alreadyRegistered) {
+        setState(() => _error = Failure.accountAlreadyExists);
+        return;
+      }
       if (result.needsVerification) {
         context.pushReplacement('/check-email', extra: _emailCtrl.text.trim());
       }
@@ -200,6 +204,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Sign Up'),
             ),
+            const SizedBox(height: AppSpacing.xs),
             if (_error != null) ...[
               const SizedBox(height: AppSpacing.sm),
               AuthBanner(message: _error!),

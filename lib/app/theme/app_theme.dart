@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_tokens.dart';
 
 /// WorkLog visual identity: cool blue surfaces, glass card treatment,
-/// navy primary actions, sky-blue highlights, Inter typography, and
+/// navy primary actions, sky-blue highlights, Poppins typography, and
 /// soft rounded controls.
 class AppTheme {
   AppTheme._();
@@ -69,32 +68,34 @@ class AppTheme {
 
   static ThemeData _base(ColorScheme scheme, Brightness brightness) {
     final isLight = brightness == Brightness.light;
-    final inter = GoogleFonts.interTextTheme();
+    final poppins = ThemeData(brightness: brightness)
+        .textTheme
+        .apply(fontFamily: 'Poppins');
 
     // Page headings 24–28 bold, section titles 16–18 semibold, body 14,
     // small labels 12–13.
-    final textTheme = inter
+    final textTheme = poppins
         .copyWith(
-          headlineLarge: inter.headlineLarge
+          headlineLarge: poppins.headlineLarge
               ?.copyWith(fontSize: 28, fontWeight: FontWeight.w700),
-          headlineMedium: inter.headlineMedium
+          headlineMedium: poppins.headlineMedium
               ?.copyWith(fontSize: 26, fontWeight: FontWeight.w700),
-          headlineSmall: inter.headlineSmall
+          headlineSmall: poppins.headlineSmall
               ?.copyWith(fontSize: 24, fontWeight: FontWeight.w700),
-          titleLarge: inter.titleLarge
+          titleLarge: poppins.titleLarge
               ?.copyWith(fontSize: 20, fontWeight: FontWeight.w700),
-          titleMedium: inter.titleMedium
+          titleMedium: poppins.titleMedium
               ?.copyWith(fontSize: 17, fontWeight: FontWeight.w600),
-          titleSmall: inter.titleSmall
+          titleSmall: poppins.titleSmall
               ?.copyWith(fontSize: 15, fontWeight: FontWeight.w600),
-          bodyLarge: inter.bodyLarge?.copyWith(fontSize: 15),
-          bodyMedium: inter.bodyMedium?.copyWith(fontSize: 14),
-          bodySmall: inter.bodySmall?.copyWith(fontSize: 12.5),
-          labelLarge: inter.labelLarge
+          bodyLarge: poppins.bodyLarge?.copyWith(fontSize: 15),
+          bodyMedium: poppins.bodyMedium?.copyWith(fontSize: 14),
+          bodySmall: poppins.bodySmall?.copyWith(fontSize: 12.5),
+          labelLarge: poppins.labelLarge
               ?.copyWith(fontSize: 14, fontWeight: FontWeight.w600),
-          labelMedium: inter.labelMedium
+          labelMedium: poppins.labelMedium
               ?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
-          labelSmall: inter.labelSmall
+          labelSmall: poppins.labelSmall
               ?.copyWith(fontSize: 12, fontWeight: FontWeight.w600),
         )
         .apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface);
@@ -108,7 +109,7 @@ class AppTheme {
       scaffoldBackgroundColor:
           isLight ? AppColors.beige : AppColors.darkBackground,
       textTheme: textTheme,
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: 'Poppins',
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: scheme.onSurface,
