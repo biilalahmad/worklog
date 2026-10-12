@@ -145,42 +145,38 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
           children: [
             const SizedBox(height: 8),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
                 children: [
-                  SizedBox(
-                    width: 48,
-                    child: _step == 0
-                        ? const SizedBox.shrink()
-                        : IconButton(
-                            tooltip: 'Back',
-                            onPressed: _finishing ? null : _previous,
-                            icon: const Icon(Icons.arrow_back_rounded),
+                  Row(
+                    children: List.generate(_stepCount, (i) {
+                      return Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            right: i == _stepCount - 1 ? 0 : 6,
                           ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(_stepCount, (i) {
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 220),
-                              margin: const EdgeInsets.symmetric(horizontal: 3),
-                              width: i == _step ? 22 : 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: i <= _step
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .outlineVariant,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            );
-                          }),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 220),
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: i <= _step
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .outlineVariant,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 8),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: 48,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 220),
                           child: Text(
@@ -188,7 +184,7 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
                             key: ValueKey(_step),
                             style: Theme.of(context)
                                 .textTheme
-                                .labelSmall
+                                .labelMedium
                                 ?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -196,10 +192,18 @@ class _OnboardingFlowScreenState extends ConsumerState<OnboardingFlowScreen> {
                                 ),
                           ),
                         ),
+                        if (_step > 0)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: IconButton(
+                              tooltip: 'Back',
+                              onPressed: _finishing ? null : _previous,
+                              icon: const Icon(Icons.arrow_back_rounded),
+                            ),
+                          ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 48),
                 ],
               ),
             ),
@@ -295,43 +299,55 @@ class _StepScaffold extends StatelessWidget {
         child: Transform.scale(scale: scale, child: child),
       ),
       child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: 84,
-                    height: 84,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        shape: BoxShape.circle),
-                    child: Icon(icon,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        size: 40),
+        builder: (context, constraints) {
+          const contentPadding = EdgeInsets.fromLTRB(20, 12, 20, 16);
+          return SingleChildScrollView(
+            padding: contentPadding,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minHeight: (constraints.maxHeight - contentPadding.vertical)
+                      .clamp(0.0, double.infinity)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle),
+                      child: Icon(icon,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 34),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                Text(title,
+                  const SizedBox(height: 16),
+                  Text(title,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          )),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 10),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 28),
-                child,
-              ],
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontSize: 14,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  child,
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -355,7 +371,7 @@ class _NameStep extends StatelessWidget {
         icon: Icons.waving_hand_rounded,
         title: 'What should we call you?',
         subtitle:
-            'We’ll use your name around your workspace and on invoices. You can change it later in Profile.',
+            'Your name appears across WorkLog and on invoices. You can change it later in Profile.',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -368,14 +384,23 @@ class _NameStep extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Your name',
                 prefixIcon: const Icon(Icons.person_outline_rounded),
+                isDense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                constraints: const BoxConstraints(
+                    minHeight: AppSpacing.onboardingControlHeight),
                 errorText: error,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             FilledButton.icon(
               onPressed: onNext,
               icon: const Icon(Icons.arrow_forward_rounded),
               label: const Text('Continue'),
+              style: FilledButton.styleFrom(
+                minimumSize:
+                    const Size.fromHeight(AppSpacing.onboardingControlHeight),
+              ),
             ),
           ],
         ),
@@ -400,7 +425,7 @@ class _AgeStep extends StatelessWidget {
         icon: Icons.cake_outlined,
         title: 'When were you born?',
         subtitle:
-            'Your age is calculated from your date of birth, updates each year, and cannot be edited later. Your date of birth cannot be changed after setup.',
+            'Your age is calculated from your date of birth and updates each year. It can’t be changed after setup.',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -412,7 +437,8 @@ class _AgeStep extends StatelessWidget {
                   : MaterialLocalizations.of(context)
                       .formatMediumDate(selected!)),
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(54),
+                minimumSize:
+                    const Size.fromHeight(AppSpacing.onboardingControlHeight),
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
@@ -427,6 +453,10 @@ class _AgeStep extends StatelessWidget {
               onPressed: onNext,
               icon: const Icon(Icons.arrow_forward_rounded),
               label: const Text('Continue'),
+              style: FilledButton.styleFrom(
+                minimumSize:
+                    const Size.fromHeight(AppSpacing.onboardingControlHeight),
+              ),
             ),
           ],
         ),
@@ -450,7 +480,7 @@ class _GenderStep extends StatelessWidget {
   Widget build(BuildContext context) => _StepScaffold(
         icon: Icons.person_outline_rounded,
         title: 'How do you describe your gender?',
-        subtitle: 'Choose an option. Gender cannot be changed after setup.',
+        subtitle: 'Choose an option. You can’t change it after setup.',
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -470,6 +500,10 @@ class _GenderStep extends StatelessWidget {
               onPressed: onNext,
               icon: const Icon(Icons.arrow_forward_rounded),
               label: const Text('Continue'),
+              style: FilledButton.styleFrom(
+                minimumSize:
+                    const Size.fromHeight(AppSpacing.onboardingControlHeight),
+              ),
             ),
           ],
         ),
@@ -505,20 +539,24 @@ class _OnboardingChoices extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
               onTap: () => onChoose(entry.key),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-                child: Row(
-                  children: [
-                    Icon(icon,
-                        color: isSelected
-                            ? scheme.primary
-                            : scheme.onSurfaceVariant),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(entry.value)),
-                    if (isSelected)
-                      Icon(Icons.check_circle_rounded, color: scheme.primary),
-                  ],
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                    minHeight: AppSpacing.onboardingControlHeight),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                  child: Row(
+                    children: [
+                      Icon(icon,
+                          color: isSelected
+                              ? scheme.primary
+                              : scheme.onSurfaceVariant),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text(entry.value)),
+                      if (isSelected)
+                        Icon(Icons.check_circle_rounded, color: scheme.primary),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -539,17 +577,24 @@ class _FitnessChoiceStep extends StatelessWidget {
     return _StepScaffold(
       icon: Icons.fitness_center_rounded,
       title: 'Would you also like to track your fitness?',
-      subtitle:
-          'Log workouts, meals, and body stats alongside your work — totally optional.',
+      subtitle: 'Track workouts, meals, and body stats alongside your work.',
       child: Column(
         children: [
           FilledButton(
             onPressed: () => onChoose(true),
+            style: FilledButton.styleFrom(
+              minimumSize:
+                  const Size.fromHeight(AppSpacing.onboardingControlHeight),
+            ),
             child: const Text('Yes, include Gym & Diet'),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () => onChoose(false),
+            style: OutlinedButton.styleFrom(
+              minimumSize:
+                  const Size.fromHeight(AppSpacing.onboardingControlHeight),
+            ),
             child: const Text('No, just Work & Finance'),
           ),
         ],
@@ -586,12 +631,15 @@ class _NotificationsStepState extends ConsumerState<_NotificationsStep> {
     return _StepScaffold(
       icon: Icons.notifications_active_rounded,
       title: 'Stay on top of reminders',
-      subtitle:
-          'Turn on notifications so WorkLog can alert you about reminders and, soon, overdue invoices.',
+      subtitle: 'Get alerts for reminders and future overdue-invoice updates.',
       child: Column(
         children: [
           FilledButton(
             onPressed: _asking ? null : _allow,
+            style: FilledButton.styleFrom(
+              minimumSize:
+                  const Size.fromHeight(AppSpacing.onboardingControlHeight),
+            ),
             child: _asking
                 ? const SizedBox(
                     height: 20,
@@ -619,9 +667,13 @@ class _DoneStep extends StatelessWidget {
       icon: Icons.check_circle_rounded,
       title: "You're all set",
       subtitle:
-          'Your workspace is ready. Business details are optional and can be added later in Profile. You can change the fitness-tracking choice anytime.',
+          'Your workspace is ready. Add business details in Profile or change fitness tracking anytime.',
       child: FilledButton(
         onPressed: finishing ? null : onFinish,
+        style: FilledButton.styleFrom(
+          minimumSize:
+              const Size.fromHeight(AppSpacing.onboardingControlHeight),
+        ),
         child: finishing
             ? const SizedBox(
                 height: 20,
