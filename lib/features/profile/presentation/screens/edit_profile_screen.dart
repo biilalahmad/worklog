@@ -223,7 +223,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 720),
               child: ListView(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                  AppSpacing.xl + MediaQuery.viewPaddingOf(context).bottom,
+                ),
                 children: [
                   Center(
                     child: Column(
@@ -287,23 +292,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  const Text('Full Name',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: _nameCtrl,
-                    textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.person_outline)),
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   Text('Personal details',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           )),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: _nameCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      prefixIcon: Icon(Icons.person_outline),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   _profileField(
                     controller: _countryCtrl,
                     label: 'Country',
@@ -311,28 +314,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     icon: Icons.public_rounded,
                     capitalization: TextCapitalization.words,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _readOnlyProfileField(
                     label: 'Age',
                     value: _ageLabel(profile.ageAt(), profile.ageRange),
-                    helper:
-                        'Calculated from your date of birth; it updates yearly and cannot be changed.',
                     icon: Icons.cake_outlined,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _readOnlyProfileField(
                     label: 'Gender',
                     value: _genderLabel(profile.gender),
-                    helper:
-                        'Set during onboarding and cannot be changed later.',
                     icon: Icons.person_outline_rounded,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.xl),
                   Text('Business details (optional)',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           )),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _profileField(
                     controller: _titleCtrl,
                     label: 'Professional title',
@@ -340,14 +339,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     icon: Icons.work_outline_rounded,
                     capitalization: TextCapitalization.words,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _profileField(
                     controller: _businessCtrl,
                     label: 'Business or studio name',
                     icon: Icons.business_outlined,
                     capitalization: TextCapitalization.words,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _profileField(
                     controller: _locationCtrl,
                     label: 'City',
@@ -355,7 +354,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     icon: Icons.location_on_outlined,
                     capitalization: TextCapitalization.words,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _profileField(
                     controller: _websiteCtrl,
                     label: 'Website or portfolio',
@@ -363,7 +362,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     icon: Icons.language_rounded,
                     keyboardType: TextInputType.url,
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.lg),
                   FilledButton(
                     onPressed: _saving ? null : _save,
                     child: _saving
@@ -406,16 +405,19 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget _readOnlyProfileField({
     required String label,
     required String value,
-    required String helper,
     required IconData icon,
   }) {
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        helperText: helper,
-        prefixIcon: Icon(icon),
+    return Opacity(
+      opacity: 0.78,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          enabled: false,
+          labelText: label,
+          prefixIcon: Icon(icon),
+          suffixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
+        ),
+        child: Text(value, style: Theme.of(context).textTheme.bodyLarge),
       ),
-      child: Text(value, style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }

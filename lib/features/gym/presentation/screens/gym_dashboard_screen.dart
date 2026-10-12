@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/utils/date_keys.dart';
 import '../../../../core/widgets/fade_slide_in.dart';
 import '../../domain/workout.dart';
@@ -100,7 +101,12 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 112),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          12,
+          16,
+          AppInsets.belowNavigation(context),
+        ),
         children: [
           FadeSlideIn(
             child: _GymHeroCard(
@@ -127,39 +133,33 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
             crossAxisCount: 2,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: AppSpacing.md,
+            crossAxisSpacing: AppSpacing.md,
             childAspectRatio: 1.55,
             children: [
               _GymAction(
                   icon: Icons.fitness_center_rounded,
                   label: 'Workout',
-                  subtitle: 'Log sets and sessions',
                   onTap: () => context.push('/gym/sections?tab=0')),
               _GymAction(
                   icon: Icons.view_list_rounded,
                   label: 'Routines',
-                  subtitle: 'Reusable workout plans',
                   onTap: () => context.push('/gym/sections?tab=1')),
               _GymAction(
                   icon: Icons.insights_rounded,
                   label: 'Progress',
-                  subtitle: 'Stats and body trends',
                   onTap: () => context.push('/gym/sections?tab=2')),
               _GymAction(
                   icon: Icons.restaurant_rounded,
                   label: 'Diet',
-                  subtitle: 'Meals and hydration',
                   onTap: () => context.push('/gym/sections?tab=3')),
               _GymAction(
                   icon: Icons.search_rounded,
                   label: 'Exercises',
-                  subtitle: 'Browse your library',
                   onTap: () => context.push('/gym/exercises')),
               _GymAction(
                   icon: Icons.history_rounded,
                   label: 'History',
-                  subtitle: 'Review past sessions',
                   onTap: () => context.push('/gym/history')),
             ],
           ),
@@ -170,14 +170,13 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
 }
 
 class _GymAction extends StatelessWidget {
-  const _GymAction(
-      {required this.icon,
-      required this.label,
-      required this.subtitle,
-      required this.onTap});
+  const _GymAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
   final IconData icon;
   final String label;
-  final String subtitle;
   final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
@@ -189,22 +188,19 @@ class _GymAction extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
                     radius: 18,
                     backgroundColor: scheme.primaryContainer,
                     child: Icon(icon, color: scheme.primary, size: 18)),
-                const SizedBox(height: 7),
+                const SizedBox(height: AppSpacing.sm),
                 Text(label,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(fontWeight: FontWeight.w700)),
-                Text(subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall),
               ]),
         ),
       ),
