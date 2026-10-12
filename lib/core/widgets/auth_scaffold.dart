@@ -13,6 +13,8 @@ class AuthScaffold extends StatelessWidget {
   final Widget child;
   final Widget? topLeft;
   final bool compactHeader;
+  final String? greeting;
+  final String? greetingSubtitle;
   const AuthScaffold({
     super.key,
     required this.headerIcon,
@@ -21,6 +23,8 @@ class AuthScaffold extends StatelessWidget {
     required this.child,
     this.topLeft,
     this.compactHeader = false,
+    this.greeting,
+    this.greetingSubtitle,
   });
 
   @override
@@ -32,179 +36,216 @@ class AuthScaffold extends StatelessWidget {
   Widget _buildCompact(BuildContext context) {
     final baseTheme = Theme.of(context);
     final scheme = baseTheme.colorScheme;
+    final isDark = baseTheme.brightness == Brightness.dark;
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(28),
+      borderSide: BorderSide.none,
+    );
     final formTheme = baseTheme.copyWith(
-      inputDecorationTheme: baseTheme.inputDecorationTheme.copyWith(
+      textTheme: baseTheme.textTheme.apply(fontFamily: 'Poppins'),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: isDark ? const Color(0xFF1E3148) : Colors.white,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        labelStyle: baseTheme.textTheme.bodySmall?.copyWith(fontSize: 13),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+        prefixIconColor:
+            isDark ? const Color(0xFFA8B8CC) : const Color(0xFF8297AB),
+        hintStyle: TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 14,
+          color: isDark ? const Color(0xFF9AACC0) : const Color(0xFF7589A1),
+        ),
+        labelStyle: baseTheme.textTheme.bodySmall?.copyWith(fontSize: 12),
+        border: inputBorder,
+        enabledBorder: inputBorder,
+        focusedBorder: inputBorder.copyWith(
+          borderSide: BorderSide(
+              color: isDark ? AppColors.lime : AppColors.forest, width: 1.4),
+        ),
+        errorBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: scheme.error, width: 1.2),
+        ),
+        focusedErrorBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: scheme.error, width: 1.4),
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          backgroundColor: isDark ? AppColors.lime : AppColors.forest,
+          foregroundColor: isDark ? AppColors.darkBackground : Colors.white,
           minimumSize: const Size(64, AppSpacing.authButtonHeight),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: const StadiumBorder(),
+          textStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: isDark ? AppColors.lime : AppColors.forest,
+          textStyle: const TextStyle(fontFamily: 'Poppins'),
         ),
       ),
     );
 
     return Scaffold(
-      backgroundColor: baseTheme.scaffoldBackgroundColor,
+      backgroundColor:
+          isDark ? const Color(0xFF172539) : const Color(0xFFE9F1F9),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, viewport) {
-            final headerHeight =
-                (viewport.maxHeight * 0.175).clamp(112.0, 136.0).toDouble();
-            return Stack(
+            final tallHeader = greeting != null;
+            final headerHeight = tallHeader
+                ? (viewport.maxHeight - (keyboardOpen ? 500 : 460))
+                    .clamp(keyboardOpen ? 88.0 : 120.0,
+                        keyboardOpen ? 132.0 : 240.0)
+                    .toDouble()
+                : (viewport.maxHeight * 0.16).clamp(92.0, 132.0).toDouble();
+
+            return Column(
               children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
+                SizedBox(
                   height: headerHeight,
-                  child: const ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(32),
+                  width: double.infinity,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.forest, AppColors.forestLight],
+                      ),
                     ),
                     child: Stack(
+                      clipBehavior: Clip.hardEdge,
                       children: [
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.forest,
-                                  AppColors.forestLight,
-                                ],
-                              ),
+                        Positioned(
+                          top: -28,
+                          left: -28,
+                          child: CustomPaint(
+                            size: const Size(150, 135),
+                            painter: _AuthLeafPainter(
+                              AppColors.lime.withValues(alpha: 0.42),
                             ),
                           ),
                         ),
-                        Positioned(
-                          right: -34,
-                          top: -64,
-                          child: _AuthGlow(size: 164),
+                        const Positioned(
+                          right: -50,
+                          top: -70,
+                          child: _AuthGlow(size: 170),
                         ),
+                        if (topLeft != null)
+                          Positioned(top: 4, left: 4, child: topLeft!),
                         Positioned(
-                          left: -38,
-                          bottom: -92,
-                          child: _AuthGlow(size: 142),
+                          left: AppSpacing.authInner,
+                          right: AppSpacing.authInner,
+                          bottom: tallHeader ? 18 : 14,
+                          child: tallHeader
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      greeting!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 32,
+                                        height: 1.1,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    if (greetingSubtitle != null) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        greetingSubtitle!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                )
+                              : Text(
+                                  title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 24,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                Column(
-                  children: [
-                    SizedBox(
-                      height: headerHeight,
-                      child: Stack(
-                        children: [
-                          if (topLeft != null)
-                            Positioned(top: 4, left: 4, child: topLeft!),
-                          Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 56),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/worklog_icon.png',
-                                    width: 20,
-                                    height: 20,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    title,
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: baseTheme.textTheme.headlineSmall
-                                        ?.copyWith(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  if (subtitle.trim().isNotEmpty) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      subtitle,
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: baseTheme.textTheme.bodySmall
-                                          ?.copyWith(
-                                        fontSize: 11,
-                                        color: Colors.white
-                                            .withValues(alpha: 0.84),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF172539)
+                          : const Color(0xFFE9F1F9),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(36)),
                     ),
-                    Expanded(
+                    child: SafeArea(
+                      top: false,
                       child: LayoutBuilder(
                         builder: (context, bodyConstraints) =>
                             SingleChildScrollView(
                           keyboardDismissBehavior:
                               ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.authOuter),
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.authInner,
+                            16,
+                            AppSpacing.authInner,
+                            16,
+                          ),
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              minHeight: bodyConstraints.maxHeight,
+                              minHeight:
+                                  math.max(0, bodyConstraints.maxHeight - 32),
+                              maxWidth: 480,
                             ),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: math.max(
-                                    0,
-                                    math.min(
-                                      480,
-                                      bodyConstraints.maxWidth -
-                                          2 * AppSpacing.authOuter,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (tallHeader) ...[
+                                  Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 24,
+                                      height: 1.25,
+                                      fontWeight: FontWeight.w700,
+                                      color: scheme.onSurface,
                                     ),
                                   ),
-                                ),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.fromLTRB(
-                                    AppSpacing.authInner,
-                                    8,
-                                    AppSpacing.authInner,
-                                    8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: scheme.surface,
-                                    borderRadius: BorderRadius.circular(28),
-                                    border: Border.all(
-                                      color: scheme.outlineVariant
-                                          .withValues(alpha: 0.55),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.forest
-                                            .withValues(alpha: 0.12),
-                                        blurRadius: 26,
-                                        offset: const Offset(0, 12),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Theme(data: formTheme, child: child),
-                                ),
-                              ),
+                                  const SizedBox(height: 14),
+                                ],
+                                Theme(data: formTheme, child: child),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             );
@@ -326,6 +367,41 @@ class AuthScaffold extends StatelessWidget {
   }
 }
 
+class _AuthLeafPainter extends CustomPainter {
+  const _AuthLeafPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final leaf = Path()
+      ..moveTo(0, size.height * .12)
+      ..cubicTo(size.width * .55, -size.height * .08, size.width * .98,
+          size.height * .30, size.width * .82, size.height * .78)
+      ..cubicTo(size.width * .45, size.height * .98, 0, size.height * .62, 0,
+          size.height * .12)
+      ..close();
+    canvas.drawPath(leaf, Paint()..color = color);
+
+    final vein = Path()
+      ..moveTo(size.width * .10, size.height * .16)
+      ..quadraticBezierTo(size.width * .45, size.height * .28, size.width * .70,
+          size.height * .72);
+    canvas.drawPath(
+      vein,
+      Paint()
+        ..color = Colors.white.withValues(alpha: .25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _AuthLeafPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
 class _AuthGlow extends StatelessWidget {
   const _AuthGlow({required this.size});
 
@@ -368,6 +444,51 @@ class AuthBanner extends StatelessWidget {
           Expanded(child: Text(message, style: TextStyle(color: fg))),
           if (trailing != null) trailing!,
         ],
+      ),
+    );
+  }
+}
+
+/// Full-width provider button used on the auth forms.
+class AuthGoogleButton extends StatelessWidget {
+  const AuthGoogleButton({
+    super.key,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final Widget icon;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return SizedBox(
+      width: double.infinity,
+      height: 44,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: scheme.surface,
+          foregroundColor: scheme.onSurface,
+          minimumSize: const Size(64, 44),
+          shape: const StadiumBorder(),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(width: 20, height: 20, child: icon),
+            const SizedBox(width: 10),
+            const Flexible(
+              child: Text(
+                'Continue with Google',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -88,7 +88,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null) AuthBanner(message: _error!),
             const VerificationCodeLimitNotice(
               action: 'reset_password',
               compact: true,
@@ -101,8 +100,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 textInputAction: TextInputAction.done,
                 enabled: !_loading,
                 decoration: const InputDecoration(
-                  labelText: 'Email address',
-                  hintText: 'you@example.com',
+                  hintText: 'Email address',
                   prefixIcon: Icon(Icons.mail_outline),
                 ),
                 validator: (value) => value == null ||
@@ -145,6 +143,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   child: const Text('Use a different email'),
                 ),
               ),
+            ],
+            if (_error != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              AuthBanner(message: _error!),
             ],
             const SizedBox(height: 12),
             Center(

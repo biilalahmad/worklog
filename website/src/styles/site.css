@@ -1,6 +1,6 @@
 /* ============================================================
    WorkLog — Public Website Styles
-   Navy #183b62 color scheme, Inter font, mobile-first responsive
+   Navy #183b62 color scheme, Poppins font, mobile-first responsive
    ============================================================ */
 
 /* — Design tokens ------------------------------------------- */
@@ -23,8 +23,8 @@
   --shadow: 0 24px 70px rgb(24 59 98 / 0.08);
   --shadow-card: 0 12px 34px rgb(24 59 98 / 0.05);
   --shadow-pill: 0 4px 24px rgb(24 59 98 / 0.1);
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-heading: 'Helvetica Neue', Helvetica, Inter, Arial, sans-serif;
+  --font-body: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --container-max: 1120px;
   --container-pad: 24px;
   --transition-fast: 150ms ease;
@@ -32,6 +32,30 @@
 }
 
 /* — Reset & base -------------------------------------------- */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Medium.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html {

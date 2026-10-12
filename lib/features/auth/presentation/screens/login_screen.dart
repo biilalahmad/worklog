@@ -99,38 +99,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final busy = _loading || _googleLoading;
     return AuthScaffold(
       headerIcon: Icons.login_rounded,
-      title: 'Welcome Back!',
-      subtitle: 'Sign in to pick up where you left off.',
+      title: 'Login',
+      subtitle: '',
       compactHeader: true,
+      greeting: 'Hello!',
+      greetingSubtitle: 'Welcome to WorkLog',
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null)
-              AuthBanner(
-                message: _error!,
-                trailing: _unverified
-                    ? TextButton(
-                        onPressed: _resending ? null : _resend,
-                        child: _resending
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2))
-                            : const Text('Resend'),
-                      )
-                    : null,
-              ),
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               enabled: !busy,
               decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'you@example.com',
-                  prefixIcon: Icon(Icons.mail_outline)),
+                  hintText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
               validator: (v) => (v == null || !v.contains('@'))
                   ? 'Enter a valid email'
                   : null,
@@ -141,8 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               obscureText: _obscure,
               enabled: !busy,
               decoration: InputDecoration(
-                labelText: 'Password',
-                hintText: '••••••••',
+                hintText: 'Password',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
                   icon: Icon(_obscure
@@ -172,20 +155,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Login'),
             ),
+            if (_error != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              AuthBanner(
+                message: _error!,
+                trailing: _unverified
+                    ? TextButton(
+                        onPressed: _resending ? null : _resend,
+                        child: _resending
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2))
+                            : const Text('Resend'),
+                      )
+                    : null,
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
             const OrDivider(label: 'or continue with'),
             const SizedBox(height: AppSpacing.md),
-            Center(
-              child: SocialIconButton(
-                tooltip: 'Continue with Google',
-                icon: _googleLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : const GoogleMark(),
-                onPressed: busy ? null : _google,
-              ),
+            AuthGoogleButton(
+              icon: _googleLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : const GoogleMark(),
+              onPressed: busy ? null : _google,
             ),
             const SizedBox(height: AppSpacing.sm),
             Wrap(

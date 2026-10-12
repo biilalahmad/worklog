@@ -78,7 +78,8 @@ Future<void> _expectNoScroll(
   expect(
       tester.state<ScrollableState>(pageScroll.first).position.maxScrollExtent,
       0);
-  expect(tester.takeException(), isNull);
+  expect(tester.takeException(), isNull,
+      reason: '${screen.runtimeType} layout');
 }
 
 class _FakeAuthRepository implements AuthRepository {

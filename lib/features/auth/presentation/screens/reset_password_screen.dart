@@ -99,14 +99,12 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null) AuthBanner(message: _error!),
             TextFormField(
               controller: _passwordCtrl,
               obscureText: _obscure,
               enabled: !_loading,
               textInputAction: TextInputAction.next,
               decoration: InputDecoration(
-                labelText: 'New password',
                 hintText: '8+ characters, including a letter and number',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
@@ -125,7 +123,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               enabled: !_loading,
               textInputAction: TextInputAction.done,
               decoration: const InputDecoration(
-                labelText: 'Confirm new password',
+                hintText: 'Confirm new password',
                 prefixIcon: Icon(Icons.lock_outline),
               ),
               validator: (value) =>
@@ -143,6 +141,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     )
                   : const Text('Update Password'),
             ),
+            if (_error != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              AuthBanner(message: _error!),
+            ],
           ],
         ),
       ),

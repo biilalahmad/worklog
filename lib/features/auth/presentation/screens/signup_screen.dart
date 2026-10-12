@@ -110,23 +110,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
     return AuthScaffold(
       headerIcon: Icons.person_add_alt_1_rounded,
-      title: 'Create Account',
-      subtitle: 'Set up your workspace in less than a minute.',
+      title: 'Sign Up',
+      subtitle: '',
       compactHeader: true,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_error != null) AuthBanner(message: _error!),
             TextFormField(
               controller: _nameCtrl,
               enabled: !busy,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'Your name',
-                  prefixIcon: Icon(Icons.person_outline)),
+                  hintText: 'Name', prefixIcon: Icon(Icons.person_outline)),
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
             ),
@@ -136,9 +133,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               keyboardType: TextInputType.emailAddress,
               enabled: !busy,
               decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'you@example.com',
-                  prefixIcon: Icon(Icons.mail_outline)),
+                  hintText: 'Email', prefixIcon: Icon(Icons.mail_outline)),
               validator: (v) => (v == null || !v.contains('@'))
                   ? 'Enter a valid email'
                   : null,
@@ -151,7 +146,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               onChanged: (v) =>
                   setState(() => _strength = passwordStrengthOf(v)),
               decoration: InputDecoration(
-                labelText: 'Password',
                 hintText: 'At least 8 characters',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffix: strengthLabel == null
@@ -182,7 +176,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               obscureText: _obscureConfirm,
               enabled: !busy,
               decoration: InputDecoration(
-                labelText: 'Confirm Password',
                 hintText: 'Re-enter your password',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
@@ -207,6 +200,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Sign Up'),
             ),
+            if (_error != null) ...[
+              const SizedBox(height: AppSpacing.sm),
+              AuthBanner(message: _error!),
+            ],
             Text.rich(
               TextSpan(
                 children: [
@@ -241,17 +238,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             const SizedBox(height: AppSpacing.sm),
             const OrDivider(label: 'or sign up with'),
             const SizedBox(height: AppSpacing.sm),
-            Center(
-              child: SocialIconButton(
-                tooltip: 'Continue with Google',
-                icon: _googleLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2))
-                    : const GoogleMark(),
-                onPressed: busy ? null : _google,
-              ),
+            AuthGoogleButton(
+              icon: _googleLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2))
+                  : const GoogleMark(),
+              onPressed: busy ? null : _google,
             ),
             Wrap(
               alignment: WrapAlignment.center,
