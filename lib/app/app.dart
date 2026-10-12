@@ -84,7 +84,10 @@ class WorkLogApp extends ConsumerWidget {
       value: style,
       child: MediaQuery(
         data: media.copyWith(
-          textScaler: media.textScaler.clamp(maxScaleFactor: 1.3),
+          textScaler: media.textScaler.clamp(
+            minScaleFactor: 0.9,
+            maxScaleFactor: 1.15,
+          ),
         ),
         child: child ?? const SizedBox.shrink(),
       ),

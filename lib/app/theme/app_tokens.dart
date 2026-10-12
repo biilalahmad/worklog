@@ -45,9 +45,36 @@ class AppSpacing {
   static const double cardRadius = 26;
   static const double fieldRadius = 18;
   static const double pageGutter = 16;
+  static const double screenHorizontal = 20;
+  static const double authOuter = 16;
+  static const double authInner = 20;
+  static const double authFieldGap = 12;
+  static const double authFieldHeight = 48;
+  static const double authButtonHeight = 48;
+  static const double onboardingControlHeight = 52;
+  static const double fabSize = 64;
+  static const double navBarHeight = 72;
+  static const double navPillHorizontal = 8;
+  static const double fabSystemGap = 32;
+  static const double fabNavGap = 16;
 
   /// Extra bottom padding so scrollable content clears the floating nav.
-  static const double navClearance = 112;
+  static const double navClearance = navBarHeight + 24;
+}
+
+/// Safe-area-aware offsets shared by scrollable screens and floating actions.
+class AppInsets {
+  AppInsets._();
+
+  static double belowNavigation(BuildContext context, {double gap = 24}) =>
+      AppSpacing.navBarHeight + MediaQuery.viewPaddingOf(context).bottom + gap;
+
+  static double floatingActionBottom(BuildContext context,
+          {required bool aboveNavigation}) =>
+      (aboveNavigation
+          ? AppSpacing.navBarHeight + AppSpacing.fabNavGap
+          : AppSpacing.fabSystemGap) +
+      MediaQuery.viewPaddingOf(context).bottom;
 }
 
 class AppIconSize {
