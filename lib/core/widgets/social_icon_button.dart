@@ -7,7 +7,11 @@ class SocialIconButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String tooltip;
 
-  const SocialIconButton({super.key, required this.icon, required this.onPressed, required this.tooltip});
+  const SocialIconButton(
+      {super.key,
+      required this.icon,
+      required this.onPressed,
+      required this.tooltip});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,7 @@ class SocialIconButton extends StatelessWidget {
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onPressed,
-          child: SizedBox(width: 54, height: 54, child: Center(child: icon)),
+          child: SizedBox(width: 48, height: 48, child: Center(child: icon)),
         ),
       ),
     );
@@ -36,7 +40,10 @@ class GoogleMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: size, height: size, child: CustomPaint(painter: _GoogleMarkPainter()));
+    return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _GoogleMarkPainter()));
   }
 }
 
@@ -65,7 +72,9 @@ class _GoogleMarkPainter extends CustomPainter {
     }
     // Cross-bar of the "G"
     final barPaint = Paint()..color = const Color(0xFF4285F4);
-    canvas.drawRect(Rect.fromLTWH(r, r - stroke * 0.28, r - stroke * 0.15, stroke * 0.56), barPaint);
+    canvas.drawRect(
+        Rect.fromLTWH(r, r - stroke * 0.28, r - stroke * 0.15, stroke * 0.56),
+        barPaint);
   }
 
   @override

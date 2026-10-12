@@ -71,8 +71,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return AuthScaffold(
         headerIcon: Icons.password_rounded,
         title: 'Verification required',
-        subtitle:
-            'Request and verify a fresh email code before choosing a new password.',
+        subtitle: '',
+        compactHeader: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -92,8 +92,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     return AuthScaffold(
       headerIcon: Icons.password_rounded,
       title: 'Set a new password',
-      subtitle:
-          'Verified for ${ticket.email}. Choose a password you haven’t used before.',
+      subtitle: '',
+      compactHeader: true,
       child: Form(
         key: _formKey,
         child: Column(
@@ -118,7 +118,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
               validator: passwordValidationError,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.authFieldGap),
             TextFormField(
               controller: _confirmCtrl,
               obscureText: _obscure,
@@ -131,7 +131,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               validator: (value) =>
                   value != _passwordCtrl.text ? 'Passwords don’t match' : null,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.authFieldGap),
             FilledButton(
               onPressed: _loading ? null : _submit,
               child: _loading

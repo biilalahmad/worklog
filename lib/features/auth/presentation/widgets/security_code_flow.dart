@@ -144,9 +144,14 @@ class SecurityCodePanel extends StatelessWidget {
 }
 
 class VerificationCodeLimitNotice extends StatelessWidget {
-  const VerificationCodeLimitNotice({super.key, required this.action});
+  const VerificationCodeLimitNotice({
+    super.key,
+    required this.action,
+    this.compact = false,
+  });
 
   final String action;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +162,10 @@ class VerificationCodeLimitNotice extends StatelessWidget {
       _ => 'password reset',
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 12 : 14,
+        vertical: compact ? 8 : 12,
+      ),
       decoration: BoxDecoration(
         color: scheme.primaryContainer.withValues(alpha: 0.48),
         borderRadius: BorderRadius.circular(16),
@@ -165,11 +173,14 @@ class VerificationCodeLimitNotice extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shield_outlined, size: 20, color: scheme.primary),
-          const SizedBox(width: 10),
+          Icon(Icons.shield_outlined,
+              size: compact ? 18 : 20, color: scheme.primary),
+          SizedBox(width: compact ? 8 : 10),
           Expanded(
             child: Text(
-              'For your security, you can request up to 7 $subject verification codes every 24 hours.',
+              compact
+                  ? 'Up to 7 reset codes every 24 hours.'
+                  : 'For your security, you can request up to 7 $subject verification codes every 24 hours.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: scheme.onSurfaceVariant,
                     height: 1.35,

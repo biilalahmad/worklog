@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +31,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _obscureConfirm = true;
   String? _error;
   PasswordStrength _strength = PasswordStrength.tooShort;
+  late final TapGestureRecognizer _termsRecognizer = TapGestureRecognizer()
+    ..onTap = () async {
+      await launchUrl(
+        Uri.parse(AppInfo.termsOfServiceUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    };
+  late final TapGestureRecognizer _privacyRecognizer = TapGestureRecognizer()
+    ..onTap = () async {
+      await launchUrl(
+        Uri.parse(AppInfo.privacyPolicyUrl),
+        mode: LaunchMode.externalApplication,
+      );
+    };
 
   @override
   void dispose() {
@@ -37,6 +52,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
+    _termsRecognizer.dispose();
+    _privacyRecognizer.dispose();
     super.dispose();
   }
 
@@ -94,57 +111,39 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     return AuthScaffold(
       headerIcon: Icons.person_add_alt_1_rounded,
       title: 'Create Account',
-      subtitle: 'Track your work, get paid on time',
+      subtitle: '',
+      compactHeader: true,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (_error != null) AuthBanner(message: _error!),
-            const Text('Name',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 6),
             TextFormField(
               controller: _nameCtrl,
               enabled: !busy,
               textCapitalization: TextCapitalization.words,
               decoration: const InputDecoration(
+                  labelText: 'Name',
                   hintText: 'Your name',
                   prefixIcon: Icon(Icons.person_outline)),
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
             ),
-            const SizedBox(height: 16),
-            const Text('Email',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.authFieldGap),
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               enabled: !busy,
               decoration: const InputDecoration(
+                  labelText: 'Email',
                   hintText: 'you@example.com',
                   prefixIcon: Icon(Icons.mail_outline)),
               validator: (v) => (v == null || !v.contains('@'))
                   ? 'Enter a valid email'
                   : null,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Expanded(
-                    child: Text('Password',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 13))),
-                if (strengthLabel != null)
-                  Text(strengthLabel,
-                      style: TextStyle(
-                          color: strengthColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12)),
-              ],
-            ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.authFieldGap),
             TextFormField(
               controller: _passwordCtrl,
               obscureText: _obscure,
@@ -152,8 +151,22 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               onChanged: (v) =>
                   setState(() => _strength = passwordStrengthOf(v)),
               decoration: InputDecoration(
+                labelText: 'Password',
                 hintText: 'At least 8 characters',
                 prefixIcon: const Icon(Icons.lock_outline),
+                suffix: strengthLabel == null
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(
+                          strengthLabel,
+                          style: TextStyle(
+                            color: strengthColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
                 suffixIcon: IconButton(
                   icon: Icon(_obscure
                       ? Icons.visibility_outlined
@@ -163,15 +176,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               ),
               validator: (v) => passwordValidationError(v),
             ),
-            const SizedBox(height: 16),
-            const Text('Confirm Password',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.authFieldGap),
             TextFormField(
               controller: _confirmCtrl,
               obscureText: _obscureConfirm,
               enabled: !busy,
               decoration: InputDecoration(
+                labelText: 'Confirm Password',
                 hintText: 'Re-enter your password',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
@@ -185,7 +196,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               validator: (v) =>
                   v != _passwordCtrl.text ? 'Passwords don\'t match' : null,
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: AppSpacing.authFieldGap),
             FilledButton(
               onPressed: busy ? null : _submit,
               child: _loading
@@ -196,54 +207,40 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Sign Up'),
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  'By signing up, you agree to the',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(48, 44),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+            Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(text: 'By signing up, you agree to the '),
+                  TextSpan(
+                    text: 'Terms of Service',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: busy ? null : _termsRecognizer,
                   ),
-                  onPressed: busy
-                      ? null
-                      : () => launchUrl(
-                            Uri.parse(AppInfo.termsOfServiceUrl),
-                            mode: LaunchMode.externalApplication,
-                          ),
-                  child: const Text('Terms of Service'),
-                ),
-                Text(
-                  'and acknowledge the',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    minimumSize: const Size(48, 44),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  const TextSpan(text: ' and acknowledge the '),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: busy ? null : _privacyRecognizer,
                   ),
-                  onPressed: busy
-                      ? null
-                      : () => launchUrl(
-                            Uri.parse(AppInfo.privacyPolicyUrl),
-                            mode: LaunchMode.externalApplication,
-                          ),
-                  child: const Text('Privacy Policy'),
-                ),
-              ],
+                ],
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: AppSpacing.sm),
             const OrDivider(label: 'or sign up with'),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.sm),
             Center(
               child: SocialIconButton(
                 tooltip: 'Continue with Google',
@@ -256,20 +253,26 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 onPressed: busy ? null : _google,
               ),
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text('Already have an account?',
                     style: TextStyle(
+                        fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
                   onPressed: busy ? null : () => context.pop(),
                   child: Text(
                     'Sign in',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w800),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12),
                   ),
                 ),
               ],

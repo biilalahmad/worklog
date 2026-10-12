@@ -79,17 +79,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return AuthScaffold(
       headerIcon: Icons.lock_reset_rounded,
       title: _codeSent ? 'Verify your email' : 'Reset password',
-      subtitle: _codeSent
-          ? 'Enter the one-time code sent to ${_emailCtrl.text.trim()}'
-          : 'We’ll send a one-time security code to your registered email.',
+      subtitle: '',
+      compactHeader: true,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (_error != null) AuthBanner(message: _error!),
-            const VerificationCodeLimitNotice(action: 'reset_password'),
-            const SizedBox(height: 16),
+            const VerificationCodeLimitNotice(
+              action: 'reset_password',
+              compact: true,
+            ),
+            const SizedBox(height: AppSpacing.authFieldGap),
             if (!_codeSent) ...[
               TextFormField(
                 controller: _emailCtrl,
@@ -107,7 +109,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ? 'Enter a valid email address'
                     : null,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.authFieldGap),
               FilledButton(
                 onPressed: _loading ? null : _requestCode,
                 child: _loading

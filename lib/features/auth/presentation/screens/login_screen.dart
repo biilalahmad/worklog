@@ -100,7 +100,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return AuthScaffold(
       headerIcon: Icons.login_rounded,
       title: 'Welcome Back!',
-      subtitle: 'Sign in to continue to your workspace',
+      subtitle: '',
+      compactHeader: true,
       child: Form(
         key: _formKey,
         child: Column(
@@ -122,29 +123,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       )
                     : null,
               ),
-            const Text('Email',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 6),
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               enabled: !busy,
               decoration: const InputDecoration(
+                  labelText: 'Email',
                   hintText: 'you@example.com',
                   prefixIcon: Icon(Icons.mail_outline)),
               validator: (v) => (v == null || !v.contains('@'))
                   ? 'Enter a valid email'
                   : null,
             ),
-            const SizedBox(height: 16),
-            const Text('Password',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.authFieldGap),
             TextFormField(
               controller: _passwordCtrl,
               obscureText: _obscure,
               enabled: !busy,
               decoration: InputDecoration(
+                labelText: 'Password',
                 hintText: '••••••••',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
@@ -164,7 +161,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: const Text('Forgot password?'),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             FilledButton(
               onPressed: busy ? null : _submit,
               child: _loading
@@ -175,9 +172,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           strokeWidth: 2, color: AppColors.ivory))
                   : const Text('Login'),
             ),
-            const SizedBox(height: 22),
-            const OrDivider(label: 'or sign up with'),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.md),
+            const OrDivider(label: 'or continue with'),
+            const SizedBox(height: AppSpacing.md),
             Center(
               child: SocialIconButton(
                 tooltip: 'Continue with Google',
@@ -190,20 +187,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: busy ? null : _google,
               ),
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(height: AppSpacing.sm),
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text("Don't have an account?",
                     style: TextStyle(
+                        fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  ),
                   onPressed: busy ? null : () => context.push('/signup'),
                   child: Text(
                     'Sign up',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w800),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12),
                   ),
                 ),
               ],

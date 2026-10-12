@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../app/theme/app_tokens.dart';
@@ -10,6 +12,7 @@ class AuthScaffold extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final Widget? topLeft;
+  final bool compactHeader;
   const AuthScaffold({
     super.key,
     required this.headerIcon,
@@ -17,10 +20,153 @@ class AuthScaffold extends StatelessWidget {
     required this.subtitle,
     required this.child,
     this.topLeft,
+    this.compactHeader = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (compactHeader) return _buildCompact(context);
+    return _buildClassic(context);
+  }
+
+  Widget _buildCompact(BuildContext context) {
+    final baseTheme = Theme.of(context);
+    final scheme = baseTheme.colorScheme;
+    final formTheme = baseTheme.copyWith(
+      inputDecorationTheme: baseTheme.inputDecorationTheme.copyWith(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        labelStyle: baseTheme.textTheme.bodySmall?.copyWith(fontSize: 13),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(64, AppSpacing.authButtonHeight),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+      ),
+    );
+
+    return Scaffold(
+      backgroundColor: baseTheme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, viewport) {
+            final headerHeight =
+                (viewport.maxHeight * 0.175).clamp(112.0, 136.0).toDouble();
+            return Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: headerHeight,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.forest,
+                          AppColors.forestLight.withValues(alpha: 0.92),
+                        ],
+                      ),
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(32),
+                      ),
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: headerHeight,
+                      child: Stack(
+                        children: [
+                          if (topLeft != null)
+                            Positioned(top: 4, left: 4, child: topLeft!),
+                          Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 56),
+                              child: Text(
+                                title,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    baseTheme.textTheme.headlineSmall?.copyWith(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, bodyConstraints) =>
+                            SingleChildScrollView(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.authOuter),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: math.max(
+                                  0,
+                                  math.min(
+                                    480,
+                                    bodyConstraints.maxWidth -
+                                        2 * AppSpacing.authOuter,
+                                  ),
+                                ),
+                                minHeight: bodyConstraints.maxHeight,
+                              ),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSpacing.authInner,
+                                  AppSpacing.sm,
+                                  AppSpacing.authInner,
+                                  AppSpacing.sm,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: scheme.surface,
+                                  borderRadius: BorderRadius.circular(28),
+                                  border: Border.all(
+                                    color: scheme.outlineVariant
+                                        .withValues(alpha: 0.55),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.forest
+                                          .withValues(alpha: 0.12),
+                                      blurRadius: 26,
+                                      offset: const Offset(0, 12),
+                                    ),
+                                  ],
+                                ),
+                                child: Theme(data: formTheme, child: child),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildClassic(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
