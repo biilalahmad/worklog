@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/theme/app_tokens.dart';
 import '../../../../core/widgets/client_picker_field.dart';
 import '../../../../core/widgets/app_select_field.dart';
 import '../../../../core/widgets/date_time_picker_field.dart';
@@ -58,13 +59,90 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
 
   Future<void> _pickDate() async {
     final today = DateTime.now();
-    final picked = await showDatePicker(
+    final firstDate = DateTime(today.year, today.month, today.day);
+    final lastDate = today.add(const Duration(days: 365 * 2));
+    var selectedDate = _date.isBefore(firstDate) ? firstDate : _date;
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: _date,
-      firstDate: DateTime(today.year, today.month, today.day),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+        final media = MediaQuery.of(dialogContext);
+        return MediaQuery(
+          data: media.copyWith(
+            textScaler: media.textScaler.clamp(
+              minScaleFactor: 1,
+              maxScaleFactor: 1.1,
+            ),
+          ),
+          child: Theme(
+            data: theme.copyWith(
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: theme.colorScheme.surface,
+                headerBackgroundColor: theme.colorScheme.primary,
+                headerForegroundColor: theme.colorScheme.onPrimary,
+              ),
+            ),
+            child: StatefulBuilder(
+              builder: (context, setDialogState) => Dialog(
+                insetPadding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xl,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Select date',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        CalendarDatePicker(
+                          initialDate: selectedDate,
+                          firstDate: firstDate,
+                          lastDate: lastDate,
+                          onDateChanged: (date) =>
+                              setDialogState(() => selectedDate = date),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Cancel'),
+                            ),
+                            const SizedBox(width: AppSpacing.sm),
+                            FilledButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(selectedDate),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
-    if (picked != null) setState(() => _date = picked);
+    if (picked != null && mounted) setState(() => _date = picked);
   }
 
   Future<void> _pickTime() async {

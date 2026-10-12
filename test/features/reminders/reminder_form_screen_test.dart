@@ -15,6 +15,43 @@ import 'package:worklog/features/reminders/presentation/screens/reminder_form_sc
 import 'package:worklog/services/notifications/notification_service.dart';
 
 void main() {
+  testWidgets('reminder calendar fits a phone dialog at large system text',
+      (tester) async {
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          clientsListProvider.overrideWith((ref) => Stream.value([])),
+        ],
+        child: MaterialApp(
+          builder: (context, child) {
+            final media = MediaQuery.of(context);
+            return MediaQuery(
+              data: media.copyWith(textScaler: const TextScaler.linear(1.3)),
+              child: child!,
+            );
+          },
+          home: const ReminderFormScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.calendar_today_rounded));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CalendarDatePicker), findsOneWidget);
+    final calendarRect = tester.getRect(find.byType(CalendarDatePicker));
+    final cancelRect = tester.getRect(find.text('Cancel'));
+    expect(calendarRect.height, lessThan(400));
+    expect(cancelRect.top - calendarRect.bottom, lessThan(24));
+    expect(find.text('OK'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
       'returns to the previous screen while notification permission is pending',
       (tester) async {
