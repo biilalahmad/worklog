@@ -81,8 +81,6 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Your fitness space',
-                      style: Theme.of(context).textTheme.bodySmall),
                   Text('Hey, ${name ?? 'there'}',
                       style: Theme.of(context)
                           .textTheme
@@ -124,11 +122,7 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          Text('Training tools',
-              style: Theme.of(context).textTheme.titleMedium),
-          Text('Choose what you want to plan, track, or review.',
-              style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,

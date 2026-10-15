@@ -241,7 +241,9 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
                 'Reminder saved, but notifications are disabled. Enable them in WorkLog settings to receive alerts.'),
           ));
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('WorkLog reminder was saved, but scheduling failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
       if (!messenger.mounted) return;
       messenger.showSnackBar(const SnackBar(
         content: Text(

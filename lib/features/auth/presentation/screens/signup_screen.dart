@@ -111,12 +111,45 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final strengthColor = _strength == PasswordStrength.strong
         ? Colors.green.shade700
         : Colors.orange.shade800;
+    const fieldGap = 8.0;
 
     return AuthScaffold(
       headerIcon: Icons.person_add_alt_1_rounded,
       title: 'Sign Up',
       subtitle: '',
       compactHeader: true,
+      bottomFooter: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: 'By signing up, you agree to our '),
+            TextSpan(
+              text: 'Terms of Service',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
+              ),
+              recognizer: busy ? null : _termsRecognizer,
+            ),
+            const TextSpan(text: ' and '),
+            TextSpan(
+              text: 'Privacy Policy',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
+              ),
+              recognizer: busy ? null : _privacyRecognizer,
+            ),
+            const TextSpan(text: '.'),
+          ],
+        ),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 11,
+            ),
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -131,7 +164,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'Enter your name' : null,
             ),
-            const SizedBox(height: AppSpacing.authFieldGap),
+            const SizedBox(height: fieldGap),
             TextFormField(
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
@@ -142,7 +175,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ? 'Enter a valid email'
                   : null,
             ),
-            const SizedBox(height: AppSpacing.authFieldGap),
+            const SizedBox(height: fieldGap),
             TextFormField(
               controller: _passwordCtrl,
               obscureText: _obscure,
@@ -174,7 +207,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               ),
               validator: (v) => passwordValidationError(v),
             ),
-            const SizedBox(height: AppSpacing.authFieldGap),
+            const SizedBox(height: fieldGap),
             TextFormField(
               controller: _confirmCtrl,
               obscureText: _obscureConfirm,
@@ -193,7 +226,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               validator: (v) =>
                   v != _passwordCtrl.text ? 'Passwords don\'t match' : null,
             ),
-            const SizedBox(height: AppSpacing.authFieldGap),
+            const SizedBox(height: fieldGap),
             FilledButton(
               onPressed: busy ? null : _submit,
               child: _loading
@@ -209,37 +242,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const SizedBox(height: AppSpacing.sm),
               AuthBanner(message: _error!),
             ],
-            Text.rich(
-              TextSpan(
-                children: [
-                  const TextSpan(text: 'By signing up, you agree to the '),
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: busy ? null : _termsRecognizer,
-                  ),
-                  const TextSpan(text: ' and acknowledge the '),
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: busy ? null : _privacyRecognizer,
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontSize: 12,
-                  ),
-            ),
             const SizedBox(height: AppSpacing.sm),
             const OrDivider(label: 'or sign up with'),
             const SizedBox(height: AppSpacing.sm),

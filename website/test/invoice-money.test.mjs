@@ -20,6 +20,11 @@ test('uses the ISO currency precision for zero-decimal currencies', () => {
   assert.equal(formatInvoiceMoney(10000, 'JPY', 'en-US'), '¥10,000');
 });
 
+test('formats PKR as rupees from integer paisa regardless of locale data', () => {
+  assert.equal(formatInvoiceMoney(10000, 'PKR', 'en-PK'), 'Rs 100.00');
+  assert.equal(formatInvoiceMoney(100, 'PKR', 'en-PK'), 'Rs 1.00');
+});
+
 test('normalizes public invoice totals without changing their minor-unit values', () => {
   const invoice = normalizePublicInvoice({
     subtotalAmountMinor: 10000,

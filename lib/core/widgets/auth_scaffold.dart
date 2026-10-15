@@ -11,6 +11,7 @@ class AuthScaffold extends StatelessWidget {
   final String title;
   final String subtitle;
   final Widget child;
+  final Widget? bottomFooter;
   final Widget? topLeft;
   final bool compactHeader;
   final String? greeting;
@@ -21,6 +22,7 @@ class AuthScaffold extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.bottomFooter,
     this.topLeft,
     this.compactHeader = false,
     this.greeting,
@@ -38,6 +40,7 @@ class AuthScaffold extends StatelessWidget {
     final scheme = baseTheme.colorScheme;
     final isDark = baseTheme.brightness == Brightness.dark;
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final hasPinnedFooter = bottomFooter != null;
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(28),
       borderSide: BorderSide.none,
@@ -48,8 +51,8 @@ class AuthScaffold extends StatelessWidget {
         filled: true,
         fillColor: isDark ? const Color(0xFF1E3148) : Colors.white,
         isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+        contentPadding: EdgeInsets.symmetric(
+            horizontal: 18, vertical: hasPinnedFooter ? 11 : 15),
         prefixIconColor:
             isDark ? const Color(0xFFA8B8CC) : const Color(0xFF8297AB),
         hintStyle: TextStyle(
@@ -105,7 +108,9 @@ class AuthScaffold extends StatelessWidget {
                     .clamp(keyboardOpen ? 88.0 : 120.0,
                         keyboardOpen ? 132.0 : 240.0)
                     .toDouble()
-                : (viewport.maxHeight * 0.16).clamp(92.0, 132.0).toDouble();
+                : hasPinnedFooter
+                    ? (viewport.maxHeight * 0.13).clamp(84.0, 118.0).toDouble()
+                    : (viewport.maxHeight * 0.16).clamp(92.0, 132.0).toDouble();
 
             return Column(
               children: [
@@ -206,43 +211,68 @@ class AuthScaffold extends StatelessWidget {
                     child: SafeArea(
                       top: false,
                       child: LayoutBuilder(
-                        builder: (context, bodyConstraints) =>
-                            SingleChildScrollView(
-                          keyboardDismissBehavior:
-                              ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.authInner,
-                            16,
-                            AppSpacing.authInner,
-                            16,
-                          ),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight:
-                                  math.max(0, bodyConstraints.maxHeight - 32),
-                              maxWidth: 480,
+                        builder: (context, bodyConstraints) {
+                          final content = SingleChildScrollView(
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
+                            padding: EdgeInsets.fromLTRB(
+                              AppSpacing.authInner,
+                              16,
+                              AppSpacing.authInner,
+                              bottomFooter == null ? 16 : 8,
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                if (tallHeader) ...[
-                                  Text(
-                                    title,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 24,
-                                      height: 1.25,
-                                      fontWeight: FontWeight.w700,
-                                      color: scheme.onSurface,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: math.max(
+                                  0,
+                                  bodyConstraints.maxHeight -
+                                      (bottomFooter == null ? 32 : 24),
+                                ),
+                                maxWidth: 480,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (tallHeader) ...[
+                                    Text(
+                                      title,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 24,
+                                        height: 1.25,
+                                        fontWeight: FontWeight.w700,
+                                        color: scheme.onSurface,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 14),
+                                    const SizedBox(height: 14),
+                                  ],
+                                  Theme(data: formTheme, child: child),
                                 ],
-                                Theme(data: formTheme, child: child),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+
+                          if (bottomFooter == null) return content;
+                          return Column(
+                            children: [
+                              Expanded(child: content),
+                              if (!keyboardOpen)
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    AppSpacing.authInner,
+                                    4,
+                                    AppSpacing.authInner,
+                                    10,
+                                  ),
+                                  child: ConstrainedBox(
+                                    constraints:
+                                        const BoxConstraints(maxWidth: 480),
+                                    child: bottomFooter!,
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),

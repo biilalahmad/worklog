@@ -26,8 +26,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Checking connection…'), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Checking…'), findsOneWidget);
     final button = tester.widget<FilledButton>(find.byType(FilledButton));
     expect(button.onPressed, isNull);
   });

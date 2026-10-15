@@ -9,7 +9,12 @@ export function formatInvoiceMoney(minorUnits, currency, locale) {
       style: 'currency',
       currency: code,
     });
-    const fractionDigits = currencyFormatter.resolvedOptions().maximumFractionDigits;
+    // Keep PKR's two minor-unit digits explicit. Some browser/locale ICU data
+    // has shipped PKR with inconsistent currency precision; deriving the
+    // divisor from that data can multiply paisa/rupees by 100 on public pages.
+    const fractionDigits = code === 'PKR'
+      ? 2
+      : currencyFormatter.resolvedOptions().maximumFractionDigits;
     const scale = 10 ** fractionDigits;
     return new Intl.NumberFormat(locale, {
       style: 'currency',

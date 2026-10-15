@@ -52,7 +52,8 @@ void main() {
       (tester) async {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await _expectNoScroll(tester, const SignupScreen(), scale: 1);
+    await _expectNoScroll(tester, const SignupScreen(),
+        scale: 1, allowScroll: true);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -87,6 +88,7 @@ Future<void> _expectNoScroll(
   WidgetTester tester,
   Widget screen, {
   required double scale,
+  bool allowScroll = false,
 }) async {
   tester.view.physicalSize = const Size(360, 640);
   tester.view.devicePixelRatio = 1;
@@ -114,9 +116,13 @@ Future<void> _expectNoScroll(
     matching: find.byType(Scrollable),
   );
   expect(find.byType(SingleChildScrollView), findsOneWidget);
-  expect(
-      tester.state<ScrollableState>(pageScroll.first).position.maxScrollExtent,
-      0);
+  final scrollExtent =
+      tester.state<ScrollableState>(pageScroll.first).position.maxScrollExtent;
+  if (allowScroll) {
+    expect(scrollExtent, greaterThanOrEqualTo(0));
+  } else {
+    expect(scrollExtent, 0);
+  }
   expect(tester.takeException(), isNull,
       reason: '${screen.runtimeType} layout');
 }

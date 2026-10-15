@@ -12,79 +12,37 @@ class NoInternetScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
+        child: Center(
+          child: Padding(
             padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints:
-                  BoxConstraints(minHeight: constraints.maxHeight - 48),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 88,
-                          height: 88,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colors.primaryContainer,
-                          ),
-                          child: Icon(
-                            Icons.wifi_off_rounded,
-                            size: 40,
-                            color: colors.onPrimaryContainer,
-                          ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    'No internet connection',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: const Color(0xFF18263A),
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(height: 20),
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            'No internet connection',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.titleLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          'Check your connection. WorkLog will open your saved workspace when it can connect.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                            height: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: isRetrying ? null : onRetry,
-                            icon: isRetrying
-                                ? const SizedBox.square(
-                                    dimension: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : const Icon(Icons.refresh_rounded),
-                            label: Text(
-                                isRetrying ? 'Checking connection…' : 'Retry'),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: isRetrying ? null : onRetry,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF183B60),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(120, 48),
+                  ),
+                  child: Text(isRetrying ? 'Checking…' : 'Retry'),
+                ),
+              ],
             ),
           ),
         ),

@@ -110,6 +110,9 @@ class AppSelectSheet {
     if (options.isEmpty) return Future<T?>.value();
     return showModalBottomSheet<T>(
       context: context,
+      // AppShell draws the floating navigation bar in a nested route. Put
+      // selectors on the root navigator so the sheet and its barrier cover it.
+      useRootNavigator: true,
       useSafeArea: true,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,

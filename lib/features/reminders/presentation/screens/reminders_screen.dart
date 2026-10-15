@@ -22,7 +22,8 @@ class RemindersScreen extends ConsumerStatefulWidget {
   ConsumerState<RemindersScreen> createState() => _RemindersScreenState();
 }
 
-class _RemindersScreenState extends ConsumerState<RemindersScreen> {
+class _RemindersScreenState extends ConsumerState<RemindersScreen>
+    with WidgetsBindingObserver {
   bool? _notificationsEnabled;
   Timer? _expiryRefresh;
   bool _openedNotificationTarget = false;
@@ -30,6 +31,7 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermission();
     _expiryRefresh = Timer.periodic(const Duration(minutes: 1), (_) {
       ref.invalidate(upcomingRemindersProvider);
@@ -38,8 +40,14 @@ class _RemindersScreenState extends ConsumerState<RemindersScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _expiryRefresh?.cancel();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkPermission();
   }
 
   Future<void> _checkPermission() async {

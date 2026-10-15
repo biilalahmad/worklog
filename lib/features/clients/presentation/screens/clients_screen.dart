@@ -92,7 +92,7 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       ),
       floatingActionButton: AppFab(
         tooltip: 'Add client',
-        extraBottomOffset: 14,
+        extraBottomOffset: 38,
         onPressed: () => context.push('/clients/new'),
       ),
       body: clientsAsync.when(

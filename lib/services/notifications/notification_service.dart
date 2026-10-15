@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -87,22 +88,33 @@ class NotificationService {
   /// Prompts for permission if not already decided. Returns whether
   /// notifications are allowed after the prompt.
   Future<bool> requestPermissions() async {
-    final androidGranted = await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-    return androidGranted ?? false;
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    try {
+      final androidGranted =
+          await androidPlugin?.requestNotificationsPermission();
+      return androidGranted ?? await areNotificationsEnabled();
+    } catch (error, stackTrace) {
+      debugPrint('WorkLog notification permission request failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      return false;
+    }
   }
 
   /// Checks current permission status without prompting — used to
   /// show a clear "notifications are off" banner instead of silently
   /// failing to schedule anything.
   Future<bool> areNotificationsEnabled() async {
-    final androidEnabled = await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.areNotificationsEnabled();
-    if (androidEnabled != null) return androidEnabled;
+    try {
+      final androidEnabled = await _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.areNotificationsEnabled();
+      if (androidEnabled != null) return androidEnabled;
+    } catch (error) {
+      debugPrint(
+          'WorkLog could not query Android notification permission: $error');
+    }
     // Fall back to permission_handler if the notification plugin cannot
     // determine Android's current permission state.
     final status = await ph.Permission.notification.status;
@@ -113,7 +125,7 @@ class NotificationService {
   /// alarm access only when a user schedules a reminder. If declined, we can
   /// still schedule a best-effort inexact alarm rather than losing it.
   Future<ReminderScheduleOutcome> prepareReminderSchedule() async {
-    if (!await areNotificationsEnabled()) {
+    if (!await areNotificationsEnabled() && !await requestPermissions()) {
       return ReminderScheduleOutcome.notificationsDisabled;
     }
 
@@ -121,11 +133,27 @@ class NotificationService {
         AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin == null) return ReminderScheduleOutcome.exact;
 
-    final canScheduleExact =
-        await androidPlugin.canScheduleExactNotifications() ?? true;
+    bool canScheduleExact;
+    try {
+      canScheduleExact =
+          await androidPlugin.canScheduleExactNotifications() ?? true;
+    } catch (error, stackTrace) {
+      debugPrint('WorkLog could not check exact-alarm access: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      return ReminderScheduleOutcome.approximate;
+    }
     if (canScheduleExact) return ReminderScheduleOutcome.exact;
 
-    final granted = await androidPlugin.requestExactAlarmsPermission() ?? false;
+    bool granted = false;
+    try {
+      await androidPlugin.requestExactAlarmsPermission();
+      granted = await androidPlugin.canScheduleExactNotifications() ?? false;
+    } catch (error, stackTrace) {
+      // Exact-alarm settings can be unavailable on some OEM builds. Reminders
+      // can still be scheduled with the OS's inexact alarm mechanism.
+      debugPrint('WorkLog exact-alarm permission request failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
     return granted
         ? ReminderScheduleOutcome.exact
         : ReminderScheduleOutcome.approximate;
