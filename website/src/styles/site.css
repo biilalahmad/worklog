@@ -822,24 +822,19 @@ h2 {
   margin-top: 4px;
 }
 
-/* Screenshots gallery */
-.screenshots-section { overflow: hidden; }
-.screenshots-scroll {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding: 8px 0 20px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+/* App preview gallery */
+.screenshots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 28px;
+  margin-top: 28px;
 }
-.screenshot-item {
-  flex: 0 0 280px;
-  scroll-snap-align: start;
-}
+.screenshot-item { min-width: 0; margin: 0; }
 .screenshot-item img {
-  width: 100%;
+  display: block;
+  width: min(100%, 280px);
+  margin-inline: auto;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-card);
@@ -850,8 +845,9 @@ h2 {
 .screenshot-item figcaption {
   font-size: 13px;
   color: var(--muted);
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: center;
+  font-weight: 600;
 }
 
 /* Trust section */
@@ -1863,8 +1859,7 @@ h2 {
 
   .trust-grid { grid-template-columns: 1fr; }
 
-  .screenshots-scroll { gap: 12px; }
-  .screenshot-item { flex: 0 0 220px; }
+  .screenshots-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; }
 
   .final-cta { display: block; }
   .final-cta-actions { margin-top: 24px; }
@@ -2142,17 +2137,36 @@ h2 {
 .feature-detail-icon .feature-icon-svg { width: 23px; height: 23px; }
 .feature-card-icon { display: grid; place-items: center; }
 .trust-card-icon { display: grid; place-items: center; }
-.screenshots-scroll { padding: 12px 3px 22px; }
-.screenshot-item { flex-basis: 232px; }
 .screenshot-item img {
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 360 / 640;
   object-fit: cover;
   border-radius: 20px;
   border: 1px solid var(--line);
   background: var(--pale);
   box-shadow: var(--shadow-card);
 }
-.screenshot-item figcaption { padding-top: 12px; }
+.release-history-section { background: var(--pale); }
+.release-history-section h2 { margin: 12px 0 8px; }
+.release-history-section .section-lede { margin-bottom: 24px; }
+.release-history-list { margin: 0; padding: 0; list-style: none; }
+.release-history-item {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 110px 130px auto;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 20px;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  background: var(--white);
+}
+.release-history-item:first-child { border-radius: 16px 16px 0 0; }
+.release-history-item:last-child { border-bottom: 1px solid var(--line); border-radius: 0 0 16px 16px; }
+.release-history-version { display: flex; align-items: center; gap: 9px; color: var(--navy); }
+.release-history-version strong { font-size: 15px; }
+.release-current-badge { padding: 4px 8px; border-radius: 999px; color: var(--navy); background: #e5f1fa; font-size: 11px; font-weight: 700; }
+.release-history-build, .release-history-date { color: var(--muted); font-size: 13px; }
+.release-history-link { color: var(--blue); font-size: 13px; font-weight: 700; text-decoration: none; }
+.release-history-link:hover { text-decoration: underline; }
 .feature-mini-nav {
   position: relative;
   z-index: 1;
@@ -2254,6 +2268,10 @@ h2 {
   .feature-detail-grid { grid-template-columns: 1fr; }
   .download-layout { grid-template-columns: 1fr; }
   .download-info-grid { grid-template-columns: 1fr 1fr; }
+  .release-history-item { grid-template-columns: 1fr auto; gap: 8px 14px; }
+  .release-history-build { grid-column: 1; }
+  .release-history-date { grid-column: 2; grid-row: 2; text-align: right; }
+  .release-history-link { grid-column: 1 / -1; }
   .verified-steps { grid-template-columns: 1fr; }
 }
 
@@ -2267,6 +2285,9 @@ h2 {
   .float-earnings { top: 48%; }
   .float-reminder { top: 69%; }
   .download-info-grid { grid-template-columns: 1fr; }
+  .screenshots-grid { grid-template-columns: 1fr; gap: 22px; }
+  .screenshot-item img { width: min(100%, 280px); }
+  .release-history-item { padding: 15px; }
   .install-panel { padding: 20px; }
   .verified-card { padding: 28px 20px; }
 }

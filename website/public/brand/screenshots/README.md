@@ -1,8 +1,8 @@
-# WorkLog screenshot placeholders
+# WorkLog app preview mockups
 
-The `.svg` files in this folder are lightweight visual placeholders, not real app screenshots. Replace each with a genuine WorkLog Android screenshot before launch.
+The `.svg` files in this folder are lightweight, privacy-safe illustrations of WorkLog's Android screens. They are mockups, not captures of live user data.
 
-Keep the filenames used by `website/src/pages/index.astro`, or update that page when you use another image format:
+Keep the filenames used by `website/src/pages/index.astro`, or update that page if you change the image format:
 
 - `screenshot-clients.svg`
 - `screenshot-worklog.svg`
@@ -11,4 +11,4 @@ Keep the filenames used by `website/src/pages/index.astro`, or update that page 
 - `screenshot-reminders.svg`
 - `screenshot-search.svg`
 
-Portrait screenshots around 360 × 640 pixels or higher work well in the mobile gallery. Use PNG or WebP for the final app captures and keep the screenshots free of real client names, email addresses, invoice links, or financial details.
+The images are vector assets, so they remain crisp at different screen sizes and add very little page weight. Keep sample content fictional and avoid real client names, email addresses, invoice links, or financial details.

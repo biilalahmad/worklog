@@ -17,7 +17,7 @@ const faqHref = isHome ? '#faq' : isCurrent('/help') ? '/help/#faq' : '/#faq';
     <nav id="site-menu" class="site-nav" data-site-menu aria-label="Main navigation">
       <a href={isCurrent('/features') ? '/features/' : `${anchorBase}#features`} aria-current={isCurrent('/features') ? 'page' : undefined}>Features</a>
       <a href={`${anchorBase}#how-it-works`}>How it works</a>
-      <a href={`${anchorBase}#screenshots`}>Screenshots</a>
+      <a href={`${anchorBase}#screenshots`}>App previews</a>
       <a href={faqHref} aria-current={isCurrent('/help') ? 'page' : undefined}>FAQ</a>
       <a href="/support/" aria-current={isCurrent('/support') ? 'page' : undefined}>Support</a>
       <a class="button button-small button-primary" href="/download/">Download for Android</a>

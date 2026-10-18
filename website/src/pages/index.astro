@@ -35,12 +35,12 @@ const faqPreview = [
 ];
 
 const screenshots = [
-  { src: '/brand/screenshots/screenshot-clients.svg', alt: 'Placeholder for a real WorkLog client list screenshot', caption: 'Clients & projects' },
-  { src: '/brand/screenshots/screenshot-worklog.svg', alt: 'Placeholder for a real WorkLog work log screenshot', caption: 'Work log' },
-  { src: '/brand/screenshots/screenshot-invoice.svg', alt: 'Placeholder for a real WorkLog invoice screenshot', caption: 'Invoices' },
-  { src: '/brand/screenshots/screenshot-finance.svg', alt: 'Placeholder for a real WorkLog finance screenshot', caption: 'Finances' },
-  { src: '/brand/screenshots/screenshot-reminders.svg', alt: 'Placeholder for a real WorkLog reminders screenshot', caption: 'Reminders' },
-  { src: '/brand/screenshots/screenshot-search.svg', alt: 'Placeholder for a real WorkLog search screenshot', caption: 'Search' },
+  { src: '/brand/screenshots/screenshot-clients.svg', alt: 'Illustrative WorkLog clients and projects screen mockup', caption: 'Clients & projects' },
+  { src: '/brand/screenshots/screenshot-worklog.svg', alt: 'Illustrative WorkLog daily work log screen mockup', caption: 'Work log' },
+  { src: '/brand/screenshots/screenshot-invoice.svg', alt: 'Illustrative WorkLog invoice screen mockup', caption: 'Invoices' },
+  { src: '/brand/screenshots/screenshot-finance.svg', alt: 'Illustrative WorkLog finance overview screen mockup', caption: 'Finances' },
+  { src: '/brand/screenshots/screenshot-reminders.svg', alt: 'Illustrative WorkLog reminders screen mockup', caption: 'Reminders' },
+  { src: '/brand/screenshots/screenshot-search.svg', alt: 'Illustrative WorkLog global search screen mockup', caption: 'Search' },
 ];
 ---
 <SiteLayout title="WorkLog — your freelance work, clearly tracked" description="Log clients, projects, tasks, time, invoices and finances in one simple workspace. WorkLog is a personal work log for freelancers across every field.">
@@ -145,10 +145,10 @@ const screenshots = [
   <!-- 6. Screenshots gallery -->
   <section class="section screenshots-section" id="screenshots">
     <div class="container">
-      <span class="eyebrow">SEE IT IN ACTION</span>
-      <h2>Screenshots from the app.</h2>
-      <p class="section-lede">A quick look at how WorkLog keeps your freelance work organized.</p>
-      <div class="screenshots-scroll">
+      <span class="eyebrow">PRODUCT PREVIEWS</span>
+      <h2>A closer look at WorkLog.</h2>
+      <p class="section-lede">Illustrative app screens for the everyday workflows freelancers use.</p>
+      <div class="screenshots-grid">
         {screenshots.map(s => (
           <figure class="screenshot-item">
             <img src={s.src} alt={s.alt} width="360" height="640" loading="lazy" decoding="async" />

@@ -4,10 +4,16 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 const releaseUrl = 'https://github.com/biilalahmad/worklog/releases/latest';
 const apkUrl = `${releaseUrl}/download/WorkLog.apk`;
 const releaseInfo = [
-  ['Version', 'Add latest version'],
-  ['APK size', 'Add file size'],
-  ['Minimum Android', 'Confirm before launch'],
-  ['Last updated', 'Add release date'],
+  ['Version', '0.5.2'],
+  ['Build number / version code', '3'],
+  ['APK size', '70.7 MB'],
+  ['Minimum Android', 'Android 7.0 (API 24)+'],
+  ['Released', '18 October 2026'],
+];
+const releaseHistory = [
+  { version: '0.5.2', build: '3', date: '18 Oct 2026', datetime: '2026-10-18', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.2', current: true },
+  { version: '0.5.1', build: '2', date: '12 Oct 2026', datetime: '2026-10-12', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.1', current: false },
+  { version: '0.5.0', build: '1', date: '11 Oct 2026', datetime: '2026-10-11', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.0', current: false },
 ];
 ---
 <SiteLayout title="Download WorkLog for Android" description="Download WorkLog for Android from the official GitHub release and find simple installation and update instructions.">
@@ -41,6 +47,23 @@ const releaseInfo = [
         </ol>
         <p class="install-note"><strong>Android security note</strong>Your browser may warn that the app is not from Google Play. Only install the APK downloaded from this official WorkLog page and the linked GitHub release.</p>
       </aside>
+    </div>
+  </section>
+  <section class="section section-space release-history-section" aria-labelledby="release-history-title">
+    <div class="container narrow">
+      <span class="eyebrow">VERSION HISTORY</span>
+      <h2 id="release-history-title">WorkLog releases.</h2>
+      <p class="section-lede">The latest Android version and previous public releases.</p>
+      <ol class="release-history-list">
+        {releaseHistory.map((release) => (
+          <li class="release-history-item">
+            <div class="release-history-version"><strong>v{release.version}</strong>{release.current && <span class="release-current-badge">Latest</span>}</div>
+            <span class="release-history-build">Build {release.build}</span>
+            <time class="release-history-date" datetime={release.datetime}>{release.date}</time>
+            <a class="release-history-link" href={release.href}>Release details <span aria-hidden="true">↗</span></a>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
   <section class="section solution-section"><div class="container narrow"><span class="eyebrow">UPDATING WORKLOG</span><h2>Keep your existing app and data.</h2><p>When a newer release is available, download it and install it over the current WorkLog app. You should not need to uninstall first as long as the package identity and signing key remain the same. Always keep a backup of your important records.</p></div></section>
