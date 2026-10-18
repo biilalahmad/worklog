@@ -6,7 +6,7 @@ WorkLog is an Android app that helps freelancers keep clients, projects, work lo
 
 - **Website:** https://worklog-site.netlify.app
 - **Download the app:** https://worklog-site.netlify.app/download/
-- **Latest APK (direct):** https://github.com/bilalahmed70/worklog/releases/latest/download/app-release.apk
+- **Latest APK (direct):** https://github.com/biilalahmad/worklog/releases/latest/download/WorkLog.apk
 - **Support:** worklog.support@gmail.com
 
 <!--
