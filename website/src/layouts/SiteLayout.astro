@@ -102,6 +102,46 @@ const siteName = 'WorkLog';
         try { localStorage.setItem('worklog-theme', next); } catch { /* Theme still applies for this visit. */ }
       });
 
+      const heroSky = document.querySelector<HTMLElement>('.hero-section');
+      const skyClouds = Array.from(heroSky?.querySelectorAll<HTMLElement>('[data-parallax-cloud]') ?? []);
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+      if (heroSky && skyClouds.length && finePointer.matches && !reducedMotion.matches) {
+        let pointerX = 0;
+        let pointerY = 0;
+        let animationFrame = 0;
+        const updateCloudPositions = () => {
+          animationFrame = 0;
+          for (const cloud of skyClouds) {
+            const depth = Number(cloud.dataset.depth ?? 12);
+            cloud.style.setProperty('--pointer-x', `${pointerX * depth}px`);
+            cloud.style.setProperty('--pointer-y', `${pointerY * depth}px`);
+          }
+        };
+        const queueCloudUpdate = () => {
+          if (!animationFrame) animationFrame = window.requestAnimationFrame(updateCloudPositions);
+        };
+        heroSky.addEventListener('pointermove', (event) => {
+          if (reducedMotion.matches) return;
+          const bounds = heroSky.getBoundingClientRect();
+          if (!bounds.width || !bounds.height) return;
+          pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * -1;
+          pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * -1;
+          queueCloudUpdate();
+        }, { passive: true });
+        heroSky.addEventListener('pointerleave', () => {
+          pointerX = 0;
+          pointerY = 0;
+          queueCloudUpdate();
+        }, { passive: true });
+        reducedMotion.addEventListener('change', (event) => {
+          if (!event.matches) return;
+          pointerX = 0;
+          pointerY = 0;
+          queueCloudUpdate();
+        });
+      }
+
       document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
         const viewport = carousel.querySelector<HTMLElement>('[data-carousel-viewport]');
         const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.screenshot-item'));

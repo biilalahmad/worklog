@@ -20,6 +20,8 @@ on:
       - 'package-lock.json'
       - 'scripts/build-netlify.mjs'
       - '.github/workflows/deploy-website.yml'
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -36,6 +38,8 @@ jobs:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'release' && 'main' || github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -51,7 +55,7 @@ jobs:
       - name: Test contact function
         run: npm run test:contact
       - name: Verify production invoice configuration
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         env:
           PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || vars.PUBLIC_SUPABASE_ANON_KEY }}
@@ -70,7 +74,7 @@ jobs:
           test -f website/dist/verified/index.html
           test -f website/dist/invoice/index.html
       - name: Verify production deploy credentials
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           test -n "$NETLIFY_SITE_ID"
           test -n "$NETLIFY_AUTH_TOKEN"
@@ -78,5 +82,5 @@ jobs:
         if: github.event_name == 'pull_request' && env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         run: npx --yes netlify-cli@27.12.0 deploy --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Preview $GITHUB_SHA"
       - name: Deploy production
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: npx --yes netlify-cli@27.12.0 deploy --prod --dir=website/dist --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN" --message="Production $GITHUB_SHA"

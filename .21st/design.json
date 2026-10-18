@@ -65,6 +65,11 @@
       "choice": "Give the website a persisted light/dark theme toggle, a swipeable preview carousel with wraparound controls, and restrained drifting cloud accents on the homepage.",
       "source": "User request",
       "date": "2026-10-18"
+    },
+    {
+      "choice": "Use lightweight inline SVG clouds in the homepage hero with gentle drift and pointer parallax; honor reduced-motion preferences.",
+      "source": "User request",
+      "date": "2026-10-18"
     }
   ],
   "evidence": [

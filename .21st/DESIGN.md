@@ -16,7 +16,7 @@ read-only invoices. Account registration and app login stay in the Android app.
 - Use the supplied WorkLog logo, spacious spacing, soft blue-tinted card shadows,
   and rounded controls.
 - Motion is subtle and purposeful; always respect `prefers-reduced-motion`.
-- Homepage sky accents drift gently; app previews loop right automatically and also provide swipe plus wrapping previous/next controls. The carousel pauses for hover, focus, and direct interaction, and respects reduced-motion preferences.
+- Homepage sky accents use inline SVG clouds with gentle drift and pointer parallax; app previews loop right automatically and also provide swipe plus wrapping previous/next controls. The carousel pauses for hover, focus, and direct interaction, and respects reduced-motion preferences.
 
 ## Implementation
 

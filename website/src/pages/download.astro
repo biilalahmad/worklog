@@ -1,19 +1,66 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { readFile } from 'node:fs/promises';
 
-const releaseUrl = 'https://github.com/biilalahmad/worklog/releases/latest';
-const apkUrl = `${releaseUrl}/download/WorkLog.apk`;
-const releaseInfo = [
+const releasesApiUrl = 'https://api.github.com/repos/biilalahmad/worklog/releases?per_page=10';
+let apkUrl = 'https://github.com/biilalahmad/worklog/releases/latest/download/WorkLog.apk';
+let releaseInfo: [string, string][] = [
   ['Version', '0.5.2'],
   ['APK size', '70.7 MB'],
   ['Minimum Android', 'Android 7.0+'],
   ['Released', '18 October 2026'],
 ];
-const releaseHistory = [
+let releaseHistory = [
   { version: '0.5.2', build: '3', date: '18 Oct 2026', datetime: '2026-10-18', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.2', current: true },
   { version: '0.5.1', build: '2', date: '12 Oct 2026', datetime: '2026-10-12', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.1', current: false },
   { version: '0.5.0', build: '1', date: '11 Oct 2026', datetime: '2026-10-11', href: 'https://github.com/biilalahmad/worklog/releases/tag/v0.5.0', current: false },
 ];
+
+try {
+  const appManifest = await readFile(new URL('../../../pubspec.yaml', import.meta.url), 'utf8');
+  const appVersion = appManifest.match(/^version:\s*(\d+\.\d+\.\d+)\+(\d+)/m);
+  const currentAppBuild = appVersion ? { version: appVersion[1], build: appVersion[2] } : null;
+  const response = await fetch(releasesApiUrl, {
+    headers: { Accept: 'application/vnd.github+json' },
+    signal: AbortSignal.timeout(5000),
+  });
+  if (!response.ok) throw new Error(`GitHub Releases returned ${response.status}`);
+  const published = (await response.json()).filter((release) => !release.draft && !release.prerelease);
+  const withApk = published.map((release) => ({
+    release,
+    apk: release.assets?.find((asset) => asset.name.toLowerCase().endsWith('.apk')),
+  })).filter(({ apk }) => apk);
+  const latest = withApk[0];
+  if (latest) {
+    const version = latest.release.tag_name.replace(/^v/i, '');
+    const publishedAt = new Date(latest.release.published_at);
+    const dateLong = publishedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    apkUrl = latest.apk.browser_download_url;
+    releaseInfo = [
+      ['Version', version],
+      ['APK size', `${(latest.apk.size / (1024 * 1024)).toFixed(1)} MB`],
+      ['Minimum Android', 'Android 7.0+'],
+      ['Released', dateLong],
+    ];
+    const knownBuilds: Record<string, string> = { '0.5.0': '1', '0.5.1': '2', '0.5.2': '3' };
+    releaseHistory = withApk.slice(0, 3).map(({ release }) => {
+      const releaseVersion = release.tag_name.replace(/^v/i, '');
+      const releaseDate = new Date(release.published_at);
+      const notesBuild = `${release.name ?? ''}\n${release.body ?? ''}`.match(/\bbuild(?:\s*(?:number|code))?\s*[:#-]?\s*(\d+)\b/i)?.[1];
+      const build = notesBuild ?? (currentAppBuild?.version === releaseVersion ? currentAppBuild.build : knownBuilds[releaseVersion]) ?? '—';
+      return {
+        version: releaseVersion,
+        build,
+        date: releaseDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }),
+        datetime: releaseDate.toISOString().slice(0, 10),
+        href: release.html_url,
+        current: release.id === latest.release.id,
+      };
+    });
+  }
+} catch {
+  // Keep the last verified public-release details if GitHub is unavailable during this build.
+}
 ---
 <SiteLayout title="Download WorkLog for Android" description="Download WorkLog for Android from the official GitHub release and find simple installation and update instructions.">
   <section class="page-hero download-hero">
