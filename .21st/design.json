@@ -16,7 +16,7 @@
     ]
   },
   "design": {
-    "colorMode": "light website; light and dark app",
+    "colorMode": "user-selectable light and dark website; light and dark app",
     "colors": {
       "navy": "#173B61",
       "blue": "#2F6F9F",
@@ -60,6 +60,11 @@
       "choice": "Use Poppins across the app and public website; keep bundled font files for app rendering and self-host fonts on the website.",
       "source": "User-provided auth mockups and font files",
       "date": "2026-10-12"
+    },
+    {
+      "choice": "Give the website a persisted light/dark theme toggle, a swipeable preview carousel with wraparound controls, and restrained drifting cloud accents on the homepage.",
+      "source": "User request",
+      "date": "2026-10-18"
     }
   ],
   "evidence": [

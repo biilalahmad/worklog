@@ -12,10 +12,11 @@ read-only invoices. Account registration and app login stay in the Android app.
 - Palette: navy `#173B61`, blue `#2F6F9F`, sky `#73BAF0`, pale `#F2F7FB`, white.
 - App and auth forms: bundled Poppins. Public website: self-hosted Poppins in regular,
   medium and bold weights; no external font request is needed.
-- The marketing site is light; the app supports both light and dark themes.
+- The marketing site supports a persisted light/dark preference; the app has its own light and dark themes.
 - Use the supplied WorkLog logo, spacious spacing, soft blue-tinted card shadows,
   and rounded controls.
 - Motion is subtle and purposeful; always respect `prefers-reduced-motion`.
+- Homepage sky accents drift gently; app previews loop right automatically and also provide swipe plus wrapping previous/next controls. The carousel pauses for hover, focus, and direct interaction, and respects reduced-motion preferences.
 
 ## Implementation
 

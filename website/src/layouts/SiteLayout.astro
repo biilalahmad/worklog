@@ -18,6 +18,7 @@ const siteName = 'WorkLog';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#183b62" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="description" content={description} />
     <meta name="robots" content={noindex ? 'noindex,nofollow' : 'index,follow'} />
     <link rel="canonical" href={canonical} />
@@ -37,6 +38,20 @@ const siteName = 'WorkLog';
     <meta name="twitter:image" content={new URL('/brand/worklog-icon.png', Astro.site)} />
 
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        try {
+          const saved = localStorage.getItem('worklog-theme');
+          const theme = saved === 'light' || saved === 'dark'
+            ? saved
+            : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch {
+          document.documentElement.dataset.theme = 'light';
+        }
+        document.documentElement.style.colorScheme = document.documentElement.dataset.theme;
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -50,6 +65,7 @@ const siteName = 'WorkLog';
         toggle?.setAttribute('aria-expanded', String(open));
         toggle?.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
         menu?.classList.toggle('is-open', open);
+        document.body.classList.toggle('menu-open', open && window.matchMedia('(max-width: 680px)').matches);
       };
       toggle?.addEventListener('click', () => {
         setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
@@ -67,6 +83,67 @@ const siteName = 'WorkLog';
         if (event.target instanceof Node && !menu?.contains(event.target) && !toggle?.contains(event.target)) {
           setMenuOpen(false);
         }
+      });
+
+      const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+      const setTheme = (theme: 'light' | 'dark') => {
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#12263b' : '#183b62');
+        themeToggle?.setAttribute('aria-pressed', String(theme === 'dark'));
+        themeToggle?.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
+        const label = themeToggle?.querySelector<HTMLElement>('[data-theme-label]');
+        if (label) label.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+      };
+      setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+      themeToggle?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        try { localStorage.setItem('worklog-theme', next); } catch { /* Theme still applies for this visit. */ }
+      });
+
+      document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
+        const viewport = carousel.querySelector<HTMLElement>('[data-carousel-viewport]');
+        const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.screenshot-item'));
+        const status = carousel.querySelector<HTMLElement>('[data-carousel-status]');
+        if (!viewport || slides.length < 2) return;
+        let activeIndex = 0;
+        let pauseUntil = 0;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const updateStatus = (index: number) => {
+          activeIndex = index;
+          const caption = slides[index].querySelector('figcaption')?.textContent?.trim() ?? 'App preview';
+          if (status) status.textContent = `${caption}, ${index + 1} of ${slides.length}`;
+        };
+        const goTo = (index: number) => {
+          const next = (index + slides.length) % slides.length;
+          const viewportLeft = viewport.getBoundingClientRect().left;
+          const slideLeft = slides[next].getBoundingClientRect().left + viewport.scrollLeft - viewportLeft;
+          viewport.scrollTo({ left: slideLeft, behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+          updateStatus(next);
+        };
+        const pauseForInteraction = () => { pauseUntil = Date.now() + 7000; };
+        carousel.querySelector('[data-carousel-previous]')?.addEventListener('click', () => { pauseForInteraction(); goTo(activeIndex - 1); });
+        carousel.querySelector('[data-carousel-next]')?.addEventListener('click', () => { pauseForInteraction(); goTo(activeIndex + 1); });
+        viewport.addEventListener('pointerdown', pauseForInteraction, { passive: true });
+        viewport.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowRight') { event.preventDefault(); pauseForInteraction(); goTo(activeIndex + 1); }
+          if (event.key === 'ArrowLeft') { event.preventDefault(); pauseForInteraction(); goTo(activeIndex - 1); }
+        });
+        window.setInterval(() => {
+          if (reducedMotion.matches || document.visibilityState !== 'visible' || carousel.matches(':hover') || carousel.contains(document.activeElement) || Date.now() < pauseUntil) return;
+          goTo(activeIndex + 1);
+        }, 5000);
+        let scrollTimer = 0;
+        viewport.addEventListener('scroll', () => {
+          window.clearTimeout(scrollTimer);
+          scrollTimer = window.setTimeout(() => {
+            const left = viewport.getBoundingClientRect().left;
+            const closest = slides.reduce((best, slide, index) =>
+              Math.abs(slide.getBoundingClientRect().left - left) < Math.abs(slides[best].getBoundingClientRect().left - left) ? index : best, 0);
+            updateStatus(closest);
+          }, 90);
+        }, { passive: true });
       });
     </script>
   </body>

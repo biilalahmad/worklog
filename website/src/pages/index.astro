@@ -47,6 +47,8 @@ const screenshots = [
 
   <!-- 1. Hero -->
   <section class="hero-section">
+    <div class="hero-sky-cloud sky-cloud-one" aria-hidden="true"></div>
+    <div class="hero-sky-cloud sky-cloud-two" aria-hidden="true"></div>
     <div class="container hero-grid">
       <div class="hero-copy">
         <div class="eyebrow"><span class="eyebrow-dot"></span> A CALMER WAY TO FREELANCE</div>
@@ -133,7 +135,7 @@ const screenshots = [
   </section>
 
   <!-- 5. Who it's for -->
-  <section class="section section-space">
+  <section class="section section-space audience-section">
     <div class="container section-heading-row"><div><span class="eyebrow">MADE FOR INDEPENDENT WORK</span><h2>Whatever your freelance work looks like.</h2></div><p>WorkLog is for the people who manage their own work — across services, projects and clients.</p></div>
     <div class="container audience-grid">
       {audience.map(a => (
@@ -148,13 +150,27 @@ const screenshots = [
       <span class="eyebrow">PRODUCT PREVIEWS</span>
       <h2>A closer look at WorkLog.</h2>
       <p class="section-lede">Illustrative app screens for the everyday workflows freelancers use.</p>
-      <div class="screenshots-grid">
-        {screenshots.map(s => (
-          <figure class="screenshot-item">
-            <img src={s.src} alt={s.alt} width="360" height="640" loading="lazy" decoding="async" />
-            <figcaption>{s.caption}</figcaption>
-          </figure>
-        ))}
+      <div class="screenshot-carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="WorkLog app previews">
+        <div class="screenshot-carousel-controls">
+          <span class="carousel-hint">Swipe or use the arrows to explore</span>
+          <button class="screenshot-carousel-button" type="button" data-carousel-previous aria-label="Previous app preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <button class="screenshot-carousel-button" type="button" data-carousel-next aria-label="Next app preview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
+        </div>
+        <div class="screenshot-viewport" data-carousel-viewport tabindex="0" aria-label="App preview slides">
+          <div class="screenshot-track">
+            {screenshots.map(s => (
+              <figure class="screenshot-item">
+                <img src={s.src} alt={s.alt} width="360" height="640" loading="lazy" decoding="async" />
+                <figcaption>{s.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+        <span class="sr-only" data-carousel-status role="status" aria-live="off">{screenshots[0].caption}, 1 of {screenshots.length}</span>
       </div>
     </div>
   </section>
