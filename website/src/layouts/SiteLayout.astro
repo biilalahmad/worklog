@@ -91,9 +91,9 @@ const siteName = 'WorkLog';
         document.documentElement.style.colorScheme = theme;
         document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#12263b' : '#183b62');
         themeToggle?.setAttribute('aria-pressed', String(theme === 'dark'));
-        themeToggle?.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
-        const label = themeToggle?.querySelector<HTMLElement>('[data-theme-label]');
-        if (label) label.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+        const actionLabel = `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`;
+        themeToggle?.setAttribute('aria-label', actionLabel);
+        themeToggle?.setAttribute('title', actionLabel);
       };
       setTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
       themeToggle?.addEventListener('click', () => {
@@ -103,23 +103,23 @@ const siteName = 'WorkLog';
       });
 
       const heroSky = document.querySelector<HTMLElement>('.hero-section');
-      const skyClouds = Array.from(heroSky?.querySelectorAll<HTMLElement>('[data-parallax-cloud]') ?? []);
+      const heroStars = Array.from(heroSky?.querySelectorAll<HTMLElement>('[data-parallax-star]') ?? []);
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
-      if (heroSky && skyClouds.length && finePointer.matches && !reducedMotion.matches) {
+      if (heroSky && heroStars.length && finePointer.matches && !reducedMotion.matches) {
         let pointerX = 0;
         let pointerY = 0;
         let animationFrame = 0;
-        const updateCloudPositions = () => {
+        const updateStarPositions = () => {
           animationFrame = 0;
-          for (const cloud of skyClouds) {
-            const depth = Number(cloud.dataset.depth ?? 12);
-            cloud.style.setProperty('--pointer-x', `${pointerX * depth}px`);
-            cloud.style.setProperty('--pointer-y', `${pointerY * depth}px`);
+          for (const star of heroStars) {
+            const depth = Number(star.dataset.depth ?? 12);
+            star.style.setProperty('--pointer-x', `${pointerX * depth}px`);
+            star.style.setProperty('--pointer-y', `${pointerY * depth}px`);
           }
         };
-        const queueCloudUpdate = () => {
-          if (!animationFrame) animationFrame = window.requestAnimationFrame(updateCloudPositions);
+        const queueStarUpdate = () => {
+          if (!animationFrame) animationFrame = window.requestAnimationFrame(updateStarPositions);
         };
         heroSky.addEventListener('pointermove', (event) => {
           if (reducedMotion.matches) return;
@@ -127,18 +127,18 @@ const siteName = 'WorkLog';
           if (!bounds.width || !bounds.height) return;
           pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * -1;
           pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * -1;
-          queueCloudUpdate();
+          queueStarUpdate();
         }, { passive: true });
         heroSky.addEventListener('pointerleave', () => {
           pointerX = 0;
           pointerY = 0;
-          queueCloudUpdate();
+          queueStarUpdate();
         }, { passive: true });
         reducedMotion.addEventListener('change', (event) => {
           if (!event.matches) return;
           pointerX = 0;
           pointerY = 0;
-          queueCloudUpdate();
+          queueStarUpdate();
         });
       }
 
