@@ -118,6 +118,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       title: 'Sign Up',
       subtitle: '',
       compactHeader: true,
+      centerContent: true,
       bottomFooter: Text.rich(
         TextSpan(
           children: [

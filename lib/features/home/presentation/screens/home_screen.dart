@@ -635,9 +635,7 @@ class _HeroCard extends StatelessWidget {
     final glow = phase.colorFor(isDark);
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
+      child: Container(
           padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -645,8 +643,8 @@ class _HeroCard extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: isDark
                   ? [
-                      glow.withValues(alpha: 0.22),
-                      scheme.surface.withValues(alpha: 0.30)
+                      glow.withValues(alpha: 0.84),
+                      scheme.surface.withValues(alpha: 0.96)
                     ]
                   : [AppColors.forest, AppColors.forestLight],
             ),
@@ -720,7 +718,6 @@ class _HeroCard extends StatelessWidget {
               ),
             ],
           ),
-        ),
       ),
     );
   }

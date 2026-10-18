@@ -3,7 +3,7 @@
 /// works identically on every platform without an extra plugin.)
 class AppInfo {
   AppInfo._();
-  static const version = '0.5.2';
+  static const version = '0.5.3';
   static const privacyPolicyUrl = 'https://worklog-site.netlify.app/privacy/';
   static const termsOfServiceUrl = 'https://worklog-site.netlify.app/terms/';
   static const invoiceBaseUrl = String.fromEnvironment(

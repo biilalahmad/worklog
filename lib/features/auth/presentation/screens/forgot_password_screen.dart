@@ -83,6 +83,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ? 'Enter the code sent to your email.'
           : 'Enter the email linked to your WorkLog account to receive a reset code.',
       compactHeader: true,
+      centerContent: true,
       child: Form(
         key: _formKey,
         child: Column(

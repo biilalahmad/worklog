@@ -12,9 +12,55 @@ import 'package:worklog/features/reminders/domain/reminder_repository.dart';
 import 'package:worklog/features/reminders/presentation/providers/notification_provider.dart';
 import 'package:worklog/features/reminders/presentation/providers/reminder_providers.dart';
 import 'package:worklog/features/reminders/presentation/screens/reminder_form_screen.dart';
+import 'package:worklog/features/reminders/presentation/screens/reminders_screen.dart';
 import 'package:worklog/services/notifications/notification_service.dart';
 
 void main() {
+  testWidgets(
+      'deletes the reminder even when Android notification cancellation fails',
+      (tester) async {
+    final reminder = Reminder(
+      id: 'reminder-delete-test',
+      title: 'Send proposal',
+      dateTime: DateTime.now().add(const Duration(hours: 1)),
+    );
+    final repository = _DeleteTestReminderRepository(reminder);
+    final notifications = _CancelFailureNotificationService();
+    final router = GoRouter(
+      initialLocation: '/reminders',
+      routes: [
+        GoRoute(
+          path: '/reminders',
+          builder: (context, state) => const RemindersScreen(),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          reminderRepositoryProvider.overrideWithValue(repository),
+          notificationServiceProvider.overrideWithValue(notifications),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Delete reminder'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(repository.deletedId, reminder.id);
+    expect(
+      find.text(
+          'Reminder deleted, but its pending notification could not be cancelled.'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('reminder calendar fits a phone dialog at large system text',
       (tester) async {
     tester.view.physicalSize = const Size(360, 640);
@@ -124,6 +170,31 @@ class _FakeReminderRepository implements ReminderRepository {
 
   @override
   Stream<List<Reminder>> watchUpcoming() => Stream.value([]);
+}
+
+class _DeleteTestReminderRepository extends _FakeReminderRepository {
+  _DeleteTestReminderRepository(this.reminder);
+
+  final Reminder reminder;
+  String? deletedId;
+
+  @override
+  Stream<List<Reminder>> watchUpcoming() => Stream.value([reminder]);
+
+  @override
+  Future<void> deleteReminder(String reminderId) async {
+    deletedId = reminderId;
+  }
+}
+
+class _CancelFailureNotificationService extends NotificationService {
+  @override
+  Future<bool> areNotificationsEnabled() async => true;
+
+  @override
+  Future<void> cancel(int id) async {
+    throw StateError('Simulated notification plugin failure');
+  }
 }
 
 class _DelayedNotificationService extends NotificationService {

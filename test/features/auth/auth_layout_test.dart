@@ -52,8 +52,7 @@ void main() {
       (tester) async {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    await _expectNoScroll(tester, const SignupScreen(),
-        scale: 1, allowScroll: true);
+    await _expectNoScroll(tester, const SignupScreen(), scale: 1);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -118,6 +117,12 @@ Future<void> _expectNoScroll(
   expect(find.byType(SingleChildScrollView), findsOneWidget);
   final scrollExtent =
       tester.state<ScrollableState>(pageScroll.first).position.maxScrollExtent;
+  if (screen is SignupScreen || screen is ForgotPasswordScreen) {
+    final formCenter = tester.getRect(find.byType(Form)).center.dy;
+    final contentCenter =
+        tester.getRect(find.byType(SingleChildScrollView)).center.dy;
+    expect((formCenter - contentCenter).abs(), lessThan(20));
+  }
   if (allowScroll) {
     expect(scrollExtent, greaterThanOrEqualTo(0));
   } else {

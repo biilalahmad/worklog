@@ -253,15 +253,31 @@ class _ReminderTile extends ConsumerWidget {
     );
     if (confirmed != true || !context.mounted) return;
     try {
-      await ref
-          .read(notificationServiceProvider)
-          .cancelReminderNotifications(reminder);
       await ref.read(reminderRepositoryProvider).deleteReminder(reminder.id);
     } catch (error) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not delete reminder: $error')),
+          SnackBar(
+            content: Text(
+                'Could not delete reminder: ${Failure.from(error).message}'),
+          ),
         );
+      }
+      return;
+    }
+
+    try {
+      await ref
+          .read(notificationServiceProvider)
+          .cancelReminderNotifications(reminder);
+    } catch (error, stackTrace) {
+      debugPrint('WorkLog reminder deleted, but notification cleanup failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Reminder deleted, but its pending notification could not be cancelled.'),
+        ));
       }
     }
   }

@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,24 +25,16 @@ class GymDashboardScreen extends ConsumerStatefulWidget {
 
 class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
   @override
-  void initState() {
-    super.initState();
-    Future<void>(() async {
-      try {
-        await ref.read(workoutRepositoryProvider).discardExpiredEmptyWorkouts();
-      } catch (_) {}
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final todayRange =
-        GymDateRange(DateKeys.startOfDay(today), DateKeys.endOfDay(today));
-    final todayWorkoutsAsync = ref.watch(workoutsForRangeProvider(todayRange));
     final recentWorkouts =
         ref.watch(recentWorkoutsProvider).valueOrNull ?? const <Workout>[];
+    final todayWorkouts = recentWorkouts
+        .where((workout) =>
+            !workout.date.isBefore(today) &&
+            workout.date.isBefore(today.add(const Duration(days: 1))))
+        .toList(growable: false);
     Workout? unfinishedWorkout;
     for (final workout in recentWorkouts) {
       if (workout.completedAt == null) {
@@ -109,7 +99,7 @@ class _GymDashboardScreenState extends ConsumerState<GymDashboardScreen> {
           FadeSlideIn(
             child: _GymHeroCard(
               streak: streak,
-              todayWorkouts: todayWorkoutsAsync.valueOrNull ?? const [],
+              todayWorkouts: todayWorkouts,
               recentWorkouts: recentWorkouts,
               meals: mealsAsync.valueOrNull ?? const [],
               target: targetAsync.valueOrNull ?? const DietTarget(),
@@ -253,17 +243,15 @@ class _GymHeroCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-          child: Container(
+        child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  scheme.primary.withValues(alpha: .88),
-                  scheme.primary.withValues(alpha: .72),
+                  scheme.primary,
+                  scheme.primary.withValues(alpha: .94),
                 ],
               ),
               border:
@@ -398,7 +386,6 @@ class _GymHeroCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
         ),
       ),
     );

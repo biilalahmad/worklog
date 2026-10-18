@@ -194,8 +194,10 @@ class _ReminderFormScreenState extends ConsumerState<ReminderFormScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not save reminder: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Could not save reminder: ${Failure.from(e).message}'),
+        ));
       }
       return;
     }

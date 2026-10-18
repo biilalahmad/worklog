@@ -14,6 +14,7 @@ class AuthScaffold extends StatelessWidget {
   final Widget? bottomFooter;
   final Widget? topLeft;
   final bool compactHeader;
+  final bool centerContent;
   final String? greeting;
   final String? greetingSubtitle;
   const AuthScaffold({
@@ -25,6 +26,7 @@ class AuthScaffold extends StatelessWidget {
     this.bottomFooter,
     this.topLeft,
     this.compactHeader = false,
+    this.centerContent = false,
     this.greeting,
     this.greetingSubtitle,
   });
@@ -212,50 +214,67 @@ class AuthScaffold extends StatelessWidget {
                       top: false,
                       child: LayoutBuilder(
                         builder: (context, bodyConstraints) {
-                          final content = SingleChildScrollView(
-                            keyboardDismissBehavior:
-                                ScrollViewKeyboardDismissBehavior.onDrag,
-                            padding: EdgeInsets.fromLTRB(
-                              AppSpacing.authInner,
-                              16,
-                              AppSpacing.authInner,
-                              bottomFooter == null ? 16 : 8,
-                            ),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minHeight: math.max(
-                                  0,
-                                  bodyConstraints.maxHeight -
-                                      (bottomFooter == null ? 32 : 24),
+                          Widget buildContent(double availableHeight) {
+                            const topPadding = 16.0;
+                            final bottomPadding = bottomFooter == null ? 16.0 : 8.0;
+                            return SingleChildScrollView(
+                              keyboardDismissBehavior:
+                                  ScrollViewKeyboardDismissBehavior.onDrag,
+                              padding: EdgeInsets.fromLTRB(
+                                AppSpacing.authInner,
+                                topPadding,
+                                AppSpacing.authInner,
+                                bottomPadding,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minHeight: math.max(
+                                    0,
+                                    availableHeight -
+                                        topPadding -
+                                        bottomPadding,
+                                  ),
+                                  maxWidth: 480,
                                 ),
-                                maxWidth: 480,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  if (tallHeader) ...[
-                                    Text(
-                                      title,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 24,
-                                        height: 1.25,
-                                        fontWeight: FontWeight.w700,
-                                        color: scheme.onSurface,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: centerContent
+                                      ? MainAxisAlignment.center
+                                      : MainAxisAlignment.start,
+                                  children: [
+                                    if (tallHeader) ...[
+                                      Text(
+                                        title,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 24,
+                                          height: 1.25,
+                                          fontWeight: FontWeight.w700,
+                                          color: scheme.onSurface,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 14),
+                                      const SizedBox(height: 14),
+                                    ],
+                                    Theme(data: formTheme, child: child),
                                   ],
-                                  Theme(data: formTheme, child: child),
-                                ],
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          }
 
-                          if (bottomFooter == null) return content;
+                          if (bottomFooter == null) {
+                            return buildContent(bodyConstraints.maxHeight);
+                          }
                           return Column(
                             children: [
-                              Expanded(child: content),
+                              Expanded(
+                                child: LayoutBuilder(
+                                  builder: (context, contentConstraints) =>
+                                      buildContent(
+                                          contentConstraints.maxHeight),
+                                ),
+                              ),
                               if (!keyboardOpen)
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(

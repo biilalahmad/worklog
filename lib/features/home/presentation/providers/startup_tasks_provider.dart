@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../clients/presentation/providers/client_providers.dart';
+import '../../../gym/presentation/providers/gym_providers.dart';
 import '../../../reminders/presentation/providers/notification_provider.dart';
 import '../../../../core/utils/money.dart';
 
@@ -13,6 +16,13 @@ final startupTasksProvider = FutureProvider<void>((ref) async {
   final clientRepo = ref.read(clientRepositoryProvider);
   final projectRepo = ref.read(projectRepositoryProvider);
   final notifications = ref.read(notificationServiceProvider);
+
+  // Sweep abandoned empty sessions once per app session, instead of
+  // issuing the same cleanup query every time the Gym tab is opened.
+  unawaited(ref
+      .read(workoutRepositoryProvider)
+      .discardExpiredEmptyWorkouts()
+      .catchError((_) {}));
 
   try {
     await clientRepo.generateDueRetainerInvoices();
