@@ -5,7 +5,8 @@ import PageClouds from '../components/PageClouds.astro';
 <SiteLayout title="Contact WorkLog support" description="Contact WorkLog support for help with your account, work log, invoice sharing or app download.">
   <section class="page-hero support-contact-hero"><PageClouds /><div class="container narrow"><span class="eyebrow">CONTACT SUPPORT</span><h1>We’re here to help.</h1><p class="hero-lede">Tell us what’s happening. Please don’t send passwords, verification codes or payment card details.</p></div></section>
   <section class="section section-space"><div class="container support-grid">
-    <form class="support-form" id="support-form" novalidate>
+    <form class="support-form" id="support-form" name="support" method="POST" action="/support/?success=true" data-netlify="true" data-netlify-honeypot="website">
+      <input type="hidden" name="form-name" value="support" />
       <label for="support-name">Your name</label><input id="support-name" name="name" autocomplete="name" maxlength="100" required />
       <label for="support-email">Email address</label><input id="support-email" name="email" type="email" autocomplete="email" maxlength="254" required />
       <label for="support-topic">What do you need help with?</label><select id="support-topic" name="topic" required><option value="">Choose a topic</option><option>Account or sign-in</option><option>Clients or work log</option><option>Invoice or payment</option><option>App download or update</option><option>Other</option></select>
@@ -21,18 +22,27 @@ import PageClouds from '../components/PageClouds.astro';
     const form = document.querySelector<HTMLFormElement>('#support-form');
     const status = document.querySelector<HTMLElement>('#support-status');
     const submit = document.querySelector<HTMLButtonElement>('#support-submit');
+    if (form && status && new URLSearchParams(location.search).has('success')) {
+      form.reset();
+      status.textContent = 'Thanks—your message has been sent. We’ll reply by email.';
+      history.replaceState({}, '', location.pathname + location.hash);
+    }
     form?.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
       if (status) status.textContent = 'Sending your message…';
       if (submit) submit.disabled = true;
-      const values = Object.fromEntries(new FormData(form).entries());
       try {
-        const response = await fetch('/.netlify/functions/contact', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values),
+        const encoded = new URLSearchParams();
+        new FormData(form).forEach((value, key) => {
+          if (typeof value === 'string') encoded.append(key, value);
         });
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(result.message || 'The message could not be sent. Please email support directly.');
+        const response = await fetch('/support/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: encoded.toString(),
+        });
+        if (!response.ok) throw new Error('The message could not be sent. Please email support directly.');
         form.reset();
         if (status) status.textContent = 'Thanks—your message has been sent. We’ll reply by email.';
       } catch (error) {

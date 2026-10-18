@@ -41,7 +41,9 @@ const siteName = 'WorkLog';
     <script is:inline>
       (() => {
         try {
-          const saved = localStorage.getItem('worklog-theme');
+          const saved = document.cookie.split(';').map((cookie) => cookie.trim())
+            .find((cookie) => cookie.startsWith('worklog-theme='))
+            ?.slice('worklog-theme='.length);
           const theme = saved === 'light' || saved === 'dark'
             ? saved
             : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -86,6 +88,10 @@ const siteName = 'WorkLog';
       });
 
       const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+      const saveThemePreference = (theme: 'light' | 'dark') => {
+        const secure = location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `worklog-theme=${theme}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+      };
       const setTheme = (theme: 'light' | 'dark') => {
         document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
@@ -99,7 +105,7 @@ const siteName = 'WorkLog';
       themeToggle?.addEventListener('click', () => {
         const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
         setTheme(next);
-        try { localStorage.setItem('worklog-theme', next); } catch { /* Theme still applies for this visit. */ }
+        saveThemePreference(next);
       });
 
       const heroSky = document.querySelector<HTMLElement>('.hero-section');

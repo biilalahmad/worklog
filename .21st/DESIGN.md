@@ -18,6 +18,8 @@ read-only invoices. Account registration and app login stay in the Android app.
 - Motion is subtle and purposeful; always respect `prefers-reduced-motion`.
 - Homepage hero accents use inline SVG stars with gentle twinkle, drift, and pointer parallax; app previews loop right automatically and also provide swipe plus wrapping previous/next controls. The carousel pauses for hover, focus, and direct interaction, and respects reduced-motion preferences.
 - Interior page heroes use several small, softly animated inline SVG clouds; the homepage hero keeps its distinct animated star field. Keep the icon-only light/dark toggle visible in the navbar at every breakpoint. Center section/page introductions on desktop and tablet, except keep the support introduction left-aligned; leave the existing mobile composition intact.
+- Replace the homepage solution and download update-section spotlight gradients with soft, animated inline SVG clouds; keep the homepage FAQ title centered, outline the hamburger with a circular stroke, and show a gently moving sun only in the homepage hero in light mode.
+- Save the selected website theme in a first-party preference cookie. Submit the support form through Netlify Forms using URL-encoded fields and the existing honeypot.
 
 ## Implementation
 

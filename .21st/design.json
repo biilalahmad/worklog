@@ -75,6 +75,16 @@
       "choice": "Keep the icon-only light/dark toggle visible in the navbar at every breakpoint, center section and page introductions on desktop/tablet while preserving the support introduction's left alignment, and use small floating inline SVG clouds on interior page heroes while retaining stars on the homepage hero.",
       "source": "User request",
       "date": "2026-10-18"
+    },
+    {
+      "choice": "Replace the homepage solution and download update-section spotlight gradients with restrained animated SVG cloud accents, keep the homepage FAQ title centered, add a circular hamburger outline, and show a gently animated sun only in the light-theme homepage hero.",
+      "source": "User request and screenshot references",
+      "date": "2026-10-18"
+    },
+    {
+      "choice": "Persist the selected website theme in a first-party one-year cookie and use Netlify Forms URL-encoded submissions for the support form.",
+      "source": "User request",
+      "date": "2026-10-18"
     }
   ],
   "evidence": [
