@@ -17,6 +17,7 @@ read-only invoices. Account registration and app login stay in the Android app.
   and rounded controls.
 - Motion is subtle and purposeful; always respect `prefers-reduced-motion`.
 - Homepage hero accents use inline SVG stars with gentle twinkle, drift, and pointer parallax; app previews loop right automatically and also provide swipe plus wrapping previous/next controls. The carousel pauses for hover, focus, and direct interaction, and respects reduced-motion preferences.
+- Interior page heroes use several small, softly animated inline SVG clouds; the homepage hero keeps its distinct animated star field. Keep the icon-only light/dark toggle visible in the navbar at every breakpoint. Center section/page introductions on desktop and tablet, except keep the support introduction left-aligned; leave the existing mobile composition intact.
 
 ## Implementation
 

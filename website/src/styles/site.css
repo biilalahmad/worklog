@@ -141,6 +141,7 @@ summary:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   background: var(--surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -1061,14 +1062,45 @@ h2 {
    PAGE HERO — Features, Help, Download, Privacy, Terms, Support
    ============================================================ */
 .page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 72px 0 48px;
-  background: linear-gradient(180deg, var(--pale), var(--white));
+  background: linear-gradient(180deg, var(--pale), var(--surface));
 }
+.page-hero > .container { position: relative; z-index: 1; }
 .page-hero h1 {
   font-size: clamp(34px, 5vw, 50px);
   margin: 14px 0;
 }
 .page-hero .hero-lede { font-size: 17px; }
+.page-clouds { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; color: #70b8e7; }
+.page-cloud {
+  position: absolute;
+  display: block;
+  width: clamp(104px, 13vw, 174px);
+  height: auto;
+  overflow: visible;
+  opacity: 0.2;
+  animation: pageCloudDrift 24s ease-in-out infinite alternate;
+}
+.page-cloud path { fill: currentColor; }
+.page-cloud--one { top: 12%; left: 3%; width: clamp(112px, 12vw, 158px); }
+.page-cloud--two { top: 26%; right: 2%; width: clamp(92px, 10vw, 132px); animation-delay: -7s; }
+.page-cloud--three { top: 58%; left: 1%; width: clamp(94px, 11vw, 146px); animation-delay: -13s; }
+.page-cloud--four { top: 62%; right: 1%; width: clamp(116px, 13vw, 172px); animation-delay: -4s; }
+.page-cloud--five { top: 8%; left: 72%; width: clamp(76px, 8vw, 108px); opacity: 0.14; animation-delay: -17s; }
+@keyframes pageCloudDrift {
+  from { transform: translate3d(-4px, 2px, 0); }
+  to { transform: translate3d(7px, -7px, 0); }
+}
+@media (min-width: 681px) and (max-width: 1024px) {
+  .page-cloud--one { top: 0; left: 2%; width: 112px; }
+  .page-cloud--two { top: 3%; right: 2%; width: 100px; }
+  .page-cloud--three { top: auto; bottom: 0; left: 1%; width: 118px; }
+  .page-cloud--four { top: auto; bottom: 0; right: 1%; width: 132px; }
+  .page-cloud--five { display: none; }
+}
 
 /* ============================================================
    FEATURES PAGE
@@ -1989,7 +2021,8 @@ h2 {
 
 /* Tablet and mobile navigation: use one compact menu before desktop links get cramped. */
 @media (max-width: 1024px) {
-  .header-inner { position: relative; }
+  .header-inner { position: relative; justify-content: flex-start; }
+  .theme-toggle { margin-left: auto; }
   .menu-toggle {
     display: grid;
     place-items: center;
@@ -2480,15 +2513,6 @@ h2 {
     background: var(--navy);
     color: var(--white);
   }
-  .site-nav > .theme-toggle {
-    justify-content: flex-start;
-    min-height: 48px;
-    width: 100%;
-    margin-top: 4px;
-    border-radius: 14px;
-    background: var(--pale);
-    color: var(--heading);
-  }
 }
 
 /* Dark theme tokens keep the existing WorkLog navy/sky palette and contrast. */
@@ -2527,7 +2551,8 @@ html[data-theme="dark"] .support-form textarea { border-color: var(--line); }
 html[data-theme="dark"] .button-white { color: #183b62; }
 html[data-theme="dark"] .release-current-badge { color: #183b62; background: #d9ecf9; }
 html[data-theme="dark"] .theme-toggle { color: var(--heading); background: var(--surface); }
-html[data-theme="dark"] .site-nav > .theme-toggle { color: #d7e5f1; background: transparent; border-color: rgb(255 255 255 / 0.2); }
+html[data-theme="dark"] .page-hero { background: linear-gradient(180deg, var(--pale), var(--surface)); }
+html[data-theme="dark"] .page-cloud { color: #84bce3; opacity: 0.15; }
 html[data-theme="dark"] .phone-app-icon { background: #fff; }
 html[data-theme="dark"] .hero-star { color: #a7d7f6; opacity: 0.9; }
 html[data-theme="dark"] .invoice-card {
@@ -2540,14 +2565,6 @@ html[data-theme="dark"] .invoice-card {
   --blue: #3b6c9d;
   color: #172b42;
   background: #fff;
-}
-
-@media (max-width: 680px) {
-  html[data-theme="dark"] .site-nav > .theme-toggle {
-    color: var(--heading);
-    background: var(--pale);
-    border-color: var(--line);
-  }
 }
 
 /* Lightweight, pointer-responsive star accents in the homepage hero. */
@@ -2630,18 +2647,18 @@ html[data-theme="dark"] .invoice-card {
 @media (max-width: 680px) { .screenshot-item { flex-basis: min(76vw, 280px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-star, .hero-star svg { animation: none !important; translate: none !important; transition: none !important; transform: none !important; }
+  .hero-star, .hero-star svg, .page-cloud { animation: none !important; translate: none !important; transition: none !important; transform: none !important; }
 }
 
 /* Keep section introductions composed and centered on tablet/desktop. */
 @media (min-width: 681px) {
-  .page-hero:not(.support-contact-hero) .container { text-align: center; }
+  .page-hero:not(.support-contact-hero) .container { margin-inline: auto; text-align: center; }
   .page-hero:not(.support-contact-hero) .hero-lede { margin-inline: auto; }
   .support-contact-hero .container { text-align: left; }
   .support-contact-hero .hero-lede { margin-inline: 0; }
 
   .section > .container > .narrow,
-  .section > .container > .narrow.center { text-align: center; }
+  .section > .container > .narrow.center { margin-inline: auto; text-align: center; }
   .section > .container > .narrow .section-lede { margin-inline: auto; text-align: center; }
   .solution-grid > div:first-child { text-align: center; }
   .solution-grid > div:first-child .section-lede { margin-inline: auto; }
@@ -2657,6 +2674,15 @@ html[data-theme="dark"] .invoice-card {
   .download-info-grid { text-align: left; }
   .final-cta > div:first-child { text-align: center; }
   .final-cta > div:first-child p { margin-inline: auto; }
+}
+@media (max-width: 680px) {
+  .page-cloud { opacity: 0.08; }
+  .page-cloud--one { top: -22px; left: -46px; width: 118px; }
+  .page-cloud--two { top: -20px; right: -48px; width: 104px; }
+  .page-cloud--three { top: auto; bottom: -15px; left: -50px; width: 120px; }
+  .page-cloud--four { top: auto; bottom: -15px; right: -52px; width: 128px; }
+  .page-cloud--five { display: none; }
+  html[data-theme="dark"] .page-cloud { opacity: 0.08; }
 }
 @media print {
   html[data-theme="dark"] {

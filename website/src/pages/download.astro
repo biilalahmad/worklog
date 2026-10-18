@@ -1,4 +1,5 @@
 ---
+import PageClouds from '../components/PageClouds.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { readFile } from 'node:fs/promises';
 
@@ -64,6 +65,7 @@ try {
 ---
 <SiteLayout title="Download WorkLog for Android" description="Download WorkLog for Android from the official GitHub release and find simple installation and update instructions.">
   <section class="page-hero download-hero">
+    <PageClouds />
     <div class="container narrow">
       <span class="eyebrow">GET STARTED WITH WORKLOG</span>
       <h1>Your freelance work log, ready for Android.</h1>

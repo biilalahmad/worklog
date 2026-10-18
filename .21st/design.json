@@ -70,6 +70,11 @@
       "choice": "Use lightweight inline SVG stars in the homepage hero with gentle twinkle, drift, and pointer parallax; honor reduced-motion preferences.",
       "source": "User request",
       "date": "2026-10-18"
+    },
+    {
+      "choice": "Keep the icon-only light/dark toggle visible in the navbar at every breakpoint, center section and page introductions on desktop/tablet while preserving the support introduction's left alignment, and use small floating inline SVG clouds on interior page heroes while retaining stars on the homepage hero.",
+      "source": "User request",
+      "date": "2026-10-18"
     }
   ],
   "evidence": [

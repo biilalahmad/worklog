@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import PageClouds from '../components/PageClouds.astro';
 const questions = [
   ['Who is WorkLog for?', 'WorkLog is a personal work log for freelancers across different fields. Use it to keep track of clients, projects, work delivered, time, invoices, income, expenses and reminders. The gym and diet tools are optional.'],
   ['How do I finish creating my account?', 'Sign up in the Android app, then open the verification link in your email. WorkLog will confirm when verification succeeds; you can then log in from the Android app. If the email does not arrive, check spam and use the resend option in the app.'],
@@ -17,7 +18,7 @@ const questions = [
 ];
 ---
 <SiteLayout title="Help and frequently asked questions — WorkLog" description="Answers about WorkLog accounts, invoices, app updates, work logs and optional wellness features.">
-  <section class="page-hero"><div class="container narrow"><span class="eyebrow">HELP &amp; FAQ</span><h1>Quick answers for using WorkLog.</h1><p class="hero-lede">Need something else? <a class="inline-link" href="/support/">Contact WorkLog support</a>.</p></div></section>
+  <section class="page-hero"><PageClouds /><div class="container narrow"><span class="eyebrow">HELP &amp; FAQ</span><h1>Quick answers for using WorkLog.</h1><p class="hero-lede">Need something else? <a class="inline-link" href="/support/">Contact WorkLog support</a>.</p></div></section>
   <section class="section section-space" id="faq"><div class="container faq-list">{questions.map(([question, answer]) => <details class="faq-item"><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
   <section class="section solution-section"><div class="container narrow"><h2>Still need a hand?</h2><p>Send us a message and include the email address associated with your WorkLog account. Don’t include passwords or security codes.</p><a class="button button-primary" href="/support/">Contact support <span aria-hidden="true">→</span></a></div></section>
 </SiteLayout>

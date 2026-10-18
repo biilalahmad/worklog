@@ -1,8 +1,9 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import PageClouds from '../components/PageClouds.astro';
 ---
 <SiteLayout title="Contact WorkLog support" description="Contact WorkLog support for help with your account, work log, invoice sharing or app download.">
-  <section class="page-hero support-contact-hero"><div class="container narrow"><span class="eyebrow">CONTACT SUPPORT</span><h1>We’re here to help.</h1><p class="hero-lede">Tell us what’s happening. Please don’t send passwords, verification codes or payment card details.</p></div></section>
+  <section class="page-hero support-contact-hero"><PageClouds /><div class="container narrow"><span class="eyebrow">CONTACT SUPPORT</span><h1>We’re here to help.</h1><p class="hero-lede">Tell us what’s happening. Please don’t send passwords, verification codes or payment card details.</p></div></section>
   <section class="section section-space"><div class="container support-grid">
     <form class="support-form" id="support-form" novalidate>
       <label for="support-name">Your name</label><input id="support-name" name="name" autocomplete="name" maxlength="100" required />

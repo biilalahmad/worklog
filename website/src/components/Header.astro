@@ -11,12 +11,6 @@ const faqHref = isHome ? '#faq' : isCurrent('/help') ? '/help/#faq' : '/#faq';
       <img src="/brand/worklog-icon.png" width="36" height="36" alt="" />
       <span>Work<span class="brand-light">Log</span></span>
     </a>
-    <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path class="menu-icon-bars" d="M4 7h16M4 12h16M4 17h16" />
-        <path class="menu-icon-close" d="m6 6 12 12M18 6 6 18" />
-      </svg>
-    </button>
     <nav id="site-menu" class="site-nav" data-site-menu aria-label="Main navigation">
       <a href={isCurrent('/features') ? '/features/' : `${anchorBase}#features`} aria-current={isCurrent('/features') ? 'page' : undefined}>Features</a>
       <a href={`${anchorBase}#how-it-works`}>How it works</a>
@@ -24,10 +18,16 @@ const faqHref = isHome ? '#faq' : isCurrent('/help') ? '/help/#faq' : '/#faq';
       <a href={faqHref} aria-current={isCurrent('/help') ? 'page' : undefined}>FAQ</a>
       <a href="/support/" aria-current={isCurrent('/support') ? 'page' : undefined}>Support</a>
       <a class="button button-small button-primary" href="/download/">Download for Android</a>
-      <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false" data-theme-toggle>
-        <svg class="theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.6 8.6 0 1 0 20.5 15.2Z" /></svg>
-        <svg class="theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></svg>
-      </button>
     </nav>
+    <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false" data-theme-toggle>
+      <svg class="theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.6 8.6 0 1 0 20.5 15.2Z" /></svg>
+      <svg class="theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42 1.42m11.3-11.3 1.42-1.42" /></svg>
+    </button>
+    <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path class="menu-icon-bars" d="M4 7h16M4 12h16M4 17h16" />
+        <path class="menu-icon-close" d="m6 6 12 12M18 6 6 18" />
+      </svg>
+    </button>
   </div>
 </header>
