@@ -2208,16 +2208,18 @@ h2 {
   animation: fadeInUp 600ms 100ms var(--transition-med) both;
 }
 .hero-visual::before {
-  z-index: -1;
+  z-index: 0;
   inset: 105px 4% 18px;
   border-radius: 48% 48% 30px 30px;
   background:
     radial-gradient(ellipse at 50% 34%, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.58) 44%, transparent 74%),
     linear-gradient(145deg, rgb(115 186 240 / 0.28), rgb(47 111 159 / 0.07));
   filter: blur(1px);
+  pointer-events: none;
 }
 .hero-preview-label {
   position: absolute;
+  z-index: 1;
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
@@ -2250,6 +2252,13 @@ h2 {
   background: var(--navy-deep);
 }
 .phone-screen {
+  --surface: #fff;
+  --pale: #f4f8fb;
+  --ink: #172b42;
+  --muted: #60738a;
+  --line: #dce6ef;
+  --heading: #183b62;
+  --blue: #3b6c9d;
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -2544,6 +2553,12 @@ html[data-theme="dark"] .hero-section {
 }
 html[data-theme="dark"] .hero-section::before { border-color: rgb(141 200 241 / 0.12); }
 html[data-theme="dark"] .hero-visual { border-color: var(--line); }
+html[data-theme="dark"] .hero-visual::before {
+  background:
+    radial-gradient(ellipse at 50% 34%, rgb(115 186 240 / 0.16), rgb(47 111 159 / 0.08) 44%, transparent 74%),
+    linear-gradient(145deg, rgb(47 111 159 / 0.16), rgb(11 28 45 / 0.02));
+  filter: none;
+}
 html[data-theme="dark"] .audience-grid > div { border-color: var(--line); }
 html[data-theme="dark"] .solution-list strong,
 html[data-theme="dark"] .support-form label,
@@ -2559,7 +2574,6 @@ html[data-theme="dark"] .theme-toggle { color: var(--heading); background: var(-
 html[data-theme="dark"] .page-hero { background: linear-gradient(180deg, var(--pale), var(--surface)); }
 html[data-theme="dark"] .page-cloud { color: #84bce3; opacity: 0.15; }
 html[data-theme="dark"] .solution-section > .page-clouds .page-cloud { opacity: 0.12; }
-html[data-theme="dark"] .hero-sun { display: none; }
 html[data-theme="dark"] .phone-app-icon { background: #fff; }
 html[data-theme="dark"] .hero-star { color: #a7d7f6; opacity: 0.9; }
 html[data-theme="dark"] .invoice-card {
@@ -2582,26 +2596,6 @@ html[data-theme="dark"] .invoice-card {
   overflow: hidden;
   pointer-events: none;
 }
-.hero-sun {
-  position: absolute;
-  top: 9%;
-  left: 49%;
-  display: block;
-  width: clamp(38px, 4.5vw, 54px);
-  aspect-ratio: 1;
-  color: #efb94e;
-  opacity: 0.82;
-  animation: sunBob 8s ease-in-out infinite alternate;
-}
-.hero-sun svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.hero-sun circle { fill: rgb(255 204 105 / 0.28); stroke: currentColor; stroke-width: 2.5; }
-.hero-sun path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
-.hero-sun-rays { transform-box: fill-box; transform-origin: center; animation: sunRayTurn 44s linear infinite; }
-@keyframes sunBob {
-  from { transform: translate3d(-3px, 0, 0); }
-  to { transform: translate3d(5px, -8px, 0); }
-}
-@keyframes sunRayTurn { to { transform: rotate(360deg); } }
 .hero-star {
   position: absolute;
   display: block;
@@ -2674,7 +2668,7 @@ html[data-theme="dark"] .invoice-card {
 @media (max-width: 680px) { .screenshot-item { flex-basis: min(76vw, 280px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-star, .hero-star svg, .hero-sun, .hero-sun-rays, .page-cloud { animation: none !important; translate: none !important; transition: none !important; transform: none !important; }
+  .hero-star, .hero-star svg, .page-cloud { animation: none !important; translate: none !important; transition: none !important; transform: none !important; }
 }
 
 /* Keep section introductions composed and centered on tablet/desktop. */
