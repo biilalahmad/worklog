@@ -5,9 +5,8 @@ const releaseUrl = 'https://github.com/biilalahmad/worklog/releases/latest';
 const apkUrl = `${releaseUrl}/download/WorkLog.apk`;
 const releaseInfo = [
   ['Version', '0.5.2'],
-  ['Build number / version code', '3'],
   ['APK size', '70.7 MB'],
-  ['Minimum Android', 'Android 7.0 (API 24)+'],
+  ['Minimum Android', 'Android 7.0+'],
   ['Released', '18 October 2026'],
 ];
 const releaseHistory = [
@@ -23,7 +22,6 @@ const releaseHistory = [
       <h1>Your freelance work log, ready for Android.</h1>
       <p class="hero-lede">Download the Android app from the official WorkLog release. Keep your clients, projects, work history, invoices and finances close at hand.</p>
       <a class="button button-primary" href={apkUrl}>Download APK <span aria-hidden="true">↓</span></a>
-      <p class="download-source-note">Official download hosted on <a class="inline-link" href={releaseUrl}>GitHub Releases</a>.</p>
     </div>
   </section>
   <section class="section section-space download-details-section">
@@ -35,7 +33,6 @@ const releaseHistory = [
         <dl class="download-info-grid">
           {releaseInfo.map(([label, value]) => <div class="download-info-item"><dt>{label}</dt><dd>{value}</dd></div>)}
         </dl>
-        <p class="release-notes-link">Release notes are published with each <a class="inline-link" href={releaseUrl}>GitHub release</a>.</p>
       </div>
       <aside class="install-panel">
         <span class="eyebrow">INSTALL IN A FEW STEPS</span>
